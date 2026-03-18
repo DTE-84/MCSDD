@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCSDD | PCSP Case Study Reference</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:   #0a0a0c;
+      --navy:    #0d1b35;
+      --gold:    #c9a84c;
+      --white:   #f4f1eb;
+      --muted:   #8a8fa8;
+      --border:  rgba(201,168,76,0.22);
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      margin: 0;
+      padding: 40px;
+    }
+    .section-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #e8c96a;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+    .section-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    .case-placeholder {
+      background: linear-gradient(160deg, #0d1525 0%, #0a0f1e 100%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 500px;
+      gap: 16px;
+      color: var(--muted);
+      text-align: center;
+      padding: 40px;
+    }
+    .upload-btn {
+      background: transparent;
+      border: 1px dashed rgba(201,168,76,0.3);
+      color: var(--gold);
+      border-radius: 6px;
+      padding: 12px 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .upload-btn:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
+    .pdf-viewer { width: 100%; height: 80vh; border: none; border-radius: 8px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="section-heading">Case Study Reference</div>
+  <div class="section-sub">Clinical Documentation & State Audit Checklist</div>
+  
+  <div class="case-placeholder" id="casePlaceholder">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" width="48" height="48" style="opacity:0.2;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
+    <p>Upload Case Documentation (PDF) for presentation reference.</p>
+    <input type="file" id="caseFileInput" accept=".pdf" style="display:none" onchange="loadCaseFile(event)" />
+    <button class="upload-btn" onclick="document.getElementById('caseFileInput').click()">Upload Reference</button>
+  </div>
+  <iframe class="pdf-viewer" id="caseViewer"></iframe>
+
+  <script>
+    function loadCaseFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      const viewer = document.getElementById('caseViewer');
+      const placeholder = document.getElementById('casePlaceholder');
+      viewer.src = url;
+      viewer.style.display = 'block';
+      placeholder.style.display = 'none';
+    }
+  </script>
+</body>
+</html>

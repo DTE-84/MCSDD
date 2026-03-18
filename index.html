@@ -893,20 +893,12 @@
 
     <!-- ── APPLICATION ── -->
     <section class="section" id="appSection">
-      <div class="section-heading">Application</div>
-      <div class="section-sub">Embedded case management tool</div>
-      <div class="app-frame-wrap">
-        <div class="app-frame-header">
-          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-          <span class="frame-title" id="frameTitle">No application loaded</span>
-        </div>
-        <div class="app-placeholder" id="appPlaceholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
-          <p>Embed your application here. Paste a URL below or upload an HTML file.</p>
-          <input type="text" id="appUrlInput" placeholder="https://your-app-url.com" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:6px;padding:11px 16px;color:#f4f1eb;font-family:'DM Sans',sans-serif;font-size:0.85rem;width:100%;max-width:420px;outline:none;" />
-          <button class="upload-btn" onclick="loadAppUrl()">Load Application</button>
-        </div>
-        <iframe id="appIframe" allowfullscreen></iframe>
+      <div class="section-heading">PCSP Assistant Pro</div>
+      <div class="section-sub">Clinical Drafting Engine — Missouri Healthcare Division</div>
+      
+      <!-- Integrated PCSP App Container -->
+      <div id="integratedApp" style="background: #ffffff; color: #333; border-radius: 10px; overflow: hidden; height: 80vh; border: 1px solid var(--border);">
+        <iframe id="appIframe" src="../MWISP/index.html" style="width: 100%; height: 100%; border: none;"></iframe>
       </div>
     </section>
 
