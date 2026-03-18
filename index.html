@@ -793,18 +793,61 @@
           <label>DMH Number</label>
           <input type="text" id="dmhNumber" placeholder="e.g. DMH-00000000" />
         </div>
-        <div class="field-group">
-          <label>Funding Type</label>
-          <select id="fundingType">
-            <option value="">— Select —</option>
-            <option value="CIH Waiver">CIH Waiver</option>
-            <option value="FSW Waiver">FSW Waiver</option>
-            <option value="ICF/IID">ICF/IID</option>
-            <option value="State Funded">State Funded</option>
-            <option value="Medicaid HCBS">Medicaid HCBS</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
+        <!-- ---------- Funding Type – multi‑select ---------- -->
+<div class="field-group">
+  <label>Funding Type</label>
+  <div class="funding-options">
+    <label><input type="checkbox" name="funding" value="Comprehensive Waiver"> Comprehensive Waiver</label>
+    <label><input type="checkbox" name="funding" value="Support Waiver"> Support Waiver</label>
+    <label><input type="checkbox" name="funding" value="Sarah Lopez(MOCDD)"> Sarah Lopez (MOCDD)</label>
+    <label><input type="checkbox" name="funding" value="ICF/IID"> ICF/IID</label>
+    <label><input type="checkbox" name="funding" value="State Funded"> State Funded</label>
+    <label><input type="checkbox" name="funding" value="PAC Funding"> PAC Funding</label>
+    <label><input type="checkbox" name="funding" value="NEAI Funding"> NEAI Funding</label>
+    <label><input type="checkbox" name="funding" value="Grant Funding"> Grant Funding</label>
+    <label><input type="checkbox" name="funding" value="No Funding"> No Funding</label>
+
+    <label class="other-option">
+      <input type="checkbox" name="funding" value="Other">
+      Other
+      <input type="text" name="otherFunding" placeholder="Enter other funding"
+             class="other-text" disabled>
+    </label>
+  </div>
+</div>
+
+
+<div id="selectedFunding" class="selected-output"></div>
+
+<script>
+  const outputDiv = document.getElementById('selectedFunding');
+
+  document.querySelectorAll('input[name="funding"]').forEach(cb => {
+    cb.addEventListener('change', updateSelectedFunding);
+  });
+
+  function updateSelectedFunding() {
+    const checked = Array.from(document.querySelectorAll('input[name="funding"]:checked'));
+    const labels = checked.map(cb => {
+      const labelText = cb.closest('label').innerText.trim();
+
+      if (cb.value === 'Other') {
+        const otherInput = cb.closest('label').querySelector('.other-text');
+        if (otherInput && otherInput.value.trim()) {
+          return `${labelText}: ${otherInput.value.trim()}`;
+        }
+        return labelText;
+      }
+      return labelText;
+    });
+
+    outputDiv.textContent = labels.length ? labels.join(', ') : '— No funding type selected —';
+  }
+
+  // Initialise on page load
+  window.addEventListener('load', updateSelectedFunding);
+</script>
+
         <div class="field-group">
           <label>PCSP Implementation Date</label>
           <input type="date" id="implementationDate" />
