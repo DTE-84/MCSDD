@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCSDD | Developmental Services Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:   #0a0a0c;
+      --navy:    #0d1b35;
+      --navy2:   #132244;
+      --gold:    #c9a84c;
+      --gold2:   #e8c96a;
+      --gold3:   #f5dfa0;
+      --white:   #f4f1eb;
+      --muted:   #8a8fa8;
+      --border:  rgba(201,168,76,0.22);
+      --radius:  6px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      background-size: 180px;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.6;
+    }
+
+    /* ─── LOCK SCREEN ─── */
+    #lockScreen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 20%, #1a2d52 0%, #0a0a0c 65%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    #lockScreen.fade-out {
+      opacity: 0;
+      transform: scale(1.04);
+      pointer-events: none;
+    }
+
+    .lock-card {
+      background: linear-gradient(160deg, #141e36 0%, #0d1525 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 52px 48px 44px;
+      width: 420px;
+      max-width: 92vw;
+      text-align: center;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.08);
+      animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(28px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .seal {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .seal svg { width: 100%; height: 100%; }
+
+    .lock-card h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--gold2);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+
+    .lock-card .subtitle {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 36px;
+    }
+
+    .field-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .field-wrap input {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--white);
+      letter-spacing: 0.14em;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field-wrap input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+    }
+
+    .field-wrap input::placeholder { color: rgba(138,143,168,0.6); letter-spacing: 0.05em; }
+
+    #errorMsg {
+      color: #e07070;
+      font-size: 0.78rem;
+      margin-bottom: 14px;
+      min-height: 18px;
+      letter-spacing: 0.03em;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold) 0%, #a8782e 100%);
+      color: var(--black);
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover  { opacity: 0.88; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .lock-footer {
+      margin-top: 28px;
+      font-size: 0.68rem;
+      color: rgba(138,143,168,0.4);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-top: 1px solid rgba(201,168,76,0.1);
+      padding-top: 20px;
+    }
+
+    /* ─── MAIN APP ─── */
+    #app { display: none; animation: appIn 0.6s ease both; }
+
+    @keyframes appIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: linear-gradient(90deg, #0a0f1e 0%, #0d1b35 60%, #0f1e38 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-seal { width: 38px; height: 38px; }
+    .header-seal svg { width: 100%; height: 100%; }
+
+    .header-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--gold2);
+    }
+
+    .header-sub {
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover { color: var(--white); border-color: var(--border); }
+
+    .tab-btn.active {
+      background: rgba(201,168,76,0.1);
+      border-color: var(--gold);
+      color: var(--gold2);
+    }
+
+    /* ─── MAIN AREA ─── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    /* ─── SECTION ─── */
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn 0.35s ease; }
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px);} to {opacity:1;transform:translateY(0);} }
+
+    /* ─── COVER PAGE BUILDER ─── */
+    .section-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold2);
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .section-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    .builder-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 680px) { .builder-grid { grid-template-columns: 1fr; } }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-group.full { grid-column: 1 / -1; }
+
+    .field-group label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .field-group input,
+    .field-group textarea,
+    .field-group select {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201,168,76,0.18);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      resize: vertical;
+    }
+
+    .field-group input:focus,
+    .field-group textarea:focus,
+    .field-group select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+    }
+
+    .field-group select option { background: #0d1b35; }
+    .field-group textarea { min-height: 90px; }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold) 0%, #a8782e 100%);
+      color: var(--black);
+      border: none;
+      border-radius: var(--radius);
+      padding: 12px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-gold:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 12px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover { background: rgba(201,168,76,0.08); }
+
+    /* ─── COVER PREVIEW ─── */
+    #coverPreview {
+      display: none;
+      margin-top: 48px;
+    }
+
+    .preview-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .preview-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .cover-doc {
+      background: #ffffff;
+      color: #111;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+      max-width: 720px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .cover-header-bar {
+      background: #0d1b35;
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 4px solid #c9a84c;
+    }
+
+    .cover-header-bar .cover-seal { width: 60px; height: 60px; flex-shrink: 0; }
+    .cover-header-bar .cover-seal svg { width: 100%; height: 100%; }
+
+    .cover-agency-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #e8c96a;
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+    }
+
+    .cover-agency-sub {
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(232,201,106,0.6);
+      margin-top: 3px;
+    }
+
+    .cover-body {
+      padding: 52px 40px 44px;
+    }
+
+    .cover-title-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0d1b35;
+      border-bottom: 2px solid #c9a84c;
+      padding-bottom: 16px;
+      margin-bottom: 32px;
+      line-height: 1.2;
+    }
+
+    .cover-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 32px;
+      margin-bottom: 32px;
+    }
+
+    .cover-meta-item label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .cover-meta-item span {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #1a1a2e;
+    }
+
+    .cover-desc-block {
+      background: #f7f5f0;
+      border-left: 3px solid #c9a84c;
+      padding: 16px 20px;
+      border-radius: 0 4px 4px 0;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #333;
+    }
+
+    .cover-footer-bar {
+      background: #0a0f1e;
+      padding: 14px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cover-footer-bar span {
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(201,168,76,0.5);
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 48px 0;
+    }
+
+    /* ─── APP SECTION ─── */
+    .app-frame-wrap {
+      background: linear-gradient(160deg, #0d1525 0%, #0a0f1e 100%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      min-height: 600px;
+      position: relative;
+    }
+
+    .app-frame-header {
+      background: rgba(201,168,76,0.06);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #e06c6c; }
+    .dot.y { background: #c9a84c; }
+    .dot.g { background: #5cb87a; }
+
+    .frame-title {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .app-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 520px;
+      gap: 16px;
+      color: var(--muted);
+      text-align: center;
+      padding: 40px;
+    }
+
+    .app-placeholder svg {
+      width: 56px;
+      height: 56px;
+      opacity: 0.25;
+    }
+
+    .app-placeholder p {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.5;
+      max-width: 300px;
+      line-height: 1.7;
+    }
+
+    .app-placeholder .upload-btn {
+      margin-top: 8px;
+      background: transparent;
+      border: 1px dashed rgba(201,168,76,0.3);
+      color: var(--gold);
+      border-radius: var(--radius);
+      padding: 12px 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .app-placeholder .upload-btn:hover {
+      background: rgba(201,168,76,0.08);
+      border-color: var(--gold);
+    }
+
+    #appIframe {
+      width: 100%;
+      height: 640px;
+      border: none;
+      display: none;
+    }
+
+    /* ─── CASE STUDY SECTION ─── */
+    .case-placeholder {
+      background: linear-gradient(160deg, #0d1525 0%, #0a0f1e 100%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      gap: 16px;
+      color: var(--muted);
+      text-align: center;
+      padding: 40px;
+    }
+
+    .case-placeholder svg {
+      width: 48px;
+      height: 48px;
+      opacity: 0.2;
+    }
+
+    .case-placeholder p {
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.5;
+      max-width: 340px;
+      line-height: 1.7;
+    }
+
+    #caseFileInput { display: none; }
+
+    .pdf-viewer {
+      width: 100%;
+      height: 720px;
+      border: none;
+      border-radius: 8px;
+      display: none;
+    }
+
+    /* ─── PHOTO UPLOAD ZONE ─── */
+    .photo-upload-zone {
+      width: 140px;
+      height: 160px;
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed rgba(201,168,76,0.3);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .photo-upload-zone:hover { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+
+    #photoPlaceholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #photoPlaceholder span {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ─── COVER PCSP LAYOUT ─── */
+    .cover-pcsp-layout {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    .cover-photo-col {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cover-photo-box {
+      width: 120px;
+      height: 140px;
+      border: 2px solid #c9a84c;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #f0eee8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cover-hipaa-badge {
+      background: #0d1b35;
+      color: #c9a84c;
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 3px;
+      border: 1px solid rgba(201,168,76,0.35);
+      white-space: nowrap;
+    }
+
+    .cover-fields-col { flex: 1; }
+
+    .cover-meta-item.full { grid-column: 1 / -1; }
+
+    /* ─── PRINT STYLES ─── */
+    @media print {
+      body { background: white; }
+      header, .tab-btn, .btn-row, #app > main > .section:not(#coverSection) { display: none !important; }
+      #coverSection { display: block !important; }
+      #coverPreview { display: block !important; }
+      .cover-doc { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ LOCK SCREEN -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <div class="seal">
+      <!-- Marion County Seal SVG -->
+      <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="38" stroke="#c9a84c" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="33" stroke="#c9a84c" stroke-width="0.75" stroke-dasharray="3 2.5"/>
+        <circle cx="40" cy="40" r="26" stroke="rgba(201,168,76,0.35)" stroke-width="0.5"/>
+        <polygon points="40,18 44.5,32 59,32 47.7,40.8 52.2,55 40,46.5 27.8,55 32.3,40.8 21,32 35.5,32" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linejoin="round"/>
+        <text x="40" y="68" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="5.5" fill="#c9a84c" letter-spacing="1.5">MARION COUNTY</text>
+      </svg>
+    </div>
+    <h1>MCSDD Employee Portal</h1>
+    <p class="subtitle">Marion County · Developmental Services</p>
+    <div class="field-wrap">
+      <input type="password" id="passInput" placeholder="Enter access code" autocomplete="off" />
+    </div>
+    <div id="errorMsg"></div>
+    <button class="btn-primary" onclick="checkPass()">Access Portal</button>
+    <div class="lock-footer">Authorized personnel only &nbsp;·&nbsp; MCSDD 2024</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ APP -->
+<div id="app">
+  <header>
+    <div class="header-left">
+      <div class="header-seal">
+        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="38" stroke="#c9a84c" stroke-width="1.5"/>
+          <circle cx="40" cy="40" r="33" stroke="#c9a84c" stroke-width="0.75" stroke-dasharray="3 2.5"/>
+          <polygon points="40,18 44.5,32 59,32 47.7,40.8 52.2,55 40,46.5 27.8,55 32.3,40.8 21,32 35.5,32" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="header-title">MCSDD</div>
+        <div class="header-sub">Marion County · Developmental Services</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="tab-btn active" onclick="showSection('coverSection', this)">Cover Page</button>
+      <button class="tab-btn" onclick="showSection('appSection', this)">Application</button>
+      <button class="tab-btn" onclick="showSection('caseSection', this)">Case Study</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── COVER PAGE BUILDER ── -->
+    <section class="section active" id="coverSection">
+      <div class="section-heading">Cover Page Builder</div>
+      <div class="section-sub">Generate a professional case document cover</div>
+
+      <div class="builder-grid">
+
+        <!-- PHOTO UPLOAD -->
+        <div class="field-group full">
+          <label>Client Photo (Optional)</label>
+          <div class="photo-upload-zone" id="photoZone" onclick="document.getElementById('photoFileInput').click()">
+            <img id="photoPreviewThumb" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:6px;" />
+            <div id="photoPlaceholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" width="28" height="28" style="opacity:0.35;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              <span>Click to upload photo</span>
+            </div>
+            <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="handlePhoto(event)" />
+          </div>
+          <div style="display:flex;gap:8px;margin-top:6px;">
+            <button class="btn-outline" style="padding:7px 16px;font-size:0.7rem;" onclick="document.getElementById('photoFileInput').click()">Upload</button>
+            <button class="btn-outline" style="padding:7px 16px;font-size:0.7rem;" onclick="clearPhoto()">Remove</button>
+          </div>
+        </div>
+
+        <!-- FIELDS -->
+        <div class="field-group full">
+          <label>Full Legal Name</label>
+          <input type="text" id="clientName" placeholder="As it appears on legal documentation" />
+        </div>
+        <div class="field-group">
+          <label>DMH Number</label>
+          <input type="text" id="dmhNumber" placeholder="e.g. DMH-00000000" />
+        </div>
+        <div class="field-group">
+          <label>Funding Type</label>
+          <select id="fundingType">
+            <option value="">— Select —</option>
+            <option value="CIH Waiver">CIH Waiver</option>
+            <option value="FSW Waiver">FSW Waiver</option>
+            <option value="ICF/IID">ICF/IID</option>
+            <option value="State Funded">State Funded</option>
+            <option value="Medicaid HCBS">Medicaid HCBS</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>PCSP Implementation Date</label>
+          <input type="date" id="implementationDate" />
+        </div>
+        <div class="field-group">
+          <label>Meeting Date</label>
+          <input type="date" id="meetingDate" />
+        </div>
+        <div class="field-group">
+          <label>Case Manager</label>
+          <input type="text" id="caseWorker" placeholder="Assigned case manager name" />
+        </div>
+        <div class="field-group">
+          <label>Confidentiality Level</label>
+          <select id="confLevel">
+            <option value="CONFIDENTIAL — HIPAA PROTECTED">Confidential — HIPAA Protected</option>
+            <option value="RESTRICTED">Restricted</option>
+            <option value="FOR OFFICIAL USE ONLY">For Official Use Only</option>
+          </select>
+        </div>
+        <div class="field-group full">
+          <label>Notes / Additional Information</label>
+          <textarea id="docSummary" placeholder="Optional notes, case overview, or document purpose…"></textarea>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-gold" onclick="generateCover()">Generate Cover Page</button>
+        <button class="btn-outline" onclick="printCover()">Print / Save PDF</button>
+        <button class="btn-outline" onclick="clearCover()">Clear</button>
+      </div>
+
+      <!-- PREVIEW -->
+      <div id="coverPreview">
+        <div class="preview-label">Document Preview</div>
+        <div class="cover-doc" id="coverDocEl">
+          <div class="cover-header-bar">
+            <div class="cover-seal">
+              <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="40" cy="40" r="38" stroke="#c9a84c" stroke-width="2"/>
+                <circle cx="40" cy="40" r="33" stroke="#c9a84c" stroke-width="1" stroke-dasharray="3 2.5"/>
+                <polygon points="40,18 44.5,32 59,32 47.7,40.8 52.2,55 40,46.5 27.8,55 32.3,40.8 21,32 35.5,32" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="cover-agency-name">Marion County Services for Developmental Disabilities</div>
+              <div class="cover-agency-sub">Marion County, Indiana &nbsp;·&nbsp; Developmental Services Division</div>
+            </div>
+          </div>
+          <div class="cover-body">
+            <div class="cover-pcsp-layout">
+              <!-- LEFT: photo -->
+              <div class="cover-photo-col">
+                <div class="cover-photo-box" id="prev-photo-wrap">
+                  <img id="prev-photo" src="" alt="Client Photo" style="display:none;width:100%;height:100%;object-fit:cover;" />
+                  <div id="prev-photo-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1" width="32" height="32" style="opacity:0.3;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                  </div>
+                </div>
+                <div class="cover-hipaa-badge">HIPAA Protected</div>
+              </div>
+              <!-- RIGHT: fields -->
+              <div class="cover-fields-col">
+                <div class="cover-title-main" id="prev-title">Person-Centered Support Plan</div>
+                <div class="cover-meta-grid">
+                  <div class="cover-meta-item full"><label>Full Legal Name</label><span id="prev-client">—</span></div>
+                  <div class="cover-meta-item"><label>DMH Number</label><span id="prev-dmh">—</span></div>
+                  <div class="cover-meta-item"><label>Funding Type</label><span id="prev-funding">—</span></div>
+                  <div class="cover-meta-item"><label>PCSP Implementation Date</label><span id="prev-impl">—</span></div>
+                  <div class="cover-meta-item"><label>Meeting Date</label><span id="prev-meeting">—</span></div>
+                  <div class="cover-meta-item"><label>Case Manager</label><span id="prev-worker">—</span></div>
+                  <div class="cover-meta-item"><label>Classification</label><span id="prev-conf" style="color:#8a2020;font-weight:700;font-size:0.8rem;">CONFIDENTIAL — HIPAA PROTECTED</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="cover-desc-block" id="prev-desc" style="display:none;margin-top:24px;"></div>
+          </div>
+          <div class="cover-footer-bar">
+            <span>MCSDD Official Document</span>
+            <span id="prev-conf-footer">CONFIDENTIAL</span>
+            <span>Marion County, Indiana</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── APPLICATION ── -->
+    <section class="section" id="appSection">
+      <div class="section-heading">Application</div>
+      <div class="section-sub">Embedded case management tool</div>
+      <div class="app-frame-wrap">
+        <div class="app-frame-header">
+          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+          <span class="frame-title" id="frameTitle">No application loaded</span>
+        </div>
+        <div class="app-placeholder" id="appPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+          <p>Embed your application here. Paste a URL below or upload an HTML file.</p>
+          <input type="text" id="appUrlInput" placeholder="https://your-app-url.com" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:6px;padding:11px 16px;color:#f4f1eb;font-family:'DM Sans',sans-serif;font-size:0.85rem;width:100%;max-width:420px;outline:none;" />
+          <button class="upload-btn" onclick="loadAppUrl()">Load Application</button>
+        </div>
+        <iframe id="appIframe" allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <!-- ── CASE STUDY ── -->
+    <section class="section" id="caseSection">
+      <div class="section-heading">Case Study</div>
+      <div class="section-sub">Upload and present case documentation</div>
+      <div class="case-placeholder" id="casePlaceholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
+        <p>Upload your case study PDF or document to display it here during the presentation.</p>
+        <input type="file" id="caseFileInput" accept=".pdf,.html" onchange="loadCaseFile(event)" />
+        <button class="upload-btn" onclick="document.getElementById('caseFileInput').click()" style="background:transparent;border:1px dashed rgba(201,168,76,0.3);color:#c9a84c;border-radius:6px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;">Upload Case Study</button>
+      </div>
+      <iframe class="pdf-viewer" id="caseViewer"></iframe>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // ── PASSWORD
+  function checkPass() {
+    const val = document.getElementById('passInput').value;
+    const err = document.getElementById('errorMsg');
+    if (val === 'MCSDD22') {
+      document.getElementById('lockScreen').classList.add('fade-out');
+      setTimeout(() => {
+        document.getElementById('lockScreen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+      }, 700);
+    } else {
+      err.textContent = 'Invalid access code. Please try again.';
+      document.getElementById('passInput').value = '';
+      document.getElementById('passInput').focus();
+    }
+  }
+
+  document.getElementById('passInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPass();
+  });
+
+  // ── TABS
+  function showSection(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ── PHOTO HANDLING
+  let photoDataUrl = null;
+
+  function handlePhoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      photoDataUrl = ev.target.result;
+      const thumb = document.getElementById('photoPreviewThumb');
+      thumb.src = photoDataUrl;
+      thumb.style.display = 'block';
+      document.getElementById('photoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearPhoto() {
+    photoDataUrl = null;
+    document.getElementById('photoPreviewThumb').style.display = 'none';
+    document.getElementById('photoPreviewThumb').src = '';
+    document.getElementById('photoPlaceholder').style.display = 'flex';
+    document.getElementById('photoFileInput').value = '';
+  }
+
+  // ── COVER GENERATOR
+  function fmtDate(val) {
+    if (!val) return '—';
+    return new Date(val + 'T00:00:00').toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  }
+
+  function generateCover() {
+    const client   = document.getElementById('clientName').value.trim()        || '—';
+    const dmh      = document.getElementById('dmhNumber').value.trim()         || '—';
+    const funding  = document.getElementById('fundingType').value              || '—';
+    const impl     = fmtDate(document.getElementById('implementationDate').value);
+    const meeting  = fmtDate(document.getElementById('meetingDate').value);
+    const worker   = document.getElementById('caseWorker').value.trim()        || '—';
+    const conf     = document.getElementById('confLevel').value;
+    const summary  = document.getElementById('docSummary').value.trim();
+
+    document.getElementById('prev-title').textContent    = 'Person-Centered Support Plan';
+    document.getElementById('prev-client').textContent   = client;
+    document.getElementById('prev-dmh').textContent      = dmh;
+    document.getElementById('prev-funding').textContent  = funding;
+    document.getElementById('prev-impl').textContent     = impl;
+    document.getElementById('prev-meeting').textContent  = meeting;
+    document.getElementById('prev-worker').textContent   = worker;
+    document.getElementById('prev-conf').textContent     = conf;
+    document.getElementById('prev-conf-footer').textContent = conf;
+
+    // photo
+    const prevPhoto = document.getElementById('prev-photo');
+    const prevPhotoPlaceholder = document.getElementById('prev-photo-placeholder');
+    if (photoDataUrl) {
+      prevPhoto.src = photoDataUrl;
+      prevPhoto.style.display = 'block';
+      prevPhotoPlaceholder.style.display = 'none';
+    } else {
+      prevPhoto.style.display = 'none';
+      prevPhotoPlaceholder.style.display = 'flex';
+    }
+
+    const descEl = document.getElementById('prev-desc');
+    if (summary) { descEl.textContent = summary; descEl.style.display = 'block'; }
+    else          { descEl.style.display = 'none'; }
+
+    document.getElementById('coverPreview').style.display = 'block';
+    document.getElementById('coverPreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function printCover() {
+    generateCover();
+    setTimeout(() => window.print(), 200);
+  }
+
+  function clearCover() {
+    ['clientName','dmhNumber','caseWorker','implementationDate','meetingDate','docSummary'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('fundingType').selectedIndex = 0;
+    document.getElementById('confLevel').selectedIndex = 0;
+    clearPhoto();
+    document.getElementById('coverPreview').style.display = 'none';
+  }
+
+  // ── LOAD APP URL
+  function loadAppUrl() {
+    const url = document.getElementById('appUrlInput').value.trim();
+    if (!url) return;
+    const iframe = document.getElementById('appIframe');
+    const placeholder = document.getElementById('appPlaceholder');
+    iframe.src = url;
+    iframe.style.display = 'block';
+    placeholder.style.display = 'none';
+    document.getElementById('frameTitle').textContent = url;
+  }
+
+  // ── LOAD CASE FILE
+  function loadCaseFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const viewer = document.getElementById('caseViewer');
+    const placeholder = document.getElementById('casePlaceholder');
+    viewer.src = url;
+    viewer.style.display = 'block';
+    placeholder.style.display = 'none';
+  }
+</script>
+</body>
+</html>
