@@ -456,20 +456,18 @@ function toggleTheme() {
 function toggleTransitionFields() {
   const cat = document.getElementById("transitionCategory").value;
   
-  // 1. Under 16 Fields (Additive history)
-  // We show it for and all subsequent stages (16+, 65+) to preserve the historical data context.
-  const hasEverBeenUnder16 = (cat !== "" && cat !== "Standard"); 
-  document.getElementById("under16Fields").style.display = hasEverBeenUnder16 ? "block" : "none";
-  
-  // 2. Standard Transition Tools (16+)
-  const is16Plus = (cat === "Transition Age (16-24)" || cat === "Adult / Employment Age" || cat === "Retirement Age (65+)");
-  const referralContainer = document.getElementById("referralGrid").closest('.field-group');
-  const discoveryContainer = document.getElementById("discoveryTools").closest('.field-group');
-  if (referralContainer) referralContainer.style.display = is16Plus ? "block" : "none";
-  if (discoveryContainer) discoveryContainer.style.display = is16Plus ? "block" : "none";
+  // Progressive Reveal Logic
+  const showUnder16 = (cat === "School Age (Under 16)" || cat === "Adult / Employment Age" || cat === "Retirement Age (65+)");
+  const showAdult = (cat === "Adult / Employment Age" || cat === "Retirement Age (65+)");
+  const showRetirement = (cat === "Retirement Age (65+)");
 
-  // 3. Retirement Fields (65+)
-  document.getElementById("retirementFields").style.display = (cat === "Retirement Age (65+)") ? "block" : "none";
+  const u16 = document.getElementById("under16Container");
+  const adult = document.getElementById("adultTransitionContainer");
+  const retirement = document.getElementById("retirementContainer");
+
+  if (u16) u16.style.display = showUnder16 ? "block" : "none";
+  if (adult) adult.style.display = showAdult ? "block" : "none";
+  if (retirement) retirement.style.display = showRetirement ? "block" : "none";
 }
 
 // ── UI UPDATE & NARRATIVE ──
@@ -707,11 +705,14 @@ function updateUI() {
   const tCat = getVal("transitionCategory");
   if (tCat && tCat !== "Standard") line(`Life Stage: ${tCat}`);
   
-  // Print historical and current notes cumulatively
-  if (getVal("under16Notes")) field("Under 16 Dev Goals", getVal("under16Notes"));
+  // Print historical and current notes cumulatively based on visible containers
+  const showUnder16 = (tCat === "School Age (Under 16)" || tCat === "Adult / Employment Age" || tCat === "Retirement Age (65+)");
+  const showAdult = (tCat === "Adult / Employment Age" || tCat === "Retirement Age (65+)");
+  const showRetirement = (tCat === "Retirement Age (65+)");
+
+  if (showUnder16 && getVal("under16Notes")) field("Youth Transition Goals", getVal("under16Notes"));
   
-  const isTransitionActive = (tCat === "Transition Age (16-24)" || tCat === "Adult / Employment Age" || tCat === "Retirement Age (65+)");
-  if (isTransitionActive) {
+  if (showAdult) {
     field("Discovery Tools", getVal("discoveryTools"));
     const referrals = [];
     document.querySelectorAll(".referral-cb").forEach(cb => { if (cb.checked) referrals.push(cb.value); });
@@ -719,7 +720,7 @@ function updateUI() {
     field("Referral Notes", getVal("referralNotes"));
   }
   
-  if (getVal("retirementNotes")) field("Retirement Context", getVal("retirementNotes"));
+  if (showRetirement && getVal("retirementNotes")) field("Retirement Context", getVal("retirementNotes"));
   
   field("Transition Plan Summary", getVal("transitionPlan"));
   line("");
@@ -1269,6 +1270,18 @@ function copyToClipboard() {
 
 function printPlan() {
   window.print();
+}
+
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Add a temporary highlight effect
+    el.classList.add('section-highlight');
+    setTimeout(() => {
+      el.classList.remove('section-highlight');
+    }, 2000);
+  }
 }
 
 function exportPCSP() {

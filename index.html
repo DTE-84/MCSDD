@@ -315,10 +315,33 @@
   <body onload="init()">
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div class="app-container" id="appContainer">
-      <!-- ── Left Sidebar: Marion County Resources ── -->
+      <!-- ── Left Sidebar ── -->
       <aside class="side-panel">
-        <div class="panel-header">Marion County Resources</div>
+        <div class="panel-header">Section Navigation</div>
+        <div class="panel-content" id="sectionNav" style="max-height: 400px; overflow-y: auto; border-bottom: 2px solid var(--border);">
+          <div class="nav-grid" style="display: grid; grid-template-columns: 1fr; gap: 4px;">
+            <div class="nav-item" onclick="scrollToSection('sec-cover-letter')"><span>0.</span> Face Sheet</div>
+            <div class="nav-item" onclick="scrollToSection('sec-demographics')"><span>1.</span> Demographics</div>
+            <div class="nav-item" onclick="scrollToSection('sec-likes')"><span>2.</span> Preferences</div>
+            <div class="nav-item" onclick="scrollToSection('sec-dislikes')"><span>3.</span> Dislikes</div>
+            <div class="nav-item" onclick="scrollToSection('sec-important-people')"><span>4.</span> People</div>
+            <div class="nav-item" onclick="scrollToSection('sec-vision')"><span>5.</span> Dreams/Hopes</div>
+            <div class="nav-item" onclick="scrollToSection('sec-communication')"><span>6.</span> Communication</div>
+            <div class="nav-item" onclick="scrollToSection('sec-program-services')"><span>7.</span> Programs</div>
+            <div class="nav-item" onclick="scrollToSection('sec-health')"><span>8.</span> Health/Risk</div>
+            <div class="nav-item" onclick="scrollToSection('sec-community-support')"><span>9.</span> Natural Support</div>
+            <div class="nav-item" onclick="scrollToSection('sec-support-ways')"><span>10.</span> Strategies</div>
+            <div class="nav-item" onclick="scrollToSection('sec-strengths')"><span>12.</span> Strengths</div>
+            <div class="nav-item" onclick="scrollToSection('sec-transition')"><span>13.</span> Transition</div>
+            <div class="nav-item" onclick="scrollToSection('sec-behavioral-legacy')"><span>14.</span> Behavioral</div>
+            <div class="nav-item" onclick="scrollToSection('sec-supervision')"><span>15.</span> Supervision</div>
+            <div class="nav-item" onclick="scrollToSection('sec-prev-goals')"><span>16.</span> Goals History</div>
+            <div class="nav-item" onclick="scrollToSection('sec-outcomes')"><span>17.</span> Action Plan</div>
+            <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>18.</span> Comments</div>
+          </div>
+        </div>
 
+        <div class="panel-header" style="margin-top: 0;">Marion County Resources</div>
         <div class="panel-content" id="resourceList">
           <div
             class="resource-card"
@@ -1840,43 +1863,52 @@
               <select id="transitionCategory" onchange="toggleTransitionFields(); updateUI();">
                 <option value="Standard">-- Select Life Stage --</option>
                 <option value="School Age (Under 16)">School Age (Under 16)</option>
-                <option value="Transition Age (16-24)">Transition Age (16-24)</option>
                 <option value="Adult / Employment Age">Adult / Employment Age</option>
                 <option value="Retirement Age (65+)">Retirement Age (65+)</option>
               </select>
             </div>
 
-            <!-- Retirement Logic -->
-            <div class="field-group full" id="retirementFields" style="display:none;">
-              <label>Retirement Status & Context</label>
-              <textarea id="retirementNotes" placeholder="e.g., Person is of retirement age and does not wish to work; or Person retired from [Employer] on [Date]." oninput="updateUI()"></textarea>
-            </div>
-
-            <!-- Under 16 Logic -->
-            <div class="field-group full" id="under16Fields" style="display:none;">
-              <label>Early Transition & Soft Skill Development (Team Discussion)</label>
-              <textarea id="under16Notes" placeholder="Discuss: Self-determination; soft skills; interest/aptitude exploration; adult roles; social capital; early work experiences (volunteerism/shadowing); independent living skills." oninput="updateUI()"></textarea>
-            </div>
-
-            <!-- Discovery Tools & Benefits Counseling -->
-            <div class="field-group full">
-              <label>Discovery Tools / Financial Literacy (DB101, My Next Move, etc.)</label>
-              <textarea id="discoveryTools" placeholder="Document use of DB101, My Next Move, or Youth Transition services. Note benefit counseling and financial literacy planning." oninput="updateUI()"></textarea>
-            </div>
-
-            <!-- Community Support Referrals -->
-            <div class="field-group full">
-              <label>Community Support Programs (Select and verify referrals)</label>
-              <div class="ethnicity-grid" id="referralGrid">
-                <label class="eth-check"><input type="checkbox" class="referral-cb" value="Vocational Rehabilitation" onchange="updateUI()"> Voc Rehab</label>
-                <label class="eth-check"><input type="checkbox" class="referral-cb" value="Centers for Independent Living" onchange="updateUI()"> CILs</label>
-                <label class="eth-check"><input type="checkbox" class="referral-cb" value="County Boards" onchange="updateUI()"> County Boards</label>
-                <label class="eth-check"><input type="checkbox" class="referral-cb" value="Missouri Job Centers" onchange="updateUI()"> MO Job Centers</label>
+            <!-- Under 16 Logic (Progressive Stage 1) -->
+            <div id="under16Container" style="display:none; grid-column: 1 / -1;">
+              <div class="subsection-label" style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Youth Transition (Under 16)</div>
+              <div class="field-group full">
+                <label>Early Transition & Soft Skill Development (Team Discussion)</label>
+                <textarea id="under16Notes" placeholder="Discuss: Self-determination; soft skills; interest/aptitude exploration; adult roles; social capital; early work experiences; independent living skills." oninput="updateUI()"></textarea>
               </div>
-              <textarea id="referralNotes" placeholder="Ensure appropriate referrals have been made and noted here." style="margin-top:10px;" oninput="updateUI()"></textarea>
             </div>
 
-            <div class="field-group full">
+            <!-- Adult / Employment Logic (Progressive Stage 2) -->
+            <div id="adultTransitionContainer" style="display:none; grid-column: 1 / -1;">
+              <div class="subsection-label" style="margin-top: 20px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Adult Transition & Employment (16+)</div>
+              <div class="form-grid">
+                <div class="field-group full">
+                  <label>Discovery Tools / Financial Literacy (DB101, My Next Move, etc.)</label>
+                  <textarea id="discoveryTools" placeholder="Document use of DB101, My Next Move, or Youth Transition services. Note benefit counseling and financial literacy planning." oninput="updateUI()"></textarea>
+                </div>
+
+                <div class="field-group full">
+                  <label>Community Support Programs (Select and verify referrals)</label>
+                  <div class="ethnicity-grid" id="referralGrid">
+                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="Vocational Rehabilitation" onchange="updateUI()"> Voc Rehab</label>
+                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="Centers for Independent Living" onchange="updateUI()"> CILs</label>
+                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="County Boards" onchange="updateUI()"> County Boards</label>
+                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="Missouri Job Centers" onchange="updateUI()"> MO Job Centers</label>
+                  </div>
+                  <textarea id="referralNotes" placeholder="Ensure appropriate referrals have been made and noted here." style="margin-top:10px;" oninput="updateUI()"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Retirement Logic (Progressive Stage 3) -->
+            <div id="retirementContainer" style="display:none; grid-column: 1 / -1;">
+              <div class="subsection-label" style="margin-top: 20px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Retirement Planning (65+)</div>
+              <div class="field-group full">
+                <label>Retirement Status & Context</label>
+                <textarea id="retirementNotes" placeholder="e.g., Person is of retirement age and does not wish to work; or Person retired from [Employer] on [Date]." oninput="updateUI()"></textarea>
+              </div>
+            </div>
+
+            <div class="field-group full" style="margin-top: 20px;">
               <label>Transition Planning Summary</label>
               <textarea
                 id="transitionPlan"

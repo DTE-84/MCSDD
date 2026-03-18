@@ -18,7 +18,7 @@
   --bg-light: #0f1117;
   --header-bg: #1a1d27;
   /* Borders */
-  --border: #c0c0c0; /* Silver for Dark Mode */
+  --border: #fffefe; /* Silver for Dark Mode */
   /* Brand */
   --marion-blue: #5b8dee;
   --marion-blue-light: #7aa3f5;
@@ -121,6 +121,40 @@ body {
   color: var(--text-label);
   margin-top: 4px;
   display: block;
+}
+
+/* ── Navigation Items ── */
+.nav-item {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-label);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.nav-item span {
+  color: var(--gold);
+  font-weight: 800;
+}
+.nav-item:hover {
+  background: var(--bg-body);
+  color: var(--marion-blue);
+  padding-left: 16px;
+}
+
+/* ── Section Highlight ── */
+.form-section.section-highlight {
+  animation: sectionFlash 2s ease-out;
+}
+@keyframes sectionFlash {
+  0% { box-shadow: 0 0 0 4px var(--marion-blue); border-color: var(--marion-blue); }
+  100% { box-shadow: 0 0 0 0 transparent; }
 }
 
 /* ── History Items ── */
