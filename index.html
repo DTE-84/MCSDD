@@ -793,35 +793,22 @@
           <label>DMH Number</label>
           <input type="text" id="dmhNumber" placeholder="e.g. DMH-00000000" />
         </div>
-       
-<div class="field-group">
-  <label>Funding Type</label>
-  <div class="funding-options">
-    <label><input type="checkbox" name="funding" value="Comprehensive Waiver"> Comprehensive Waiver</label>
-    <label><input type="checkbox" name="funding" value="Support Waiver"> Support Waiver</label>
-    <label><input type="checkbox" name="funding" value="Sarah Lopez(MOCDD)"> Sarah Lopez (MOCDD)</label>
-    <label><input type="checkbox" name="funding" value="ICF/IID"> ICF/IID</label>
-    <label><input type="checkbox" name="funding" value="State Funded"> State Funded</label>
-    <label><input type="checkbox" name="funding" value="PAC Funding"> PAC Funding</label>
-    <label><input type="checkbox" name="funding" value="NEAI Funding"> NEAI Funding</label>
-    <label><input type="checkbox" name="funding" value="Grant Funding"> Grant Funding</label>
-    <label><input type="checkbox" name="funding" value="No Funding"> No Funding</label>
-
-    <label class="other-option">
-      <input type="checkbox" name="funding" value="Other">
-      Other
-      <input type="text" name="otherFunding" placeholder="Enter other funding"
-             class="text" disabled>
-    </label>
-  </div>
-</div>
-
-
-<div id="selectedFunding" class="selected-output"></div>
-
-
-
         <div class="field-group">
+          <label>Funding Type</label>
+        
+          <div id="fundingOptions" class="funding-options">
+            <label class="funding-item"><input type="checkbox" name="funding" value="Comprehensive Waiver"> Comprehensive Waiver</label>
+            <label class="funding-item"><input type="checkbox" name="funding" value="Support Waiver"> Support Waiver</label>
+            <label class="funding-item"><input type="checkbox" name="funding" value="Sarah Lopez(MOCDD)"> Sarah Lopez (MOCDD)</label>
+            <label class="funding-item"><input type="checkbox" name="funding" value="ICF/IID"> ICF/IID</label>
+            <label class="funding-item"><input type="checkbox" name="funding" value="State Funded"> State Funded</label>
+            <label class="funding-item"><input type="checkbox" name="funding" value="PAC Funding"> PAC Funding</label>
+            <label class="funding-item"><input type="checkbox" name="funding" value="NEAI Funding"> NEAI Funding</label>
+            <label class="funding-item"><input type="checkbox" name="funding" value="Grant Funding"> Grant Funding</label>
+            <label class="funding-item"><input type="checkbox" name="funding" value="No Funding"> No Funding</label>
+          </div>
+        </div> 
+                <div class="field-group">
           <label>PCSP Implementation Date</label>
           <input type="date" id="implementationDate" />
         </div>
@@ -919,7 +906,16 @@
       <div class="case-placeholder" id="casePlaceholder">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
         <p>Please upload the <strong>PCSP Checklist (PDF)</strong> or other audit documentation to display it here during the session.</p>
-        <div style="font-size: 11px; color: var(--gold); margin-top: 10px; opacity: 0.8;">Note: Checklist .docx files must be converted to PDF for in-browser viewing.</div>
+        
+        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);">Available Documents (Download)</div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <a href="./PCSP ChecklistDDFunded872017.docx" class="btn-outline" style="padding: 6px 14px; font-size: 10px; text-decoration: none;">Checklist (DD Funded)</a>
+            <a href="./PCSP ChecklistNonDDFunded762018.docx" class="btn-outline" style="padding: 6px 14px; font-size: 10px; text-decoration: none;">Checklist (Non-DD)</a>
+          </div>
+        </div>
+
+        <div style="font-size: 11px; color: var(--gold); margin-top: 15px; opacity: 0.8;">Note: Checklist .docx files must be converted to PDF for in-browser viewing.</div>
         <input type="file" id="caseFileInput" accept=".pdf,.html" onchange="loadCaseFile(event)" />
         <button class="upload-btn" onclick="document.getElementById('caseFileInput').click()" style="background:transparent;border:1px dashed rgba(201,168,76,0.3);color:#c9a84c;border-radius:6px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;margin-top:15px;">Upload Clinical Reference</button>
       </div>

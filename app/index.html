@@ -55,30 +55,7 @@
       .font-sans { font-family: 'DM Sans', sans-serif; }
     </style>
   </head>
-  <body>
-    <!-- ─── LOCK SCREEN ─── -->
-    <div id="lockScreen">
-      <div class="lock-card">
-        <div class="seal">
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="40" cy="40" r="38" stroke="#c9a84c" stroke-width="1.5"/>
-            <circle cx="40" cy="40" r="33" stroke="#c9a84c" stroke-width="0.75" stroke-dasharray="3 2.5"/>
-            <circle cx="40" cy="40" r="26" stroke="rgba(201,168,76,0.35)" stroke-width="0.5"/>
-            <polygon points="40,18 44.5,32 59,32 47.7,40.8 52.2,55 40,46.5 27.8,55 32.3,40.8 21,32 35.5,32" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linejoin="round"/>
-            <text x="40" y="68" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="5.5" fill="#c9a84c" letter-spacing="1.5">MARION COUNTY</text>
-          </svg>
-        </div>
-        <h1>MCSDD Employee Portal</h1>
-        <p class="subtitle">Marion County · Developmental Services</p>
-        <div class="field-wrap">
-          <input type="password" id="passInput" placeholder="Enter access code" autocomplete="off" />
-        </div>
-        <div id="errorMsg"></div>
-        <button class="btn btn-primary" style="width:100%; padding:14px; background: linear-gradient(135deg, #c9a84c 0%, #a8782e 100%); color: #0a0a0c; font-weight:600;" onclick="checkPass()">Access Portal</button>
-        <div class="lock-footer">Authorized personnel only &nbsp;·&nbsp; MCSDD 2026</div>
-      </div>
-    </div>
-
+  <body onload="init()">
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div class="app-container" id="appContainer">
       <!-- ── Left Sidebar: Marion County Resources ── -->

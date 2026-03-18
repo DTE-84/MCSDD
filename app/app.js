@@ -61,24 +61,6 @@ function esc(str) {
   return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-// ── PASSWORD / LOCK SCREEN ──
-function checkPass() {
-  const val = document.getElementById('passInput').value;
-  const err = document.getElementById('errorMsg');
-  if (val === 'MCSDD22') {
-    document.getElementById('lockScreen').classList.add('fade-out');
-    setTimeout(() => { document.getElementById('lockScreen').style.display = 'none'; }, 700);
-  } else {
-    err.textContent = 'Invalid access code. Please try again.';
-    document.getElementById('passInput').value = '';
-    document.getElementById('passInput').focus();
-  }
-}
-document.addEventListener('keydown', e => {
-  const passInput = document.getElementById('passInput');
-  if (passInput && e.key === 'Enter' && document.activeElement === passInput) checkPass();
-});
-
 // ── PHOTO HANDLING ──
 function handlePhotoUpload(event) {
   const file = event.target.files[0];
