@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
-import BgAnimation from "../../components/BgAnimation";
+import BgAnimation from "../components/BgAnimation";
 export default function CaseStudyPCSP() {
   useEffect(() => {
     // Force green theme for case study page

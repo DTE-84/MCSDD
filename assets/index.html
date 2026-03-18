@@ -1904,7 +1904,7 @@
 
         <!-- ── Section 15: Supervision ── -->
         <div class="form-section" id="sec-supervision">
-          <div class="section-title"><span>15</span> Supervision</div>
+          <div class="section-title"><span>15</span> Supervision(housing) (safety and security)</div>
           <div class="form-grid">
             <div class="field-group">
               <label>Supervision Level</label>
@@ -1926,11 +1926,40 @@
               <label>Staff Precautions (OSHA)</label>
               <textarea id="oshaPrecaution" oninput="updateUI()"></textarea>
             </div>
-            <div class="field-group">
+            <div class="field-group full">
               <label>Evacuation / 911 Plan</label>
               <textarea id="evacPlan" placeholder="Describe steps for emergencies and evacuation." oninput="updateUI()"></textarea>
             </div>
-            <!-- 1D: Due Process (Moved from Section 7B) -->
+          </div>
+
+          <!-- Home Life Sub-section -->
+          <div class="subsection-label" style="margin-top: 24px;">Home Life (HCBS Compliance)</div>
+          <div class="form-grid">
+             <div class="field-group full">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <input type="checkbox" id="hcbsRule1" onchange="updateUI()"> 
+                HCBS RULE #1: Individual has a lease or legally enforceable agreement.
+              </label>
+            </div>
+            <div class="field-group full">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <input type="checkbox" id="hcbsRule2" onchange="updateUI()"> 
+                HCBS RULE #2: Individual has privacy in their sleeping or living unit (locks).
+              </label>
+            </div>
+            <div class="field-group full">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <input type="checkbox" id="hcbsRule3" onchange="updateUI()"> 
+                HCBS RULE #3: Individual has freedom to furnish and decorate their unit.
+              </label>
+            </div>
+            <div class="field-group full">
+              <label>Home Life / Safety Notes</label>
+              <textarea id="homeLifeNotes" placeholder="Additional details regarding safety and security in the home environment..." oninput="updateUI()"></textarea>
+            </div>
+          </div>
+
+          <!-- 1D: Due Process (Moved from Section 7B) -->
           <div
             class="subsection-label"
             style="
@@ -2025,9 +2054,9 @@
           </div>
         </div>
 
-        <!-- ── Section 16: Previous and Current Goals ── -->
+        <!-- ── Section 16: Previous Goals ── -->
         <div class="form-section" id="sec-prev-goals">
-          <div class="section-title"><span>16</span> Previous and Current Goals</div>
+          <div class="section-title"><span>16</span> Previous Goals</div>
           <div id="dynamicGoalsTasksContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addGoalTask()">+ Add Goal / Task Entry</button>
         </div>

@@ -108,6 +108,10 @@ const FORM_FIELDS = [
   "supervisionLevel",
   "riskLevel",
   "oshaPrecaution",
+  "hcbsRule1",
+  "hcbsRule2",
+  "hcbsRule3",
+  "homeLifeNotes",
   // Section 18 - Comments & Clinical Summary
   "lastAssessment",
   "lastLOC",
@@ -725,13 +729,19 @@ function updateUI() {
   field("Psychotropic Protocol", getVal("psychotropicProtocol"));
   line("");
 
-  head("15. SUPERVISION");
+  head("15. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
   field("Supervision Level", getVal("supervisionLevel"));
   field("OSHA Precautions", getVal("oshaPrecaution"));
   field("Risk Level", getVal("riskLevel"));
+  
+  line("Home Life / HCBS Compliance:");
+  line(`  - Rule #1 (Lease): ${document.getElementById("hcbsRule1")?.checked ? "YES" : "NO"}`);
+  line(`  - Rule #2 (Privacy/Locks): ${document.getElementById("hcbsRule2")?.checked ? "YES" : "NO"}`);
+  line(`  - Rule #3 (Freedom to Furnish): ${document.getElementById("hcbsRule3")?.checked ? "YES" : "NO"}`);
+  field("Home Life Notes", getVal("homeLifeNotes"));
   line("");
 
-  head("16. PREVIOUS AND CURRENT GOALS");
+  head("16. PREVIOUS GOALS");
   line(
     clinicalGoalsTasks
       .map(
