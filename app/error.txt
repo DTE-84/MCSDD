@@ -1,0 +1,9 @@
+C:\Users\drewt\dtedev\PCSP files\app\app.js:647
+    if (titles[i]) titles[i].textContent = `Representative #${i + 1}${legalReps[i].name ? " ΓÇö " + legalReps[i].name : ""}`;
+                                            ^^^^^^^^^^^^^^
+
+SyntaxError: Unexpected identifier 'Representative'
+    at wrapSafe (node:internal/modules/cjs/loader:1742:18)
+    at checkSyntax (node:internal/main/check_syntax:76:3)
+
+Node.js v25.6.1

@@ -4,21 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PCSP Assistant Pro | Marion County DMH</title>
-    <meta name="description" content="Person Centered Service Plan assistant for Marion County Division of Developmental Disabilities, Missouri." />
+    <meta
+      name="description"
+      content="Person Centered Service Plan assistant for Marion County Division of Developmental Disabilities, Missouri."
+    />
     <meta name="robots" content="noindex, nofollow" />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
     <style>
       /* ─── LOCK SCREEN STYLES (from MCSDD Portal) ─── */
       #lockScreen {
         position: fixed;
         inset: 0;
-        background: radial-gradient(ellipse at 30% 20%, #1a2d52 0%, #0a0a0c 65%);
+        background: radial-gradient(
+          ellipse at 30% 20%,
+          #1a2d52 0%,
+          #0a0a0c 65%
+        );
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 10000;
-        transition: opacity 0.7s ease, transform 0.7s ease;
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
       }
       #lockScreen.fade-out {
         opacity: 0;
@@ -27,40 +39,200 @@
       }
       .lock-card {
         background: linear-gradient(160deg, #141e36 0%, #0d1525 100%);
-        border: 1px solid rgba(201,168,76,0.22);
+        border: 1px solid rgba(201, 168, 76, 0.22);
         border-radius: 12px;
         padding: 52px 48px 44px;
         width: 420px;
         max-width: 92vw;
         text-align: center;
-        box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.08);
-        animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
+        box-shadow:
+          0 32px 80px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(201, 168, 76, 0.08);
+        animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
       }
       @keyframes cardIn {
-        from { opacity: 0; transform: translateY(28px) scale(0.97); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
+        from {
+          opacity: 0;
+          transform: translateY(28px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
       }
-      .seal { width: 72px; height: 72px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; }
-      .seal svg { width: 100%; height: 100%; }
-      .lock-card h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.55rem; font-weight: 700; letter-spacing: 0.04em; color: #e8c96a; line-height: 1.25; margin-bottom: 4px; }
-      .lock-card .subtitle { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: #8a8fa8; margin-bottom: 36px; }
-      .field-wrap { position: relative; margin-bottom: 16px; }
-      .field-wrap input { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.2); border-radius: 6px; padding: 14px 18px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: #f4f1eb; letter-spacing: 0.14em; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-      .field-wrap input:focus { border-color: #c9a84c; box-shadow: 0 0 0 3px rgba(201,168,76,0.12); }
-      #errorMsg { color: #e07070; font-size: 0.78rem; margin-bottom: 14px; min-height: 18px; letter-spacing: 0.03em; }
-      .lock-footer { margin-top: 28px; font-size: 0.68rem; color: rgba(138,143,168,0.4); letter-spacing: 0.1em; text-transform: uppercase; border-top: 1px solid rgba(201,168,76,0.1); padding-top: 20px; }
-      
+      .seal {
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-logo {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+      .seal svg {
+        width: 100%;
+        height: 100%;
+      }
+      .lock-card h1 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.55rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #e8c96a;
+        line-height: 1.25;
+        margin-bottom: 4px;
+      }
+      .lock-card .subtitle {
+        font-size: 0.72rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #8a8fa8;
+        margin-bottom: 36px;
+      }
+      .field-wrap {
+        position: relative;
+        margin-bottom: 16px;
+      }
+      .field-wrap input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        border-radius: 6px;
+        padding: 14px 18px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.9rem;
+        color: #f4f1eb;
+        letter-spacing: 0.14em;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .field-wrap input:focus {
+        border-color: #c9a84c;
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+      }
+      #errorMsg {
+        color: #e07070;
+        font-size: 0.78rem;
+        margin-bottom: 14px;
+        min-height: 18px;
+        letter-spacing: 0.03em;
+      }
+      .lock-footer {
+        margin-top: 28px;
+        font-size: 0.68rem;
+        color: rgba(138, 143, 168, 0.4);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-top: 1px solid rgba(201, 168, 76, 0.1);
+        padding-top: 20px;
+      }
       /* App fonts */
-      .font-serif { font-family: 'Cormorant Garamond', serif; }
-      .font-sans { font-family: 'DM Sans', sans-serif; }
+      .font-serif {
+        font-family: "Cormorant Garamond", serif;
+      }
+      .font-sans {
+        font-family: "DM Sans", sans-serif;
+      }
+      /* ─── PRINT STYLES ─── */
+      @media print {
+        body {
+          background: white;
+        }
+        header,
+        .tab-btn,
+        .btn-row,
+        #app > main > .section:not(#coverSection) {
+          display: none !important;
+        }
+        #coverSection {
+          display: block !important;
+        }
+        #coverPreview {
+          display: block !important;
+        }
+        .cover-doc {
+          box-shadow: none;
+        }
+      }
     </style>
   </head>
+  <!-- ═══════════════════════════════════════ LOCK SCREEN -->
+  <div id="lockScreen">
+    <div class="lock-card">
+      <div class="seal">
+        <img src="MCSDDL.svg" alt="MCSDD Logo" class="modal-logo" />
+      </div>
+
+      <h1>MCSDD Employee Portal</h1>
+      <p class="subtitle">Marion County · Developmental Services</p>
+      <div class="field-wrap">
+        <input
+          type="password"
+          id="passInput"
+          placeholder="Enter access code"
+          autocomplete="off"
+        />
+      </div>
+      <div id="errorMsg"></div>
+      <button class="btn-primary" onclick="checkPass()">Access Portal</button>
+      <div class="lock-footer">
+        Authorized personnel only &nbsp;·&nbsp; MCSDD 2024
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ APP -->
   <body onload="init()">
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div class="app-container" id="appContainer">
       <!-- ── Left Sidebar: Marion County Resources ── -->
       <aside class="side-panel">
         <div class="panel-header">Marion County Resources</div>
+
+        <div class="panel-content" id="resourceList">
+          <div
+            class="resource-card"
+            onclick="injectResource('Mark Twain Behavior Health')"
+          >
+            <span class="resource-name">Mark Twain Behavior Health</span>
+            <span class="resource-info"
+              >Crisis: (800) 356-5395 | Hannibal Office</span
+            >
+          </div>
+
+          <div
+            class="resource-card"
+            onclick="injectResource('Douglass Community Services')"
+          >
+            <span class="resource-name">Douglass Community Services</span>
+            <span class="resource-info"
+              >Food/Utility Assistance | (573) 221-3892</span
+            >
+          </div>
+
+          <div class="resource-card" onclick="injectResource('OATS Transit')">
+            <span class="resource-name">OATS Transit</span>
+            <span class="resource-info"
+              >Transportation Marion Co. | (800) 269-6287</span
+            >
+          </div>
+
+          <div
+            class="resource-card"
+            onclick="injectResource('NECAC Marion County')"
+          >
+            <span class="resource-name">NECAC Marion County</span>
+            <span class="resource-info"
+              >Housing &amp; Support | (573) 221-7166</span
+            >
+          </div>
+        </div>
         <div class="panel-content" id="resourceList"></div>
       </aside>
 
@@ -70,15 +242,42 @@
         <div id="printCoverSheet" class="cover-doc">
           <div class="cover-header-bar">
             <div class="cover-seal">
-              <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="40" cy="40" r="38" stroke="#c9a84c" stroke-width="2"/>
-                <circle cx="40" cy="40" r="33" stroke="#c9a84c" stroke-width="1" stroke-dasharray="3 2.5"/>
-                <polygon points="40,18 44.5,32 59,32 47.7,40.8 52.2,55 40,46.5 27.8,55 32.3,40.8 21,32 35.5,32" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-linejoin="round"/>
+              <svg
+                viewBox="0 0 80 80"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="38"
+                  stroke="#c9a84c"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="33"
+                  stroke="#c9a84c"
+                  stroke-width="1"
+                  stroke-dasharray="3 2.5"
+                />
+                <polygon
+                  points="40,18 44.5,32 59,32 47.7,40.8 52.2,55 40,46.5 27.8,55 32.3,40.8 21,32 35.5,32"
+                  fill="none"
+                  stroke="#c9a84c"
+                  stroke-width="1.5"
+                  stroke-linejoin="round"
+                />
               </svg>
             </div>
             <div>
-              <div class="cover-agency-name">Marion County Services for Developmental Disabilities</div>
-              <div class="cover-agency-sub">Marion County · Division of Developmental Disabilities</div>
+              <div class="cover-agency-name">
+                Marion County Services for Developmental Disabilities
+              </div>
+              <div class="cover-agency-sub">
+                Marion County · Division of Developmental Disabilities
+              </div>
             </div>
           </div>
           <div class="cover-body">
@@ -86,9 +285,32 @@
               <!-- Photo -->
               <div class="cover-photo-col">
                 <div class="cover-photo-box" id="printPhotoBox">
-                  <img id="printPhotoImg" src="" alt="Individual Photo" style="display:none; width:100%; height:100%; object-fit:cover;" />
-                  <div id="printPhotoPlaceholder" style="text-align:center; padding:20px; opacity:0.3;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1" width="32" height="32"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                  <img
+                    id="printPhotoImg"
+                    src=""
+                    alt="Individual Photo"
+                    style="
+                      display: none;
+                      width: 100%;
+                      height: 100%;
+                      object-fit: cover;
+                    "
+                  />
+                  <div
+                    id="printPhotoPlaceholder"
+                    style="text-align: center; padding: 20px; opacity: 0.3"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#c9a84c"
+                      stroke-width="1"
+                      width="32"
+                      height="32"
+                    >
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                    </svg>
                   </div>
                 </div>
                 <div class="cover-hipaa-badge">HIPAA Protected</div>
@@ -105,6 +327,7 @@
                     <label>DMH ID Number</label>
                     <span id="printDMH">—</span>
                   </div>
+
                   <div class="cover-meta-item">
                     <label>Funding Type</label>
                     <span id="printFunding">—</span>
@@ -129,14 +352,50 @@
               </div>
             </div>
             <!-- Legal Description/Summary -->
-            <div class="cover-desc-block" style="margin-top: 30px;">
-              This document constitutes the official Person-Centered Support Plan for the above-named individual. All services must be provided in accordance with the outcomes, strategies, and legal authorities detailed within the following clinical documentation.
+            <div class="cover-desc-block" style="margin-top: 30px">
+              This document constitutes the official Person-Centered Support
+              Plan for the above-named individual. All services must be provided
+              in accordance with the outcomes, strategies, and legal authorities
+              detailed within the following clinical documentation.
             </div>
           </div>
-          <div class="cover-footer-bar" style="background:#0a0f1e; padding:10px 40px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.6rem; color:rgba(201,168,76,0.5); text-transform:uppercase; letter-spacing:1px;">MCSDD Official Document</span>
-            <span style="font-size:0.6rem; color:rgba(201,168,76,0.5); text-transform:uppercase; letter-spacing:1px;">Confidential PHI</span>
-            <span style="font-size:0.6rem; color:rgba(201,168,76,0.5); text-transform:uppercase; letter-spacing:1px;">Marion County, Missouri</span>
+          <div
+            class="cover-footer-bar"
+            style="
+              background: #0a0f1e;
+              padding: 10px 40px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <span
+              style="
+                font-size: 0.6rem;
+                color: rgba(201, 168, 76, 0.5);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              "
+              >MCSDD Official Document</span
+            >
+            <span
+              style="
+                font-size: 0.6rem;
+                color: rgba(201, 168, 76, 0.5);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              "
+              >Confidential PHI</span
+            >
+            <span
+              style="
+                font-size: 0.6rem;
+                color: rgba(201, 168, 76, 0.5);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              "
+              >Marion County, Missouri</span
+            >
           </div>
         </div>
 
@@ -157,13 +416,7 @@
             >
               ☰
             </button>
-            <div style="width: 40px; height: 40px; margin-right: 10px;">
-              <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="40" cy="40" r="38" stroke="#c9a84c" stroke-width="1.5"/>
-                <circle cx="40" cy="40" r="33" stroke="#c9a84c" stroke-width="0.75" stroke-dasharray="3 2.5"/>
-                <polygon points="40,18 44.5,32 59,32 47.7,40.8 52.2,55 40,46.5 27.8,55 32.3,40.8 21,32 35.5,32" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linejoin="round"/>
-              </svg>
-            </div>
+            <img src="MCSDDL.svg" style="height: 48px; width: auto; margin-right: 15px;" alt="Logo" />
             <h1 class="font-serif">
               PCSP Assistant
               <span style="font-weight: 300; color: var(--gold)">Pro</span>
@@ -176,11 +429,23 @@
               onclick="toggleTheme()"
               title="Toggle Dark/Light Mode"
               aria-label="Toggle dark and light mode"
-              style="padding: 8px 12px; font-size: 18px;"
+              style="padding: 8px 12px; font-size: 18px"
             >
               🌓
             </button>
-            <span id="autoSaveIndicator" style="font-size:11px;font-weight:600;color:var(--success);opacity:0;transition:opacity 0.5s;white-space:nowrap;align-self:center;">✓ Auto-saved</span>
+            <span
+              id="autoSaveIndicator"
+              style="
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--success);
+                opacity: 0;
+                transition: opacity 0.5s;
+                white-space: nowrap;
+                align-self: center;
+              "
+              >✓ Auto-saved</span
+            >
             <button class="btn btn-outline" onclick="resetForm()">
               New Plan
             </button>
@@ -212,20 +477,80 @@
           <div class="form-grid">
             <div class="field-group full">
               <label>Individual Photo (Optional)</label>
-              <div style="display: flex; gap: 20px; align-items: start;">
-                <div id="photoPreview" style="width: 150px; height: 180px; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; background: var(--bg-light); overflow: hidden;">
-                  <span id="photoPlaceholder" style="font-size: 10px; color: var(--text-label); text-align: center; padding: 10px;">No Image Uploaded</span>
-                  <img id="coverPhoto" style="display: none; width: 100%; height: 100%; object-fit: cover;" />
+              <div style="display: flex; gap: 20px; align-items: start">
+                <div
+                  id="photoPreview"
+                  style="
+                    width: 150px;
+                    height: 180px;
+                    border: 2px dashed var(--border);
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: var(--bg-light);
+                    overflow: hidden;
+                  "
+                >
+                  <span
+                    id="photoPlaceholder"
+                    style="
+                      font-size: 10px;
+                      color: var(--text-label);
+                      text-align: center;
+                      padding: 10px;
+                    "
+                    >No Image Uploaded</span
+                  >
+                  <img
+                    id="coverPhoto"
+                    style="
+                      display: none;
+                      width: 100%;
+                      height: 100%;
+                      object-fit: cover;
+                    "
+                  />
                 </div>
-                <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
-                  <button class="btn btn-outline" onclick="document.getElementById('photoInput').click()">
+                <div
+                  style="
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                  "
+                >
+                  <button
+                    class="btn btn-outline"
+                    onclick="document.getElementById('photoInput').click()"
+                  >
                     📷 Upload Photo
                   </button>
-                  <button class="btn btn-danger" id="removePhotoBtn" style="display: none; padding: 8px 16px; font-size: 12px;" onclick="removePhoto()">
+                  <button
+                    class="btn btn-danger"
+                    id="removePhotoBtn"
+                    style="display: none; padding: 8px 16px; font-size: 12px"
+                    onclick="removePhoto()"
+                  >
                     Remove Photo
                   </button>
-                  <input type="file" id="photoInput" accept="image/*" style="display: none" onchange="handlePhotoUpload(event)" />
-                  <p style="font-size: 10px; color: var(--text-label); font-style: italic;">Note: Photos are stored locally in your browser's RAM and included in .pcsp exports.</p>
+                  <input
+                    type="file"
+                    id="photoInput"
+                    accept="image/*"
+                    style="display: none"
+                    onchange="handlePhotoUpload(event)"
+                  />
+                  <p
+                    style="
+                      font-size: 10px;
+                      color: var(--text-label);
+                      font-style: italic;
+                    "
+                  >
+                    Note: Photos are stored locally in your browser's RAM and
+                    included in .pcsp exports.
+                  </p>
                 </div>
               </div>
             </div>
@@ -235,15 +560,6 @@
                 type="text"
                 id="coverLegalName"
                 placeholder="Full Name as it appears on DMH records"
-                oninput="updateUI();"
-              />
-            </div>
-            <div class="field-group">
-              <label>Preferred Nickname</label>
-              <input
-                type="text"
-                id="clientNickname"
-                placeholder="e.g. Johnny"
                 oninput="updateUI()"
               />
             </div>
@@ -257,20 +573,26 @@
                 type="text"
                 id="coverDmhID"
                 placeholder="7-digit ID"
-                oninput="updateUI();"
+                oninput="updateUI()"
               />
             </div>
-            <div class="field-group">
+            <div class="field-group full">
               <label>Funding Type</label>
-              <select id="coverFundingType" onchange="syncFunding(this.value); updateUI();">
-                <option value="">-- Select Funding --</option>
-                <option value="Comprehensive Waiver">Comprehensive Waiver</option>
-                <option value="Support Waiver">Support Waiver</option>
-                <option value="Grant Funding">Grant Funding</option>
-                <option value="Sarah Lopez Waiver (MOCDD)">Sarah Lopez Waiver (MOCDD)</option>
-                <option value="PAC Funding">PAC Funding</option>
-                <option value="NEAI Funding">NEAI Funding</option>
-              </select>
+              <input type="hidden" id="coverFundingType" value="" />
+              <div class="funding-grid" id="fundingGrid">
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Comprehensive Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Comprehensive Waiver</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Support Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Support Waiver</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Grant Funding" onchange="syncFundingCheckboxes(); updateUI()" /> Grant Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Sarah Lopez Waiver (MOCDD)" onchange="syncFundingCheckboxes(); updateUI()" /> Sarah Lopez (MOCDD)</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="PAC Funding" onchange="syncFundingCheckboxes(); updateUI()" /> PAC Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="NEAI Funding" onchange="syncFundingCheckboxes(); updateUI()" /> NEAI Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="No Funding" onchange="syncFundingCheckboxes(); updateUI()" /> No Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Partnership for Hope Waiver" onchange="syncFundingCheckboxes(); updateUI()" />Partnership for Hope Waiver</label>
+                <label class="eth-check"><input type="checkbox" id="fundingOtherCb" value="Other" onchange="toggleFundingOther(); syncFundingCheckboxes(); updateUI()" /> Other</label>
+              </div>
+              <div id="fundingOtherGroup" style="display: none; margin-top: 8px">
+                <input type="text" id="fundingOtherText" placeholder="Please specify other funding" style="width: 100%; box-sizing: border-box" oninput="syncFundingCheckboxes(); updateUI()" />
+              </div>
             </div>
             <div class="field-group">
               <label>PCSP Meeting Date</label>
@@ -295,12 +617,43 @@
         <!-- ── Section 1: Demographics / Contributors / Legal ── -->
         <div class="form-section" id="sec-demographics">
           <div class="section-title">
-            <span>1</span> Demographics / Contributors Information
+            <span>1</span> Demographics / Contributors Information / Legal
           </div>
 
           <!-- 1A: Identity -->
           <div class="subsection-label">Clinical Profile</div>
           <div class="form-grid">
+            <div class="field-group half">
+              <label>Full Legal Name</label>
+              <input
+                type="text"
+                id="coverLegalName"
+                placeholder="Full Name as it appears on DMH records"
+                oninput="updateUI()"
+              />
+            </div>
+            <div class="field-group">
+              <label>Nickname</label>
+              <input
+                type="text"
+                id="clientNickname"
+                placeholder="e.g. MCSDD"
+                oninput="updateUI()"
+              />
+            </div>
+            <div class="field-group">
+              <label>Date of Birth</label>
+              <input type="date" id="clientDOB" oninput="updateUI()" />
+            </div>
+            <div class="field-group">
+              <label>DMH ID #</label>
+              <input
+                type="text"
+                id="coverDmhID"
+                placeholder="7-digit ID"
+                oninput="updateUI()"
+              />
+            </div>
             <div class="field-group">
               <label>TCM Agency</label>
               <input
@@ -317,45 +670,6 @@
                 <option value="Regional Office">Regional Office</option>
                 <option value="Satellite Office">Satellite Office</option>
                 <option value="Habilitation Center">Habilitation Center</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label>Marital Status</label>
-              <select id="maritalStatus" onchange="updateUI()">
-                <option value="Single">Single</option>
-                <option value="Married">Married</option>
-                <option value="Divorced">Divorced</option>
-                <option value="Widowed">Widowed</option>
-                <option value="Separated">Separated</option>
-                <option value="Domestic Partnership">
-                  Domestic Partnership
-                </option>
-                <option value="Unknown / Not Reported">
-                  Unknown / Not Reported
-                </option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label>Voter Registration Status</label>
-              <select id="voterStatus" onchange="updateUI()">
-                <option value="Registered — Active Voter">
-                  Registered — Active Voter
-                </option>
-                <option value="Registered — Has Not Voted">
-                  Registered — Has Not Voted
-                </option>
-                <option value="Not Registered — Eligible">
-                  Not Registered — Eligible (Assistance Available)
-                </option>
-                <option value="Not Registered — Not Eligible">
-                  Not Registered — Not Eligible
-                </option>
-                <option value="Voter Rights Removed (Guardianship)">
-                  Voter Rights Removed per Guardianship Order
-                </option>
-                <option value="Unknown / Not Reported">
-                  Unknown / Not Reported
-                </option>
               </select>
             </div>
             <div class="field-group">
@@ -388,7 +702,96 @@
             </div>
           </div>
 
-          <!-- 1A2: Ethnicity -->
+         
+          <!-- 1H: Residency -->
+          <div class="subsection-label">Residency</div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Residential Setting (Missouri)</label>
+              <select id="residencyType" onchange="updateUI()">
+                <option value="Family Home (Parent / Relative)">
+                  Family Home (Parent / Relative)
+                </option>
+                <option value="Group Home">Group Home</option>
+                <option value="Independent Living — Own Home / Apartment">
+                  Independent Living — Own Home / Apartment
+                </option>
+                <option value="Guardian's Home">Guardian's Home</option>
+                <option value="Host Home / Shared Living (Waiver)">
+                  Host Home / Shared Living
+                </option>
+                <option value="ICF/IID — Intermediate Care Facility">
+                  ICF/IID — Intermediate Care Facility
+                </option>
+                <option value="Supported Independent Living (SIL)">
+                  Supported Independent Living (SIL)
+                </option>
+                <option value="Individualized Supported Living (ISL)">
+                  Individual Supported Living (ISL)
+                </option>
+                <option value="Residential Care Facility (RCF)">
+                  Residential Care Facility (RCF)
+                </option>
+                <option value="Skilled Nursing Facility (SNF)">
+                  Skilled Nursing Facility (SNF)
+                </option>
+                <option value="Homeless / Transitional Housing">
+                  Homeless / Transitional Housing
+                </option>
+                <option value="Other / Pending Placement">
+                  Other / Pending Placement
+                </option>
+              </select>
+            </div>
+            <div class="field-group half">
+              <label>Residence Address / Location Notes</label>
+              <input
+                type="text"
+                id="residenceNotes"
+                placeholder="City, ZIP or facility name if applicable"
+                oninput="updateUI()"
+              />
+            </div>
+          </div>
+          <div class="subsection-label">Education</div>
+          <div class="form-grid">
+            <div class="field-group half">
+              <label>School Name (Last / Current)</label>
+              <input
+                type="text"
+                id="schoolName"
+                placeholder="e.g. Hannibal Senior High School"
+                oninput="updateUI()"
+              />
+            </div>
+            <div class="field-group">
+              <label>Education Status</label>
+              <select id="educationStatus" onchange="updateUI()">
+                <option value="Graduated / Diploma Received">
+                  Graduated / Diploma Received
+                </option>
+                <option value="GED / HiSET Received">
+                  GED / HiSET Received
+                </option>
+                <option value="Certificate of Completion">
+                  Certificate of Completion
+                </option>
+                <option value="Currently Enrolled">Currently Enrolled</option>
+                <option value="Some College">Some College</option>
+                <option value="Associate's Degree">Associate's Degree</option>
+                <option value="Bachelor's Degree">Bachelor's Degree</option>
+                <option value="Master's Degree">Master's Degree</option>
+                <option value="Doctorate Degree">Doctorate Degree</option>
+                <option value="Post-Secondary / Vocational">
+                  Post-Secondary / Vocational
+                </option>
+                <option value="Did Not Complete">Did Not Complete</option>
+                <option value="Not Applicable">Not Applicable</option>
+              </select>
+            </div>
+          </div>
+        
+          <!-- 1E: Ethnicity -->
           <div class="subsection-label">
             Ethnicity / Race (select all that apply)
           </div>
@@ -480,7 +883,7 @@
             />
           </div>
 
-          <!-- 1B: Communication & Language -->
+          <!-- 1F: Communication & Language -->
           <div class="subsection-label">Communication &amp; Language</div>
           <div class="form-grid">
             <div class="field-group">
@@ -522,9 +925,18 @@
                 <option value="Communication Board">Communication Board</option>
               </select>
             </div>
+            <div class="field-group half">
+              <label>Other</label>
+              <input
+                type="text"
+                id="comm-other"
+                placeholder="other"
+                oninput="updateUI()"
+              />
+            </div>
           </div>
 
-          <!-- 1C: Insurance & Benefits -->
+          <!-- 1G: Insurance & Benefits -->
           <div class="subsection-label">Insurance &amp; Benefits</div>
           <div class="form-grid">
             <div class="field-group">
@@ -578,9 +990,7 @@
                 <option value="Medicare (limited dental)">
                   Medicare (limited dental)
                 </option>
-                <option value="Private Dental">
-                  Private Dental (specify)
-                </option>
+                <option value="Private Dental">Private Dental (specify)</option>
                 <option value="None / Not Enrolled">None / Not Enrolled</option>
                 <option value="Other">Other (specify)</option>
               </select>
@@ -598,112 +1008,55 @@
                 oninput="updateUI()"
               />
             </div>
-          </div>
-
-          <!-- 1D: Residency -->
-          <div class="subsection-label">Residency</div>
-          <div class="form-grid">
+            
+          
             <div class="field-group">
-              <label>Residential Setting (Missouri)</label>
-              <select id="residencyType" onchange="updateUI()">
-                <option value="Family Home (Parent / Relative)">
-                  Family Home (Parent / Relative)
+              <label>Secondary Medical Insurance</label>
+              <select id="insuranceSec" onchange="toggleInsuranceFieldsSec()">
+                <option value="None / Pending">None / Pending</option>
+                <option value="Medicaid (MO HealthNet)">
+                  Medicaid (MO HealthNet)
                 </option>
-                <option value="Group Home">Group Home</option>
-                <option value="Independent Living — Own Home / Apartment">
-                  Independent Living — Own Home / Apartment
+                <option value="Medicare">Medicare</option>
+                <option value="Medicaid &amp; Medicare (Dual)">
+                  Medicaid &amp; Medicare (Dual)
                 </option>
-                <option value="Guardian's Home">Guardian's Home</option>
-                <option value="Host Home / Shared Living (Waiver)">
-                  Host Home / Shared Living
+                <option value="Medicaid — Spend Down">
+                  Medicaid — Spend Down
                 </option>
-                <option value="ICF/IID — Intermediate Care Facility">
-                  ICF/IID — Intermediate Care Facility
+                <option value="Medicaid CHIP (Children's Health Insurance)">
+                  Medicaid CHIP
                 </option>
-                <option value="Supported Independent Living (SIL)">
-                  Supported Independent Living (SIL)
-                </option>
-                <option value="Individualized Supported Living (ISL)">
-                  Individual Supported Living (ISL)
-                </option>
-                <option value="Residential Care Facility (RCF)">
-                  Residential Care Facility (RCF)
-                </option>
-                <option value="Skilled Nursing Facility (SNF)">
-                  Skilled Nursing Facility (SNF)
-                </option>
-                <option value="Homeless / Transitional Housing">
-                  Homeless / Transitional Housing
-                </option>
-                <option value="Other / Pending Placement">
-                  Other / Pending Placement
-                </option>
+                <option value="Private Insurance">Private Insurance</option>
               </select>
             </div>
-            <div class="field-group half">
-              <label>Residence Address / Location Notes</label>
+            <div class="field-group" id="spenddownGroupSec" style="display: none">
+              <label>Spend Down Monthly Amount</label>
               <input
                 type="text"
-                id="residenceNotes"
-                placeholder="City, ZIP or facility name if applicable"
+                id="spenddownAmountSec"
+                placeholder="e.g. $125.00 / month"
+                oninput="updateUI()"
+              />
+            </div>
+            <div
+              class="field-group"
+              id="privateInsuranceGroupSec"
+              style="display: none"
+            >
+              <label>Private Insurance Provider Name</label>
+              <input
+                type="text"
+                id="privateInsuranceProviderSec"
+                placeholder="e.g. Blue Cross Blue Shield"
                 oninput="updateUI()"
               />
             </div>
           </div>
 
-          <!-- 1E: Legal Representatives -->
-          <div class="subsection-label">
-            Legal Representatives / Guardians / Custodians
-          </div>
-          <div id="legalRepsContainer"></div>
-          <button
-            class="btn btn-outline add-rep-btn"
-            type="button"
-            onclick="addLegalRep()"
-          >
-            + Add Guardian / Legal Rep
-          </button>
+         
 
-          <!-- 1F: Education -->
-          <div class="subsection-label">Education</div>
-          <div class="form-grid">
-            <div class="field-group half">
-              <label>School Name (Last / Current)</label>
-              <input
-                type="text"
-                id="schoolName"
-                placeholder="e.g. Hannibal Senior High School"
-                oninput="updateUI()"
-              />
-            </div>
-            <div class="field-group">
-              <label>Education Status</label>
-              <select id="educationStatus" onchange="updateUI()">
-                <option value="Graduated / Diploma Received">
-                  Graduated / Diploma Received
-                </option>
-                <option value="GED / HiSET Received">
-                  GED / HiSET Received
-                </option>
-                <option value="Certificate of Completion">
-                  Certificate of Completion
-                </option>
-                <option value="Currently Enrolled">Currently Enrolled</option>
-                <option value="Some College">Some College</option>
-                <option value="Associate's Degree">Associate's Degree</option>
-                <option value="Bachelor's Degree">Bachelor's Degree</option>
-                <option value="Master's Degree">Master's Degree</option>
-                <option value="Doctorate Degree">Doctorate Degree</option>
-                <option value="Post-Secondary / Vocational">
-                  Post-Secondary / Vocational
-                </option>
-                <option value="Did Not Complete">Did Not Complete</option>
-                <option value="Not Applicable">Not Applicable</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- 1G: Employment -->
+          <!-- 1K: Employment -->
           <div class="subsection-label">Employment</div>
           <div class="form-grid">
             <div class="field-group">
@@ -741,120 +1094,89 @@
               />
             </div>
           </div>
-
-          <!-- 1H: System Dates -->
-          <div class="subsection-label">System Integration Dates</div>
+           <!-- 1B: Legal & Marital -->
+           <div class="subsection-label">Legal &amp; Marital Status</div>
           <div class="form-grid">
             <div class="field-group">
-              <label>Last Assessment Date</label>
-              <input type="date" id="lastAssessment" oninput="updateUI()" />
-            </div>
-            <div class="field-group">
-              <label>Last LOC Date</label>
-              <input type="date" id="lastLOC" oninput="updateUI()" />
-            </div>
-            <div class="field-group">
-              <label>RAS Score</label>
-              <input
-                type="text"
-                id="rasSisScore"
-                placeholder="Score (or 'None')"
-                oninput="updateUI()"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Section 2: Goals / Tasks ── -->
-        <div class="form-section" id="sec-goals-tasks">
-          <div class="section-title">
-            <span>2</span> Goals / Tasks
-          </div>
-          <div id="dynamicGoalsTasksContainer">
-            <p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px">
-              No clinical goals/tasks added. Click below to create a new entry.
-            </p>
-          </div>
-          <button class="btn btn-outline" type="button" onclick="addGoalTask()" style="margin-bottom: 30px;">
-            + Add Goal / Task Entry
-          </button>
-
-          <div class="subsection-label">Plan Administration</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Plan Effective Date</label>
-              <input type="date" id="planEffectiveDate" oninput="updateUI()" />
-            </div>
-            <div class="field-group">
-              <label>Annual Review Due Date</label>
-              <input type="date" id="planReviewDate" oninput="updateUI()" />
-            </div>
-            <div class="field-group">
-              <label>Waiver / Funding Type</label>
-              <select id="waiverType" onchange="syncFunding(this.value, true); updateUI();">
-                <option value="Non-Waivered">Non-Waivered / General Revenue</option>
-                <option value="CDS Waiver">CDS Waiver (Community Support)</option>
-                <option value="Missouri Children's Waiver">Missouri Children's Waiver</option>
-                <option value="Partnership for Hope">Partnership for Hope Waiver</option>
-                <option value="Comprehensive Waiver">Comprehensive DD Waiver</option>
-                <option value="Support Waiver">Support Waiver</option>
-                <option value="Grant Funding">Grant Funding</option>
-                <option value="Sarah Lopez Waiver (MOCDD)">Sarah Lopez Waiver (MOCDD)</option>
-                <option value="PAC Funding">PAC Funding</option>
-                <option value="NEAI Funding">NEAI Funding</option>
-                <option value="ICF/IID">ICF/IID</option>
+              <label>Marital Status</label>
+              <select id="maritalStatus" onchange="updateUI()">
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Divorced">Divorced</option>
+                <option value="Widowed">Widowed</option>
+                <option value="Separated">Separated</option>
+                <option value="Domestic Partnership">
+                  Domestic Partnership
+                </option>
+                <option value="Unknown / Not Reported">
+                  Unknown / Not Reported
+                </option>
               </select>
             </div>
-            <div class="field-group full">
-              <label>Plan Contributors (Who was involved?)</label>
-              <input
-                type="text"
-                id="contributors"
-                placeholder="E.g. Individual, Guardian, SC, Provider Name..."
-                oninput="updateUI()"
-              />
+            <div class="field-group">
+              <label>Voter Registration Status</label>
+              <select id="voterStatus" onchange="updateUI()">
+                <option value="Registered — Active Voter">
+                  Registered — Active Voter
+                </option>
+                <option value="Registered — Has Not Voted">
+                  Registered — Has Not Voted
+                </option>
+                <option value="Not Registered — Eligible">
+                  Not Registered — Eligible (Assistance Available)
+                </option>
+                <option value="Not Registered — Not Eligible">
+                  Not Registered — Not Eligible
+                </option>
+                <option value="Voter Rights Removed (Guardianship)">
+                  Voter Rights Removed per Guardianship Order
+                </option>
+                <option value="Unknown / Not Reported">
+                  Unknown / Not Reported
+                </option>
+              </select>
             </div>
+          </div>
+           <!-- 1C: Legal Authority -->
+          <div class="subsection-label">Legal Representatives / Guardians / Custodians</div>
+          <div id="legalRepsContainer"></div>
+          <button class="btn btn-outline add-rep-btn" type="button" onclick="addLegalRep()">
+            + Add Guardian / Legal Rep
+          </button>
+
+          <div class="subsection-label">Legal Authority Specifics</div>
+          <div class="form-grid">
             <div class="field-group full">
-              <label>Participation Statement</label>
+              <label>Authority Context / Case Manager Notes</label>
               <textarea
-                id="participation"
-                placeholder="How did the individual participate? If not present, provide justification."
+                id="legalSpecify"
+                placeholder="Specify details regarding legal representatives, state wards, or add specific CM notes."
                 oninput="updateUI()"
               ></textarea>
             </div>
-            <div class="field-group">
-              <label>SC Visit Frequency</label>
-              <input
-                type="text"
-                id="scFrequency"
-                placeholder="E.g. Face-to-face monthly"
+            <div class="field-group full">
+              <label>Hierarchy / Limited Guardianship Details</label>
+              <textarea
+                id="limitedGuardianshipDetails"
+                placeholder="Describe specific authorities (e.g. Medical Only, Financial Only) or order of contact."
                 oninput="updateUI()"
-              />
+              ></textarea>
             </div>
-            <div class="field-group">
-              <label>Payee / Monthly Spending Info</label>
-              <input
-                type="text"
-                id="payeeInfo"
-                placeholder="If HSO is payee, discuss spending info."
+            <div class="field-group full">
+              <label>Licenses &amp; Legal Status (Fishing, Driving, Parole)</label>
+              <textarea
+                id="legalLicensesProbation"
+                placeholder="Note any licenses held or if the individual is on probation/parole."
                 oninput="updateUI()"
-              />
-            </div>
-            <div class="field-group">
-              <label>Burial Info (Placement only)</label>
-              <input
-                type="text"
-                id="burialInfo"
-                placeholder="Address if applicable"
-                oninput="updateUI()"
-              />
+              ></textarea>
             </div>
           </div>
         </div>
-
-        <!-- ── Section 3: Likes & Dislikes ── -->
+        <!-- ── Section 2: Preferences, Likes & Special Interests ── -->
         <div class="form-section" id="sec-likes">
-          <div class="section-title"><span>3</span>Preferences, Likes &amp; Special Interests / Dislikes</div>
+          <div class="section-title">
+            <span>2</span> Preferences, Likes &amp; Special Interests
+          </div>
 
           <div class="subsection-label">
             Things the Individual Likes / Enjoys
@@ -893,7 +1215,11 @@
               ></textarea>
             </div>
           </div>
+        </div>
 
+        <!-- ── Section 3: Dislikes ── -->
+        <div class="form-section" id="sec-dislikes">
+          <div class="section-title"><span>3</span> Dislikes</div>
           <div class="subsection-label">
             Things the Individual Dislikes / Finds Upsetting
           </div>
@@ -925,13 +1251,17 @@
           </div>
         </div>
 
-        <!-- ── Section 4: Important People in This Individual's Life ── -->
+        <!-- ── Section 4: Important People ── -->
         <div class="form-section" id="sec-important-people">
-          <div class="section-title">
-            <span>4</span> Important People
-          </div>
+          <div class="section-title"><span>4</span> Important People</div>
           <div id="importantPeopleContainer">
-            <p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px">
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-label);
+                margin: 8px 0 12px;
+              "
+            >
               No people added yet. Click below to add someone important to this
               individual.
             </p>
@@ -944,7 +1274,7 @@
           >
             + Add Important Person
           </button>
-          
+
           <div class="field-group full">
             <label>Relationships individual wants to explore or enhance</label>
             <textarea
@@ -955,28 +1285,171 @@
           </div>
         </div>
 
-        <!-- ── Section 5: Hopes, Dreams, Wants and Concerns ── -->
+        <!-- ── Section 5: Hopes, Dreams, Aspirations and Concerns ── -->
         <div class="form-section" id="sec-vision">
-          <div class="section-title"><span>5</span> Hopes, Dreams, Wants and Concerns</div>
+          <div class="section-title">
+            <span>5</span> Hopes, Dreams, Aspirations and Concerns
+          </div>
           <div class="form-grid">
             <div class="field-group full">
               <label>Hopes, Dreams &amp; Aspirations</label>
-              <textarea id="aspirations" placeholder="What does the individual want their life to look like in 1-3 years? What would they like to try?" oninput="updateUI()"></textarea>
+              <textarea
+                id="aspirations"
+                placeholder="What does the individual want their life to look like in 1-3 years? What would they like to try?"
+                oninput="updateUI()"
+              ></textarea>
             </div>
             <div class="field-group full">
               <label>Concerns</label>
-              <textarea id="concerns" placeholder="Identify any barriers, fears, or specific concerns the individual or team has for their future." oninput="updateUI()"></textarea>
+              <textarea
+                id="concerns"
+                placeholder="Identify any barriers, fears, or specific concerns the individual or team has for their future."
+                oninput="updateUI()"
+              ></textarea>
             </div>
           </div>
         </div>
 
-        <!-- ── Section 6: Health, Safety & Risk ── -->
+
+        <!-- ── Section 6: Communication ── -->
+        <div class="form-section" id="sec-communication">
+          <div class="section-title"><span>6</span> Communication</div>
+
+          <!-- 6A: Language & Evaluation -->
+          <div class="subsection-label">Language &amp; Evaluation</div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Primary Language</label>
+              <input
+                type="text"
+                id="commPrimaryLanguage"
+                placeholder="e.g. English"
+                oninput="updateUI()"
+              />
+            </div>
+            <div class="field-group">
+              <label>Communication Evaluation Status</label>
+              <select id="commEvalStatus" onchange="updateUI()">
+                <option value="N/A">N/A</option>
+                <option value="Completed">Completed</option>
+                <option value="Needed">Needed</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Evaluation Type</label>
+              <input
+                type="text"
+                id="commEvalType"
+                placeholder="e.g. SLP Assessment"
+                oninput="updateUI()"
+              />
+            </div>
+            <div class="field-group">
+              <label>Date of Last Evaluation</label>
+              <input type="date" id="commEvalDate" oninput="updateUI()" />
+            </div>
+          </div>
+
+          <!-- 6B: Method of Communication -->
+          <div class="subsection-label">Method of Communication</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Primary Communication Method(s)</label>
+              <div class="comm-method-grid" id="commMethodGrid">
+                <label class="eth-check"><input type="checkbox" value="Verbal / Spoken" onchange="updateUI()"> Verbal / Spoken</label>
+                <label class="eth-check"><input type="checkbox" value="Written Communication" onchange="updateUI()"> Written Communication</label>
+                <label class="eth-check"><input type="checkbox" value="Behavior as Communication" onchange="updateUI()"> Behavior as Communication</label>
+                <label class="eth-check"><input type="checkbox" value="Eye Gaze / Pointing" onchange="updateUI()"> Eye Gaze / Pointing</label>
+                <label class="eth-check"><input type="checkbox" value="Communication Board / PECS" onchange="updateUI()"> Communication Board / PECS</label>
+                <label class="eth-check"><input type="checkbox" value="AAC Device (Speech-Generating)" onchange="updateUI()"> AAC Device</label>
+                <label class="eth-check"><input type="checkbox" value="Facial Expressions" onchange="updateUI()"> Facial Expressions</label>
+                <label class="eth-check"><input type="checkbox" value="Gestures / Body Language" onchange="updateUI()"> Gestures / Body Language</label>
+                <label class="eth-check"><input type="checkbox" value="Vocalizations (non-verbal)" onchange="updateUI()"> Vocalizations (non-verbal)</label>
+                <label class="eth-check"><input type="checkbox" value="Other Communication Method" onchange="toggleCommMethodOther(this)"> Other (specify)</label>
+              </div>
+            </div>
+            <div class="field-group full" id="commMethodOtherGroup" style="display: none">
+              <label>Other Communication Method (specify)</label>
+              <input type="text" id="commMethodOther" oninput="updateUI()">
+            </div>
+            <div class="field-group full">
+              <label>Communication Description / Notes</label>
+              <textarea
+                id="commMethodNotes"
+                placeholder="Describe how this individual communicates."
+                oninput="updateUI()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- 6C: Communication Chart -->
+          <div class="subsection-label" style="display: flex; justify-content: space-between; align-items: center;">
+            Communication Chart
+            <div style="display: flex; gap: 15px;">
+              <label style="font-size: 11px; font-weight: 700; color: var(--marion-blue); cursor: pointer; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                <input type="checkbox" id="commSeeAttached" onchange="updateUI()">
+                See Attached
+              </label>
+              <label style="font-size: 11px; font-weight: 700; color: var(--marion-blue); cursor: pointer; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                <input type="checkbox" id="commChartNA" onchange="toggleCommChartNA(this)">
+                Not Applicable
+              </label>
+            </div>
+          </div>
+          <div id="commChartContainer"></div>
+          <button
+            id="addCommRowBtn"
+            class="btn btn-outline"
+            type="button"
+            onclick="addCommChartRow()"
+            style="margin-top: 4px"
+          >
+            + Add Communication Entry
+          </button>
+        </div>
+
+        <!-- ── Section 7: Program or Other Services ── -->
+        <div class="form-section" id="sec-program-services">
+          <div class="section-title"><span>7</span> Program or Other Services</div>
+          
+          <div class="subsection-label">Current Programs &amp; Waivers</div>
+          <div id="programServicesContainer"></div>
+          <button class="btn btn-outline" type="button" onclick="addProgramService()" style="margin-bottom: 20px;">
+            + Add Waiver / Service
+          </button>
+
+          <div class="subsection-label">HCBS Waiver Choice &amp; Education</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>1. How was the individual educated and informed of the options listed in the Medicaid waiver, provider and services choice statement?</label>
+              <textarea id="hcbsEducatedOptions" placeholder="Describe how they were informed..." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>2. How was the individual educated and informed of the full range of HCBS available to support achievement of personally identified goals?</label>
+              <textarea id="hcbsEducatedRange" placeholder="Describe the education on available HCBS..." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>3. Conflict-Free Resolution: Include a method for the individual to request updates to the plan as needed.</label>
+              <textarea id="hcbsUpdateMethod" placeholder="Include process for requesting updates..." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>4. Discuss the alternative home and community based settings that were considered by the individual.</label>
+              <textarea id="hcbsAlternatives" placeholder="List alternatives considered..." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>Plan Contributors</label>
+              <input type="text" id="contributors" placeholder="Who was involved?" oninput="updateUI()" />
+            </div>
+          </div>
+        </div>
+        <!--Section 8: Medical Profile -->
         <div class="form-section" id="sec-health">
           <div class="section-title">
-            <span>6</span> Health, Safety &amp; Risk Planning
+            <span>8</span> Health, Safety &amp; Risk Planning
           </div>
           
-          <!-- 6A: Medical Profile -->
+          
           <div class="subsection-label">Medical Profile &amp; History</div>
           <div class="form-grid">
             <div class="field-group full">
@@ -1008,7 +1481,7 @@
             </div>
           </div>
 
-          <!-- 6B: Prevention & Providers -->
+          <!-- 8B: Prevention & Providers -->
           <div class="subsection-label">Prevention &amp; Providers</div>
           <div class="form-grid">
             <div class="field-group">
@@ -1025,7 +1498,7 @@
             </div>
           </div>
 
-          <!-- 6C: Medications & Protocols -->
+          <!-- 8C: Medications & Protocols -->
           <div class="subsection-label">Medications &amp; Health Protocols</div>
           <div class="form-grid">
             <div class="field-group full">
@@ -1063,17 +1536,14 @@
             </div>
           </div>
 
-          <!-- 6D: Known Risks -->
+          <!-- 8D: Known Risks -->
           <div class="subsection-label">Known Health Risks &amp; Emergency Planning</div>
           <div class="form-grid">
             <div class="field-group full">
               <label>Identified Health Risks</label>
               <textarea id="healthRisks" placeholder="Choking/Aspiration, Fall Risk, Skin Breakdown, Dehydration, etc." oninput="updateUI()"></textarea>
             </div>
-            <div class="field-group">
-              <label>Evacuation / 911 Plan</label>
-              <textarea id="evacPlan" placeholder="Describe steps for emergencies and evacuation." oninput="updateUI()"></textarea>
-            </div>
+          
             <div class="field-group">
               <label>DNR / CPR Status</label>
               <select id="dnrStatus" onchange="updateUI()">
@@ -1124,122 +1594,373 @@
           </div>
         </div>
 
-        <!-- ── Section 7: Legal ── -->
-        <div class="form-section" id="sec-legal">
-          <div class="section-title">
-            <span>7</span> Legal
-          </div>
+        <!-- ── Section 9: Community Natural and Non-Division Support ── -->
+        <div class="form-section" id="sec-community-support">
+          <div class="section-title"><span>9</span> Community Natural and Non-Division Support</div>
           <div class="form-grid">
+            <div class="field-group full">
+              <label>Support Notes</label>
+              <textarea
+                id="communitySupport"
+                placeholder="Describe natural supports (family, friends) and non-division community resources."
+                oninput="updateUI()"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+<!-- ── Section 10: Ways to Support the Individual ── -->
+<div class="form-section" id="sec-support-ways">
+          <div class="section-title"><span>10</span> Ways to Support the Individual</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Specific Support Strategies</label>
+              <textarea id="aspirations" placeholder="What does the individual want their life to look like in 1-3 years? What would they like to try?" oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>Former Goals &amp; Progress</label>
+              <textarea id="prevGoals" placeholder="Discuss former hopes, dreams, and concerns and the progress (or lack thereof) made." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>How to Support These Vision Outcomes</label>
+              <textarea id="supportNeeded" placeholder="What specific supports are needed to help get their hopes, dreams, and concerns met?" oninput="updateUI()"></textarea>
+            </div>
             <div class="field-group">
-              <label>Legal Authority Roles</label>
-              <div class="multi-select-container" id="legalRolesContainer">
-                <div class="multi-select-display" onclick="toggleMultiSelect('legalRolesContainer')">
-                  <div class="selected-tags" id="legalRolesTags">
-                    <span class="placeholder">Select Authority Roles...</span>
+              <label>Personal Strengths &amp; Assets</label>
+              <textarea id="strengths" placeholder="Individual strengths, skills, and personal assets discovered during assessment." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group">
+              <label>MAAS / Vineland / MOCABI Limitations</label>
+              <textarea id="maasTools" placeholder="If waivered, discuss limitations on assessment tools and how the individual is supported." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group">
+              <label>Rituals &amp; Routines</label>
+              <textarea id="ritualsRoutines" placeholder="Rituals or routines that are important to the person for consistency." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group">
+              <label>Religious Supports</label>
+              <textarea id="religiousSupports" placeholder="If religion is marked on Demo section, ensure you discuss religious supports here." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>Individual Preference for Staff</label>
+              <textarea id="staffPreference" placeholder="Preferences for staff members (e.g. male/female, personality) for specific tasks like bathing or gym." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>Support in All Aspects (School, Work, Home)</label>
+              <textarea id="otherSupport" placeholder="Discuss supports needed across all environments to ensure consistency." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>How the Individual Learns Best / Learning Style</label>
+              <div class="multi-select-container" id="learningStyleContainer">
+                <div class="multi-select-display" onclick="toggleMultiSelect('learningStyleContainer')">
+                  <div class="selected-tags" id="learningStyleTags">
+                    <span class="placeholder">Select Learning Styles...</span>
                   </div>
                 </div>
                 <div class="multi-select-dropdown">
-                  <label class="multi-option">
-                    <input type="checkbox" value="Self / Full Rights" onchange="updateLegalRoles()">
-                    <span>Self / Full Rights</span>
-                  </label>
-                  <label class="multi-option">
-                    <input type="checkbox" value="Full Guardianship" onchange="updateLegalRoles()">
-                    <span>Full Guardianship</span>
-                  </label>
-                  <label class="multi-option">
-                    <input type="checkbox" value="Limited Guardianship" onchange="updateLegalRoles()">
-                    <span>Limited Guardianship</span>
-                  </label>
-                  <label class="multi-option">
-                    <input type="checkbox" value="Full Conservatorship" onchange="updateLegalRoles()">
-                    <span>Full Conservatorship</span>
-                  </label>
-                  <label class="multi-option">
-                    <input type="checkbox" value="Limited Conservatorship" onchange="updateLegalRoles()">
-                    <span>Limited Conservatorship</span>
-                  </label>
-                  <label class="multi-option">
-                    <input type="checkbox" value="Power of Attorney" onchange="updateLegalRoles()">
-                    <span>Power of Attorney</span>
-                  </label>
-                  <label class="multi-option">
-                    <input type="checkbox" value="Representative Payee" onchange="updateLegalRoles()">
-                    <span>Representative Payee</span>
-                  </label>
-                  <label class="multi-option">
-                    <input type="checkbox" value="Physical Custody" onchange="updateLegalRoles()">
-                    <span>Physical Custody</span>
-                  </label>
-                  <label class="multi-option">
-                    <input type="checkbox" value="Legal Custody" onchange="updateLegalRoles()">
-                    <span>Legal Custody</span>
-                  </label>
+                  <label class="multi-option"><input type="checkbox" value="Visual" onchange="updateLearningStyles()"><span>Visual (Pictures, Images, Spatial)</span></label>
+                  <label class="multi-option"><input type="checkbox" value="Auditory" onchange="updateLearningStyles()"><span>Auditory (Sound, Music)</span></label>
+                  <label class="multi-option"><input type="checkbox" value="Kinesthetic" onchange="updateLearningStyles()"><span>Kinesthetic (Physical, Touch, Hands-on)</span></label>
+                  <label class="multi-option"><input type="checkbox" value="Verbal" onchange="updateLearningStyles()"><span>Verbal (Speech, Writing)</span></label>
+                  <label class="multi-option"><input type="checkbox" value="Social" onchange="updateLearningStyles()"><span>Social (Interpersonal, Group)</span></label>
+                  <label class="multi-option"><input type="checkbox" value="Solitary" onchange="updateLearningStyles()"><span>Solitary (Intrapersonal, Independent)</span></label>
+                  <label class="multi-option"><input type="checkbox" value="Observation" onchange="updateLearningStyles()"><span>Observation (Watching others)</span></label>
+                  <label class="multi-option"><input type="checkbox" value="Modeling" onchange="updateLearningStyles()"><span>Modeling (Imitating)</span></label>
                 </div>
               </div>
             </div>
             <div class="field-group full">
-              <label>Legal Authority — Specifics / Case Manager Notes</label>
-              <textarea
-                id="legalSpecify"
-                placeholder="Specify any details regarding the authorities above or add specific Case Manager notes."
-                oninput="updateUI()"
-              ></textarea>
-            </div>
-            <div class="field-group full">
-              <label>Limited Guardianship / Authority Details</label>
-              <textarea
-                id="limitedGuardianshipDetails"
-                placeholder="Describe specific authorities (e.g. Medical Only, Financial Only, etc.)"
-                oninput="updateUI()"
-              ></textarea>
+              <label>Learning Style Notes</label>
+              <textarea id="learningStyleNotes" placeholder="Additional details on the method by which the person learns best." oninput="updateUI()"></textarea>
             </div>
             <div class="field-group">
-              <label>Voter Registration Status</label>
-              <select id="voterStatus" onchange="updateUI()">
-                <option value="Registered — Active Voter">
-                  Registered — Active Voter
-                </option>
-                <option value="Registered — Has Not Voted">
-                  Registered — Has Not Voted
-                </option>
-                <option value="Not Registered — Eligible">
-                  Not Registered — Eligible (Assistance Available)
-                </option>
-                <option value="Not Registered — Not Eligible">
-                  Not Registered — Not Eligible
-                </option>
-                <option value="Voter Rights Removed (Guardianship)">
-                  Voter Rights Removed per Guardianship Order
-                </option>
-                <option value="Unknown / Not Reported">
-                  Unknown / Not Reported
-                </option>
+              <label>Cultural Differences</label>
+              <textarea id="culturalDifferences" placeholder="Person does not believe in certain holidays, programs, celebrations, etc." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group">
+              <label>Regulate Water Temperature?</label>
+              <select id="waterTemp" onchange="updateUI()">
+                <option value="Independent">Independent (Add to Section 5)</option>
+                <option value="Needs Supports">Needs Supports</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        
+
+        <!-- ── Section 11: (Not specified) ── -->
+
+        <!-- ── Section 12: Independence Personal Strengths and Assets ── -->
+        <div class="form-section" id="sec-strengths">
+          <div class="section-title"><span>12</span> Independence Personal Strengths and Assets</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Strengths and Personal Assets</label>
+              <textarea
+                id="independenceStrengths"
+                placeholder="What is the individual good at? What are their greatest assets?"
+                oninput="updateUI()"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 13: Transition Youth / Adults / Community ── -->
+        <div class="form-section" id="sec-transition">
+          <div class="section-title"><span>13</span> Transition Youth / Adults / Community</div>
+          <div class="form-grid">
+            <!-- Age-Based Context -->
+            <div class="field-group full">
+              <label>Transition Category / Life Stage</label>
+              <select id="transitionCategory" onchange="toggleTransitionFields(); updateUI();">
+                <option value="Standard">-- Select Life Stage --</option>
+                <option value="School Age (Under 16)">School Age (Under 16)</option>
+                <option value="Transition Age (16-24)">Transition Age (16-24)</option>
+                <option value="Adult / Employment Age">Adult / Employment Age</option>
+                <option value="Retirement Age (65+)">Retirement Age (65+)</option>
+              </select>
+            </div>
+
+            <!-- Retirement Logic -->
+            <div class="field-group full" id="retirementFields" style="display:none;">
+              <label>Retirement Status & Context</label>
+              <textarea id="retirementNotes" placeholder="e.g., Person is of retirement age and does not wish to work; or Person retired from [Employer] on [Date]." oninput="updateUI()"></textarea>
+            </div>
+
+            <!-- Under 16 Logic -->
+            <div class="field-group full" id="under16Fields" style="display:none;">
+              <label>Early Transition & Soft Skill Development (Team Discussion)</label>
+              <textarea id="under16Notes" placeholder="Discuss: Self-determination; soft skills; interest/aptitude exploration; adult roles; social capital; early work experiences (volunteerism/shadowing); independent living skills." oninput="updateUI()"></textarea>
+            </div>
+
+            <!-- Discovery Tools & Benefits Counseling -->
+            <div class="field-group full">
+              <label>Discovery Tools / Financial Literacy (DB101, My Next Move, etc.)</label>
+              <textarea id="discoveryTools" placeholder="Document use of DB101, My Next Move, or Youth Transition services. Note benefit counseling and financial literacy planning." oninput="updateUI()"></textarea>
+            </div>
+
+            <!-- Community Support Referrals -->
+            <div class="field-group full">
+              <label>Community Support Programs (Select and verify referrals)</label>
+              <div class="ethnicity-grid" id="referralGrid">
+                <label class="eth-check"><input type="checkbox" class="referral-cb" value="Vocational Rehabilitation" onchange="updateUI()"> Voc Rehab</label>
+                <label class="eth-check"><input type="checkbox" class="referral-cb" value="Centers for Independent Living" onchange="updateUI()"> CILs</label>
+                <label class="eth-check"><input type="checkbox" class="referral-cb" value="County Boards" onchange="updateUI()"> County Boards</label>
+                <label class="eth-check"><input type="checkbox" class="referral-cb" value="Missouri Job Centers" onchange="updateUI()"> MO Job Centers</label>
+              </div>
+              <textarea id="referralNotes" placeholder="Ensure appropriate referrals have been made and noted here." style="margin-top:10px;" oninput="updateUI()"></textarea>
+            </div>
+
+            <div class="field-group full">
+              <label>Transition Planning Summary</label>
+              <textarea
+                id="transitionPlan"
+                placeholder="Consolidated transition summary..."
+                oninput="updateUI()"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 14: Behavioral (LEGACY) ── -->
+        <div class="form-section" id="sec-behavioral-legacy" style="display: none;">
+          <div class="section-title"><span>14</span> Behavioral (Legacy)</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Behavioral Status / Support Needs</label>
+              <textarea id="behavioralStatus-legacy" oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>Psychotropic Protocol (If Applicable)</label>
+              <textarea id="psychotropicProtocol-legacy" oninput="updateUI()"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 15: Supervision ── -->
+        <div class="form-section" id="sec-supervision">
+          <div class="section-title"><span>15</span> Supervision</div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Supervision Level</label>
+              <select id="supervisionLevel" onchange="updateUI()">
+                <option value="Standard">Standard</option>
+                <option value="Line of Sight">Line of Sight</option>
+                <option value="1:1 Constant">1:1 Constant</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Risk Level</label>
+              <select id="riskLevel" onchange="updateUI()">
+                <option value="Low">Low Risk</option>
+                <option value="Moderate">Moderate Risk</option>
+                <option value="High">High Risk</option>
               </select>
             </div>
             <div class="field-group full">
-              <label>Licenses & Legal Notes (Fishing, Drivers, Probation/Parole, etc.)</label>
-              <textarea
-                id="legalLicensesProbation"
-                placeholder="Note any licenses held (fishing, drivers, etc.) or if the individual is on probation or parole."
-                oninput="updateUI()"
-              ></textarea>
+              <label>Staff Precautions (OSHA)</label>
+              <textarea id="oshaPrecaution" oninput="updateUI()"></textarea>
             </div>
             <div class="field-group">
+              <label>Evacuation / 911 Plan</label>
+              <textarea id="evacPlan" placeholder="Describe steps for emergencies and evacuation." oninput="updateUI()"></textarea>
+            </div>
+            <!-- 1D: Due Process (Moved from Section 7B) -->
+          <div
+            class="subsection-label"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-top: 24px;
+            "
+          >
+            Rights Limitations &amp; Due Process
+            <label
+              style="
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--marion-blue);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              "
+            >
+              <input
+                type="checkbox"
+                id="dueProcessNA"
+                onchange="toggleDueProcess(this)"
+              />
+              No active limitations
+            </label>
+          </div>
+
+          <div id="dueProcessFields">
+            <div class="form-grid">
+              <div class="field-group">
+                <label>Due Process Meeting Invitation</label>
+                <textarea
+                  id="dpInvitation"
+                  placeholder="Document when guardian/individual was invited and their response."
+                  oninput="updateUI()"
+                ></textarea>
+              </div>
+              <div class="field-group">
+                <label>Description of Limitation</label>
+                <textarea
+                  id="dpDescription"
+                  placeholder="What is the restriction and where/when is it imposed?"
+                  oninput="updateUI()"
+                ></textarea>
+              </div>
+              <div class="field-group full">
+                <label>Less Intrusive Methods Tried (HCBS Requirement)</label>
+                <textarea
+                  id="dpLessIntrusive"
+                  placeholder="Document specific methods that were attempted but did not work."
+                  oninput="updateUI()"
+                ></textarea>
+              </div>
+              <div class="field-group full">
+                <label>Historical Pattern / Source of Data</label>
+                <textarea
+                  id="dpHistorical"
+                  placeholder="Historical events justifying limitation. Include current data source (e.g. incident reports)."
+                  oninput="updateUI()"
+                ></textarea>
+              </div>
+              <div class="field-group">
+                <label>Teaching &amp; Support Strategies</label>
+                <textarea
+                  id="dpTeaching"
+                  placeholder="Goals/tasks to help the individual overcome the need for this support."
+                  oninput="updateUI()"
+                ></textarea>
+              </div>
+              <div class="field-group">
+                <label>Measurable Criteria for Lifting</label>
+                <textarea
+                  id="dpLiftingCriteria"
+                  placeholder="How will the Team know when the limit can be reduced or lifted?"
+                  oninput="updateUI()"
+                ></textarea>
+              </div>
+              <div class="field-group full">
+                <label>Monitoring &amp; Data Collection</label>
+                <textarea
+                  id="dpMonitoring"
+                  placeholder="Who documents? Where is data kept? Frequency? Review dates by SC."
+                  oninput="updateUI()"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 16: Previous and Current Goals ── -->
+        <div class="form-section" id="sec-prev-goals">
+          <div class="section-title"><span>16</span> Previous and Current Goals</div>
+          <div id="dynamicGoalsTasksContainer"></div>
+          <button class="btn btn-outline" type="button" onclick="addGoalTask()">+ Add Goal / Task Entry</button>
+        </div>
+
+       
+        <!-- ---Section 17: Action Plan--->
+         <div class="form-section" id="sec-outcomes">
+          <div class="section-title">
+            <span>17</span> Action Plan
+          </div>
+          <div id="goalsContainer"></div>
+          <button class="btn btn-outline" type="button" onclick="addGoal()" style="margin-top:4px;">
+            + Add Action Plan
+          </button>
+        </div>
+
+        <!-- ── Section 18: Comments ── -->
+        <div class="form-section" id="sec-comments">
+          <div class="section-title"><span>18</span> Comments</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Plan Comments / Clinical Summary</label>
+              <textarea id="planComments" oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group">
+              <label>RAS Score</label>
+              <input type="text" id="rasSisScore" oninput="updateUI()" />
+            </div>
+            <div class="field-group">
+              <label>PON Score</label>
+              <input type="text" id="ponScore" oninput="updateUI()" />
+            </div>
+            <div class="field-group">
+              <label>Last Assessment Date</label>
+              <input type="date" id="lastAssessment" oninput="updateUI()" />
+            </div>
+            <div class="field-group">
+              <label>Last LOC Date</label>
+              <input type="date" id="lastLOC" oninput="updateUI()" />
+            </div>
+             <div class="field-group">
               <label>Rights Brochure Addressed?</label>
               <select id="rightsBrochure" onchange="updateUI()">
                 <option value="Yes">Yes - Knowing Your Rights</option>
                 <option value="No">No</option>
               </select>
             </div>
-            <div class="field-group">
-              <label>Consents on File?</label>
-              <select id="consents" onchange="updateUI()">
-                <option value="Yes - All signed">Yes - All signed</option>
-                <option value="Pending">Pending</option>
+            <div class="field-group full">
+              <label>Conflict of Interest Info Provided?</label>
+              <select id="conflictInfo" onchange="updateUI()">
+                <option value="Yes - Documentation shared">
+                  Yes - Documentation shared
+                </option>
+                <option value="N/A">Not Applicable</option>
               </select>
             </div>
-            <div class="field-group full">
+             <div class="field-group full">
               <label>Satisfaction with Services (Spelled out by service)</label>
               <textarea
                 id="serviceSatisfaction"
@@ -1248,360 +1969,21 @@
               ></textarea>
             </div>
             <div class="field-group full">
-              <label>Conflict of Interest Info Provided?</label>
-              <select id="conflictInfo" onchange="updateUI()">
-                <option value="Yes - Documentation shared">Yes - Documentation shared</option>
-                <option value="N/A">Not Applicable</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- 7B: Due Process & Rights Limitations -->
-          <div class="subsection-label" style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
-            Rights Limitations &amp; Due Process
-            <label style="font-size: 11px; font-weight: 700; color: var(--marion-blue); cursor: pointer; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-              <input type="checkbox" id="dueProcessNA" onchange="toggleDueProcess(this)">
-              No active limitations
-            </label>
-          </div>
-          
-          <div id="dueProcessFields">
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Due Process Meeting Invitation</label>
-                <textarea id="dpInvitation" placeholder="Document when guardian/individual was invited and their response." oninput="updateUI()"></textarea>
+              <label>LOC Limitations / Categories</label>
+              <div class="ethnicity-grid">
+                <label class="eth-check"><input type="checkbox" id="locSelfCare" onchange="updateUI()"> Self Care</label>
+                <label class="eth-check"><input type="checkbox" id="locLearning" onchange="updateUI()"> Learning</label>
+                <label class="eth-check"><input type="checkbox" id="locSelfDirection" onchange="updateUI()"> Self Direction</label>
+                <label class="eth-check"><input type="checkbox" id="locIndependentLiving" onchange="updateUI()"> Independent Living</label>
+                <label class="eth-check"><input type="checkbox" id="locLanguage" onchange="updateUI()"> Language</label>
+                <label class="eth-check"><input type="checkbox" id="locMobility" onchange="updateUI()"> Mobility</label>
               </div>
-              <div class="field-group">
-                <label>Description of Limitation</label>
-                <textarea id="dpDescription" placeholder="What is the restriction and where/when is it imposed?" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>Less Intrusive Methods Tried (HCBS Requirement)</label>
-                <textarea id="dpLessIntrusive" placeholder="Document specific methods that were attempted but did not work." oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>Historical Pattern / Source of Data</label>
-                <textarea id="dpHistorical" placeholder="Historical events justifying limitation. Include current data source (e.g. incident reports)." oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group">
-                <label>Teaching &amp; Support Strategies</label>
-                <textarea id="dpTeaching" placeholder="Goals/tasks to help the individual overcome the need for this support." oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group">
-                <label>Measurable Criteria for Lifting</label>
-                <textarea id="dpLiftingCriteria" placeholder="How will the Team know when the limit can be reduced or lifted?" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>Monitoring &amp; Data Collection</label>
-                <textarea id="dpMonitoring" placeholder="Who documents? Where is data kept? Frequency? Review dates by SC." oninput="updateUI()"></textarea>
-              </div>
-            </div>
-            <p style="font-size: 11px; color: var(--text-label); font-style: italic; margin-top: 10px; border-left: 3px solid var(--gold); padding-left: 10px;">
-              Compliance Note: Plan must include assurance that interventions cause no harm and information regarding the right to appeal to the Office of Constituent Services.
-            </p>
-          </div>
-        </div>
-
-        <!-- ── Section 8: Communication ── -->
-        <div class="form-section" id="sec-communication">
-          <div class="section-title">
-            <span>8</span> Communication
-          </div>
-
-          <!-- 8A: Language -->
-          <div class="subsection-label">Language</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Primary Language</label>
-              <div style="display: flex; gap: 10px; align-items: center">
-                <input
-                  type="text"
-                  id="commPrimaryLanguage"
-                  placeholder="e.g. English"
-                  oninput="updateUI()"
-                  style="flex: 1"
-                />
-                <label
-                  style="
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    text-transform: none;
-                    font-size: 12px;
-                    white-space: nowrap;
-                  "
-                >
-                  <input
-                    type="checkbox"
-                    id="commPrimaryLanguageNA"
-                    onchange="
-                      toggleNAField(
-                        'commPrimaryLanguage',
-                        'commPrimaryLanguageNA',
-                      )
-                    "
-                  />
-                  N/A
-                </label>
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Uses Sign Language?</label>
-              <select
-                id="commUsesSignLang"
-                onchange="
-                  toggleSignLangType();
-                  updateUI();
-                "
-              >
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
-            </div>
-            <div
-              class="field-group"
-              id="signLangTypeGroup"
-              style="display: none"
-            >
-              <label>Type of Sign Language</label>
-              <div style="display: flex; gap: 10px; align-items: center">
-                <select
-                  id="commSignLangType"
-                  onchange="
-                    toggleSignLangTypeOther();
-                    updateUI();
-                  "
-                  style="flex: 1"
-                >
-                  <option value="American Sign Language (ASL)">
-                    American Sign Language (ASL)
-                  </option>
-                  <option value="Other Sign Language">Other Sign Language</option>
-                  <option value="Signed Exact English (SEE)">
-                    Signed Exact English (SEE)
-                  </option>
-                  <option value="Pidgin Signed English (PSE)">
-                    Pidgin Signed English (PSE)
-                  </option>
-                  <option value="Home Signs / Informal Signing">
-                    Home Signs / Informal Signing
-                  </option>
-                  <option value="Other">Other (specify)</option>
-                </select>
-              </div>
-            </div>
-            <div
-              class="field-group"
-              id="signLangTypeOtherGroup"
-              style="display: none"
-            >
-              <label>Sign Language Type — Other (specify)</label>
-              <input
-                type="text"
-                id="commSignLangTypeOther"
-                placeholder="Specify type"
-                oninput="updateUI()"
-              />
-            </div>
-          </div>
-
-          <!-- 8B: Method of Communication -->
-          <div class="subsection-label">Method of Communication</div>
-          <div class="form-grid">
-            <div class="field-group full">
-              <label
-                >Primary Communication Method(s) — Select all that apply</label
-              >
-              <div class="comm-method-grid" id="commMethodGrid">
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="Verbal / Spoken"
-                    onchange="updateUI()"
-                  />
-                  Verbal / Spoken</label
-                >
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="Communication Board / PECS"
-                    onchange="updateUI()"
-                  />
-                  Communication Board / PECS</label
-                >
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="AAC Device (Speech-Generating)"
-                    onchange="updateUI()"
-                  />
-                  AAC Device (Speech-Generating)</label
-                >
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="Gestures / Body Language"
-                    onchange="updateUI()"
-                  />
-                  Gestures / Body Language</label
-                >
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="Written Communication"
-                    onchange="updateUI()"
-                  />
-                  Written Communication</label
-                >
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="Eye Gaze / Pointing"
-                    onchange="updateUI()"
-                  />
-                  Eye Gaze / Pointing</label
-                >
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="Facial Expressions"
-                    onchange="updateUI()"
-                  />
-                  Facial Expressions</label
-                >
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="Vocalizations (Non-verbal sounds)"
-                    onchange="updateUI()"
-                  />
-                  Vocalizations (Non-verbal)</label
-                >
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="Behavior as Communication"
-                    onchange="updateUI()"
-                  />
-                  Behavior as Communication</label
-                >
-                <label class="eth-check"
-                  ><input
-                    type="checkbox"
-                    value="Other Communication Method"
-                    onchange="toggleCommMethodOther(this)"
-                  />
-                  Other (specify)</label
-                >
-              </div>
-            </div>
-            <div
-              class="field-group full"
-              id="commMethodOtherGroup"
-              style="display: none"
-            >
-              <label>Other Communication Method (specify)</label>
-              <input
-                type="text"
-                id="commMethodOther"
-                placeholder="Describe the communication method"
-                oninput="updateUI()"
-              />
             </div>
             <div class="field-group full">
-              <label>Communication Description / Notes</label>
-              <textarea
-                id="commMethodNotes"
-                placeholder="Describe how this individual communicates. Include what works, what doesn't, and how staff should respond."
-                oninput="updateUI()"
-              ></textarea>
+              <label>Other Domains</label>
+              <input type="text" id="locOtherDomains" oninput="updateUI()" />
             </div>
           </div>
-
-          <!-- 8C: Evaluations -->
-          <div class="subsection-label">Communication Evaluations</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Evaluation Date(s) — Filed</label>
-              <div id="commEvalDatesContainer">
-                <input type="date" class="comm-eval-date" oninput="updateUI()" style="margin-bottom: 8px;" />
-              </div>
-              <button class="btn btn-outline" style="padding: 4px 12px; font-size: 11px;" onclick="addCommEvalDate()">+ Add Another Date</button>
-            </div>
-            <div class="field-group">
-              <label>Evaluation(s) Needed?</label>
-              <select
-                id="commEvalNeeded"
-                onchange="
-                  toggleCommEvalFields();
-                  updateUI();
-                "
-              >
-                <option value="Already Completed">
-                  Already Completed / On File
-                </option>
-                <option value="Yes — Evaluation(s) Needed">
-                  Yes — Evaluation(s) Needed
-                </option>
-                <option value="No — Not Needed">
-                  No — Not Needed at This Time
-                </option>
-                <option value="N/A">N/A</option>
-              </select>
-            </div>
-            <div
-              class="field-group full"
-              id="commEvalBarriersGroup"
-              style="display: none"
-            >
-              <label>Communication Barriers Identified</label>
-              <textarea
-                id="commEvalBarriers"
-                placeholder="Describe any known barriers (e.g. hearing loss, limited vocabulary, anxiety, unfamiliar listeners). Include strategies to overcome."
-                oninput="updateUI()"
-              ></textarea>
-            </div>
-          </div>
-
-          <!-- 8D: Communication Chart -->
-          <div class="subsection-label" style="display: flex; justify-content: space-between; align-items: center;">
-            Communication Chart
-            <label style="font-size: 11px; font-weight: 700; color: var(--marion-blue); cursor: pointer; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-              <input type="checkbox" id="commChartNA" onchange="toggleCommChartNA(this)">
-              Not Applicable
-            </label>
-          </div>
-          <div id="commChartContainer">
-            <div class="field-group full" style="margin-bottom: 15px;">
-              <label class="eth-check" style="margin-bottom: 10px;">
-                <input type="checkbox" id="commSeeAttached" onchange="updateUI()"> 
-                <strong>SEE ATTACHED</strong> (Clinical chart provided separately)
-              </label>
-            </div>
-            <p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px">
-              No communication entries added. Click below to add one.
-            </p>
-          </div>
-          <button
-            id="addCommRowBtn"
-            class="btn btn-outline"
-            type="button"
-            onclick="addCommChartRow()"
-            style="margin-top: 4px"
-          >
-            + Add Communication Entry
-          </button>
-        </div>
-
-        <!-- ── Section 9: Action Plan ── -->
-        <div class="form-section" id="sec-outcomes">
-          <div class="section-title">
-            <span>9</span> Action Plan
-          </div>
-          <div id="goalsContainer"></div>
-          <button class="btn btn-outline" type="button" onclick="addGoal()" style="margin-top:4px;">
-            + Add Action Item
-          </button>
         </div>
 
         <!-- ── PCSP Document Preview & Export ── -->
@@ -1642,8 +2024,16 @@
               />
             </label>
           </div>
-          <p style="font-size:11px;color:var(--text-label);margin-top:10px;text-align:center;">
-            💡 You can also drag &amp; drop a <strong>.pcsp</strong> file anywhere onto this page to open it.
+          <p
+            style="
+              font-size: 11px;
+              color: var(--text-label);
+              margin-top: 10px;
+              text-align: center;
+            "
+          >
+            💡 You can also drag &amp; drop a <strong>.pcsp</strong> file
+            anywhere onto this page to open it.
           </p>
         </div>
       </main>
