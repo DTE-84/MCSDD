@@ -1,0 +1,17 @@
+{
+  "name": "pcsp-files",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18",
+    "react-dom": "^18",
+    "next": "14.2.3",
+    "@iconify/react": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5"
+  }
+}

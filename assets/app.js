@@ -451,16 +451,21 @@ function toggleTheme() {
 
 function toggleTransitionFields() {
   const cat = document.getElementById("transitionCategory").value;
-  document.getElementById("retirementFields").style.display = cat === "Retirement Age (65+)" ? "block" : "none";
-  document.getElementById("under16Fields").style.display = cat === "School Age (Under 16)" ? "block" : "none";
   
-  // Show referral grid and discovery tools only if 16+ (Standard or Retirement)
-  const isTransitionAge = (cat === "Standard (16+)" || cat === "Retirement Age (65+)");
+  // 1. Under 16 Fields (Additive history)
+  // We show it for and all subsequent stages (16+, 65+) to preserve the historical data context.
+  const hasEverBeenUnder16 = (cat !== "" && cat !== "Standard"); 
+  document.getElementById("under16Fields").style.display = hasEverBeenUnder16 ? "block" : "none";
+  
+  // 2. Standard Transition Tools (16+)
+  const is16Plus = (cat === "Transition Age (16-24)" || cat === "Adult / Employment Age" || cat === "Retirement Age (65+)");
   const referralContainer = document.getElementById("referralGrid").closest('.field-group');
   const discoveryContainer = document.getElementById("discoveryTools").closest('.field-group');
-  
-  if (referralContainer) referralContainer.style.display = isTransitionAge ? "block" : "none";
-  if (discoveryContainer) discoveryContainer.style.display = isTransitionAge ? "block" : "none";
+  if (referralContainer) referralContainer.style.display = is16Plus ? "block" : "none";
+  if (discoveryContainer) discoveryContainer.style.display = is16Plus ? "block" : "none";
+
+  // 3. Retirement Fields (65+)
+  document.getElementById("retirementFields").style.display = (cat === "Retirement Age (65+)") ? "block" : "none";
 }
 
 // ── UI UPDATE & NARRATIVE ──
@@ -696,22 +701,21 @@ function updateUI() {
 
   head("13. TRANSITION YOUTH / ADULTS / COMMUNITY");
   const tCat = getVal("transitionCategory");
-  if (tCat !== "Standard") line(`Life Stage: ${tCat}`);
+  if (tCat && tCat !== "Standard") line(`Life Stage: ${tCat}`);
   
-  if (tCat === "Retirement Age (65+)") {
-    field("Retirement Context", getVal("retirementNotes"));
-  } else if (tCat === "School Age (Under 16)") {
-    field("Under 16 Dev Goals", getVal("under16Notes"));
+  // Print historical and current notes cumulatively
+  if (getVal("under16Notes")) field("Under 16 Dev Goals", getVal("under16Notes"));
+  
+  const isTransitionActive = (tCat === "Transition Age (16-24)" || tCat === "Adult / Employment Age" || tCat === "Retirement Age (65+)");
+  if (isTransitionActive) {
+    field("Discovery Tools", getVal("discoveryTools"));
+    const referrals = [];
+    document.querySelectorAll(".referral-cb").forEach(cb => { if (cb.checked) referrals.push(cb.value); });
+    if (referrals.length) field("Community Referrals", referrals.join(", "));
+    field("Referral Notes", getVal("referralNotes"));
   }
   
-  field("Discovery/Tools", getVal("discoveryTools"));
-  
-  const referrals = [];
-  document.querySelectorAll(".referral-cb").forEach(cb => {
-    if (cb.checked) referrals.push(cb.value);
-  });
-  if (referrals.length) field("Community Referrals", referrals.join(", "));
-  field("Referral Notes", getVal("referralNotes"));
+  if (getVal("retirementNotes")) field("Retirement Context", getVal("retirementNotes"));
   
   field("Transition Plan Summary", getVal("transitionPlan"));
   line("");
@@ -1199,16 +1203,28 @@ function checkPass() {
   const val = document.getElementById("passInput").value;
   const err = document.getElementById("errorMsg");
   if (val === "MCSDD22") {
+    // Transition to Welcome/README screen instead of app immediately
     document.getElementById("lockScreen").classList.add("fade-out");
     setTimeout(() => {
       document.getElementById("lockScreen").style.display = "none";
-      document.getElementById("app").style.display = "block";
+      document.getElementById("welcomeScreen").style.display = "flex";
     }, 700);
   } else {
     err.textContent = "Invalid access code. Please try again.";
     document.getElementById("passInput").value = "";
     document.getElementById("passInput").focus();
   }
+}
+
+function launchApp() {
+  const welcome = document.getElementById("welcomeScreen");
+  welcome.style.opacity = "0";
+  welcome.style.transition = "opacity 0.5s ease";
+  setTimeout(() => {
+    welcome.style.display = "none";
+    document.getElementById("appContainer").style.display = "grid";
+    init(); // Ensure UI is fresh
+  }, 500);
 }
 
 document.getElementById("passInput").addEventListener("keydown", (e) => {
