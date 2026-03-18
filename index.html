@@ -793,7 +793,7 @@
           <label>DMH Number</label>
           <input type="text" id="dmhNumber" placeholder="e.g. DMH-00000000" />
         </div>
-        <!-- ---------- Funding Type – multi‑select ---------- -->
+       
 <div class="field-group">
   <label>Funding Type</label>
   <div class="funding-options">
@@ -811,7 +811,7 @@
       <input type="checkbox" name="funding" value="Other">
       Other
       <input type="text" name="otherFunding" placeholder="Enter other funding"
-             class="other-text" disabled>
+             class="text" disabled>
     </label>
   </div>
 </div>
@@ -819,34 +819,7 @@
 
 <div id="selectedFunding" class="selected-output"></div>
 
-<script>
-  const outputDiv = document.getElementById('selectedFunding');
 
-  document.querySelectorAll('input[name="funding"]').forEach(cb => {
-    cb.addEventListener('change', updateSelectedFunding);
-  });
-
-  function updateSelectedFunding() {
-    const checked = Array.from(document.querySelectorAll('input[name="funding"]:checked'));
-    const labels = checked.map(cb => {
-      const labelText = cb.closest('label').innerText.trim();
-
-      if (cb.value === 'Other') {
-        const otherInput = cb.closest('label').querySelector('.other-text');
-        if (otherInput && otherInput.value.trim()) {
-          return `${labelText}: ${otherInput.value.trim()}`;
-        }
-        return labelText;
-      }
-      return labelText;
-    });
-
-    outputDiv.textContent = labels.length ? labels.join(', ') : '— No funding type selected —';
-  }
-
-  // Initialise on page load
-  window.addEventListener('load', updateSelectedFunding);
-</script>
 
         <div class="field-group">
           <label>PCSP Implementation Date</label>
@@ -889,7 +862,7 @@
             </div>
             <div>
               <div class="cover-agency-name">Marion County Services for Developmental Disabilities</div>
-              <div class="cover-agency-sub">Marion County, Indiana &nbsp;·&nbsp; Developmental Services Division</div>
+              <div class="cover-agency-sub">Marion County, Missouri &nbsp;·&nbsp; Developmental Services Division</div>
             </div>
           </div>
           <div class="cover-body">
@@ -922,7 +895,7 @@
           <div class="cover-footer-bar">
             <span>MCSDD Official Document</span>
             <span id="prev-conf-footer">CONFIDENTIAL</span>
-            <span>Marion County, Indiana</span>
+            <span>Marion County, Missouri</span>
           </div>
         </div>
       </div>
@@ -935,19 +908,20 @@
       
       <!-- Integrated PCSP App Container -->
       <div id="integratedApp" style="background: #ffffff; color: #333; border-radius: 10px; overflow: hidden; height: 80vh; border: 1px solid var(--border);">
-        <iframe id="appIframe" src="../MWISP/index.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        <iframe id="appIframe" src="./app/index.html" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
       </div>
     </section>
 
     <!-- ── CASE STUDY ── -->
     <section class="section" id="caseSection">
-      <div class="section-heading">Case Study</div>
-      <div class="section-sub">Upload and present case documentation</div>
+      <div class="section-heading">Clinical Reference</div>
+      <div class="section-sub">PCSP Checklist & State Audit Documentation</div>
       <div class="case-placeholder" id="casePlaceholder">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
-        <p>Upload your case study PDF or document to display it here during the presentation.</p>
+        <p>Please upload the <strong>PCSP Checklist (PDF)</strong> or other audit documentation to display it here during the session.</p>
+        <div style="font-size: 11px; color: var(--gold); margin-top: 10px; opacity: 0.8;">Note: Checklist .docx files must be converted to PDF for in-browser viewing.</div>
         <input type="file" id="caseFileInput" accept=".pdf,.html" onchange="loadCaseFile(event)" />
-        <button class="upload-btn" onclick="document.getElementById('caseFileInput').click()" style="background:transparent;border:1px dashed rgba(201,168,76,0.3);color:#c9a84c;border-radius:6px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;">Upload Case Study</button>
+        <button class="upload-btn" onclick="document.getElementById('caseFileInput').click()" style="background:transparent;border:1px dashed rgba(201,168,76,0.3);color:#c9a84c;border-radius:6px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;margin-top:15px;">Upload Clinical Reference</button>
       </div>
       <iframe class="pdf-viewer" id="caseViewer"></iframe>
     </section>
