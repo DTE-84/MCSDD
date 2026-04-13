@@ -14,6 +14,8 @@ let legalReps = [];
 let commChartRows = [];
 let importantPeople = [];
 let programServices = []; // Section 7: Program Services
+let currentSupports = []; // Section 9: Current Services
+let linkingSupports = []; // Section 9: Linking Services
 let goalsData = []; // Section 9: Action Plan
 let clinicalGoalsTasks = []; // Section 2: Goals/Tasks
 let _coverPhotoData = null;
@@ -89,7 +91,7 @@ const FORM_FIELDS = [
   "medHistory",
   "pcpName",
   // Section 9 - Community Support
-  "communitySupport",
+  "nonDivisionalWaiverStatus",
   // Section 10 - Ways to Support
   "waysToSupport",
   // Section 12 - Independence/Strengths
@@ -257,6 +259,83 @@ function removeProgramService(id) {
   programServices = programServices.filter((p) => p.id !== id);
   renderProgramServices();
   updateUI();
+}
+
+// ── SECTION 9: COMMUNITY NATURAL AND NON-DIVISION SUPPORT ──
+function addSupport(type) {
+  const list = type === 'current' ? currentSupports : linkingSupports;
+  list.push({
+    id: Date.now(),
+    type: "Community",
+    description: "",
+    purpose: "",
+    frequency: "",
+    enrollmentInfo: ""
+  });
+  renderSupports(type);
+  updateUI();
+}
+
+function updateSupportField(id, type, field, val) {
+  const list = type === 'current' ? currentSupports : linkingSupports;
+  const s = list.find(x => x.id === id);
+  if (s) {
+    s[field] = val;
+    if (field === 'type') renderSupports(type);
+  }
+  updateUI();
+}
+
+function removeSupport(id, type) {
+  if (type === 'current') {
+    currentSupports = currentSupports.filter(x => x.id !== id);
+  } else {
+    linkingSupports = linkingSupports.filter(x => x.id !== id);
+  }
+  renderSupports(type);
+  updateUI();
+}
+
+function renderSupports(type) {
+  const containerId = type === 'current' ? 'currentSupportsContainer' : 'linkingSupportsContainer';
+  const container = document.getElementById(containerId);
+  const list = type === 'current' ? currentSupports : linkingSupports;
+  if (!container) return;
+  
+  if (!list.length) {
+    container.innerHTML = `<p style="font-size: 13px; color: var(--text-label); margin-bottom: 20px;">No ${type} services added.</p>`;
+    return;
+  }
+
+  container.innerHTML = list.map((s, idx) => `
+    <div class="legal-rep-card" style="border-left: 3px solid var(--marion-blue); margin-bottom:15px;">
+      <div class="rep-header">
+        <span class="rep-title">${type === 'current' ? 'Current' : 'Linking'} Support #${idx + 1}</span>
+        <button class="remove-rep-btn" onclick="removeSupport(${s.id}, '${type}')">×</button>
+      </div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Support Type</label>
+          <select onchange="updateSupportField(${s.id}, '${type}', 'type', this.value)">
+            <option value="Community" ${s.type === 'Community' ? 'selected' : ''}>Community (pantries, churches, clubs, gym)</option>
+            <option value="State plan services" ${s.type === 'State plan services' ? 'selected' : ''}>State plan services</option>
+            <option value="Relationship based" ${s.type === 'Relationship based' ? 'selected' : ''}>Relationship based</option>
+            <option value="Insurances" ${s.type === 'Insurances' ? 'selected' : ''}>Insurances</option>
+            <option value="DMH Services" ${s.type === 'DMH Services' ? 'selected' : ''}>DMH Services</option>
+            <option value="Technology" ${s.type === 'Technology' ? 'selected' : ''}>Technology</option>
+            <option value="Other" ${s.type === 'Other' ? 'selected' : ''}>Other</option>
+          </select>
+        </div>
+        <div class="field-group"><label>Define Support</label><input type="text" value="${esc(s.description)}" oninput="updateSupportField(${s.id}, '${type}', 'description', this.value)"></div>
+        <div class="field-group"><label>Purpose</label><input type="text" value="${esc(s.purpose)}" oninput="updateSupportField(${s.id}, '${type}', 'purpose', this.value)"></div>
+        <div class="field-group"><label>Frequency</label><input type="text" value="${esc(s.frequency)}" oninput="updateSupportField(${s.id}, '${type}', 'frequency', this.value)"></div>
+        <div class="field-group full">
+          <label>Enrollment Info / "Not Currently Utilizing"</label>
+          <input type="text" value="${esc(s.enrollmentInfo)}" placeholder="How to enroll or status note" oninput="updateSupportField(${s.id}, '${type}', 'enrollmentInfo', this.value)">
+        </div>
+      </div>
+    </div>
+  `).join("");
 }
 function updateProgramServiceField(id, field, val) {
   const p = programServices.find((x) => x.id === id);
@@ -671,9 +750,31 @@ function updateUI() {
   line("");
 
   head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
-  field("Support Notes", getVal("communitySupport"));
+  field("Non-Divisional Waiver Status", getVal("nonDivisionalWaiverStatus"));
   line("");
+  
+  if (currentSupports.length > 0) {
+    line("Current Services:");
+    currentSupports.forEach((s, idx) => {
+      line(`  [${idx + 1}] Support: ${s.description || "—"} (${s.type})`);
+      line(`      Purpose: ${s.purpose || "—"}`);
+      line(`      Freq: ${s.frequency || "—"}`);
+      if (s.enrollmentInfo) line(`      Enrollment/Note: ${s.enrollmentInfo}`);
+    });
+    line("");
+  }
 
+  if (linkingSupports.length > 0) {
+    line("Linking Services:");
+    linkingSupports.forEach((s, idx) => {
+      line(`  [${idx + 1}] Support: ${s.description || "—"} (${s.type})`);
+      line(`      Purpose: ${s.purpose || "—"}`);
+      line(`      Freq: ${s.frequency || "—"}`);
+      if (s.enrollmentInfo) line(`      Enrollment/Note: ${s.enrollmentInfo}`);
+    });
+    line("");
+  }
+  
   head("10. WAYS TO SUPPORT THE INDIVIDUAL");
   field("Aspirations (1-3 Years)", getVal("aspirations"));
   field("Former Goals & Progress", getVal("prevGoals"));
@@ -782,6 +883,26 @@ function updateUI() {
   field("Last LOC Date", getVal("lastLOC"));
   field("RAS Score", getVal("rasSisScore"));
   field("PON Score", getVal("ponScore"));
+
+  // ── SIGNATURE SECTION ──
+  line("\n" + "═".repeat(67));
+  line("SIGNATURES & APPROVAL");
+  line("");
+  line(`Individual: ${displayName.toUpperCase()}`);
+  line("Signature: _____________________________________ Date: __________");
+  line("");
+  
+  const cont = getVal("contributors");
+  if (cont) {
+    line("Plan Contributors:");
+    cont.split('\n').filter(c => c.trim()).forEach(c => {
+      line(`${c.trim()}: _____________________________________ Date: __________`);
+      line("");
+    });
+  } else {
+    line("Contributor: ____________________________________ Date: __________");
+    line("");
+  }
 
   line("\n" + "═".repeat(67));
   line(`PCSP FOR: ${displayName.toUpperCase()} | DMH ID: ${displayDMH}`);
@@ -1106,6 +1227,8 @@ function captureFormData() {
     _goalsData: goalsData,
     _clinicalGoalsTasks: clinicalGoalsTasks,
     _programServices: programServices,
+    _currentSupports: currentSupports,
+    _linkingSupports: linkingSupports,
     _legalReps: legalReps,
     _commChartRows: commChartRows,
     _importantPeople: importantPeople,
@@ -1141,6 +1264,8 @@ function restoreFormData(fd) {
   goalsData = fd._goalsData || [];
   clinicalGoalsTasks = fd._clinicalGoalsTasks || [];
   programServices = fd._programServices || [];
+  currentSupports = fd._currentSupports || [];
+  linkingSupports = fd._linkingSupports || [];
   legalReps = fd._legalReps || [];
   commChartRows = fd._commChartRows || [];
   importantPeople = fd._importantPeople || [];
@@ -1154,6 +1279,8 @@ function restoreFormData(fd) {
   renderGoals();
   renderGoalTasks();
   renderProgramServices();
+  renderSupports('current');
+  renderSupports('linking');
   renderLegalReps();
   renderCommChart();
   renderImportantPeople();

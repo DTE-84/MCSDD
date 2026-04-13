@@ -1741,17 +1741,26 @@
           </div>
         </div>
 
-        <!-- ── Section 9: Community Natural and Non-Division Support ── -->
+        <!-- ── Section 9: Community, Natural and Non-Division Supports ── -->
         <div class="form-section" id="sec-community-support">
-          <div class="section-title"><span>9</span> Community Natural and Non-Division Support</div>
-          <div class="form-grid">
+          <div class="section-title"><span>9</span> Community, Natural and Non-Division Supports</div>
+          
+          <div class="subsection-label">Current Services</div>
+          <div id="currentSupportsContainer"></div>
+          <button class="btn btn-outline" type="button" onclick="addSupport('current')" style="margin-bottom: 20px;">
+            + Add Current Support
+          </button>
+
+          <div class="subsection-label">Linking Services</div>
+          <div id="linkingSupportsContainer"></div>
+          <button class="btn btn-outline" type="button" onclick="addSupport('linking')" style="margin-bottom: 20px;">
+            + Add Linking Support
+          </button>
+
+          <div class="form-grid" style="margin-top: 10px;">
             <div class="field-group full">
-              <label>Support Notes</label>
-              <textarea
-                id="communitySupport"
-                placeholder="Describe natural supports (family, friends) and non-division community resources."
-                oninput="updateUI()"
-              ></textarea>
+              <label>Non-Divisional Waiver Status</label>
+              <input type="text" id="nonDivisionalWaiverStatus" placeholder="State if Person is in a Non-Divisional Waiver" oninput="updateUI()">
             </div>
           </div>
         </div>
