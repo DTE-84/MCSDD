@@ -12,6 +12,7 @@ const DRAFT_EXPIRY_DAYS = 30;
 const SESSION_TIMEOUT_MINS = 30;
 
 // ── DATA STRUCTURES ──
+let employmentEntries = []; 
 let legalReps = [];
 let commChartRows = [];
 let importantPeople = [];
@@ -56,7 +57,7 @@ const FORM_FIELDS = [
   "residenceNotes",
   "schoolName",
   "educationStatus",
-  "employmentJob",  // Section 2 - Preferences
+  // Section 2 - Preferences
   "likesActivities",
   "likesFoods",
   "likesPlaces",
@@ -80,10 +81,6 @@ const FORM_FIELDS = [
   "commSeeAttached",
   "commChartNA",
   // Section 7 - Program or Other Services
-  "hcbsEducatedOptions",
-  "hcbsEducatedRange",
-  "hcbsUpdateMethod",
-  "hcbsAlternatives",
   "contributors",
   // Section 8 - Medical
   "diagnosis",
@@ -252,6 +249,11 @@ function addProgramService() {
     frequency: "",
     funding: "",
     otherFunding: "",
+    justification: "",
+    hcbs1: "",
+    hcbs2: "",
+    hcbs3: "",
+    hcbs4: "",
   });
   renderProgramServices();
   updateUI();
@@ -342,34 +344,37 @@ function updateProgramServiceField(id, field, val) {
   const p = programServices.find((x) => x.id === id);
   if (p) {
     p[field] = val;
-    if (field === 'funding') {
-      renderProgramServices(); // Refresh for "Other" field
-      checkAndApplyHCBSTemplate(val);
+    if (field === "funding" || field === "service") {
+      renderProgramServices(); // Refresh for "Other" or HCBS grouping
+      if (field === "funding") {
+        checkAndApplyHCBSTemplateToService(p, val);
+      }
     }
   }
   updateUI();
 }
 
-function checkAndApplyHCBSTemplate(waiverName) {
+function checkAndApplyHCBSTemplateToService(p, waiverName) {
   const triggers = [
     "Comprehensive Waiver",
     "Support Waiver",
     "Sarah Lopez Waiver (MOCDD)",
-    "Partnership for Hope Waiver"
+    "Partnership for Hope Waiver",
   ];
-  
+
   if (!triggers.includes(waiverName)) return;
 
-  const template = "Provider Choice Statement and Spreadsheet was signed on ________ by ________________ for ________________.";
-  const fields = ["hcbsEducatedOptions", "hcbsEducatedRange", "hcbsUpdateMethod", "hcbsAlternatives"];
-  
-  fields.forEach(id => {
-    const el = document.getElementById(id);
-    if (el && !el.value.trim()) {
-      el.value = template;
-    }
-  });
+  const template =
+    "Provider Choice Statement and Spreadsheet was signed on ________ by ________________ for ________________.";
+
+  if (!p.hcbs1) p.hcbs1 = template;
+  if (!p.hcbs2) p.hcbs2 = template;
+  if (!p.hcbs3) p.hcbs3 = template;
+  // hcbs4 remains blank for custom input as requested
+
+  renderProgramServices();
 }
+
 function renderProgramServices() {
   const container = document.getElementById("programServicesContainer");
   if (!container) return;
@@ -379,8 +384,9 @@ function renderProgramServices() {
     return;
   }
   container.innerHTML = programServices
-    .map(
-      (p, idx) => `
+    .map((p, idx) => {
+      const isWaiver = /waiver/i.test(p.service) || /waiver/i.test(p.funding);
+      return `
     <div class="legal-rep-card" style="border-left: 3px solid var(--marion-blue); margin-bottom:15px;">
       <div class="rep-header"><span class="rep-title">Waiver / Service #${idx + 1}</span><button class="remove-rep-btn" onclick="removeProgramService(${p.id})">×</button></div>
       <div class="form-grid">
@@ -402,13 +408,47 @@ function renderProgramServices() {
             <option value="Other" ${p.funding === "Other" ? "selected" : ""}>Other</option>
           </select>
         </div>
-        <div class="field-group half" style="display: ${p.funding === 'Other' ? 'block' : 'none'}">
+        <div class="field-group half" style="display: ${p.funding === "Other" ? "block" : "none"}">
           <label>Other Funding Source</label>
-          <input type="text" value="${esc(p.otherFunding || '')}" placeholder="Specify funding..." oninput="updateProgramServiceField(${p.id},'otherFunding',this.value)">
+          <input type="text" value="${esc(p.otherFunding || "")}" placeholder="Specify funding..." oninput="updateProgramServiceField(${p.id},'otherFunding',this.value)">
         </div>
+        <div class="field-group full">
+          <label>Justification / Explanation</label>
+          <textarea style="min-height: 60px;" placeholder="Explain the need for this service..." oninput="updateProgramServiceField(${p.id},'justification',this.value)">${esc(p.justification)}</textarea>
+        </div>
+
+        ${
+          isWaiver
+            ? `
+        <div class="field-group full" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
+          <div style="font-weight: 800; color: var(--gold); margin-bottom: 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">HCBS Waiver Choice & Education</div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">1. How was the individual educated and informed of the options listed in the Medicaid waiver, provider and services choice statement?</label>
+            <textarea style="width: 100%; min-height: 60px;" oninput="updateProgramServiceField(${p.id},'hcbs1',this.value)">${esc(p.hcbs1)}</textarea>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">2. How was the individual educated and informed of the full range of HCBS available to support achievement of personally identified goals?</label>
+            <textarea style="width: 100%; min-height: 60px;" oninput="updateProgramServiceField(${p.id},'hcbs2',this.value)">${esc(p.hcbs2)}</textarea>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">3. Conflict-Free Resolution: Include a method for the individual to request updates to the plan as needed.</label>
+            <textarea style="width: 100%; min-height: 60px;" oninput="updateProgramServiceField(${p.id},'hcbs3',this.value)">${esc(p.hcbs3)}</textarea>
+          </div>
+          
+          <div>
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">4. Discuss the alternative home and community based settings that were considered by the individual.</label>
+            <textarea style="width: 100%; min-height: 60px;" placeholder="Custom input for alternatives considered..." oninput="updateProgramServiceField(${p.id},'hcbs4',this.value)">${esc(p.hcbs4)}</textarea>
+          </div>
+        </div>
+        `
+            : ""
+        }
       </div>
-    </div>`,
-    )
+    </div>`;
+    })
     .join("");
 }
 
@@ -641,10 +681,15 @@ function updateUI() {
   field("Education", getVal("educationStatus"));
   field("School", getVal("schoolName"));
   
-  const empS = [];
-  document.querySelectorAll('#employmentGrid input[type="checkbox"]:checked').forEach(cb => empS.push(cb.value));
-  field("Employment Status", empS.length ? empS.join(", ") : "None Specified");
-  field("Job / Employer", getVal("employmentJob"));
+  if (employmentEntries.length > 0) {
+    line("Employment History / Current Jobs:");
+    employmentEntries.forEach((e, idx) => {
+      const supportedStr = e.isSupported ? " [Supported Employment/Job Coach]" : "";
+      line(`  Job #${idx + 1}: ${e.status} | ${e.jobTitle || "No Title/Employer Provided"}${supportedStr}`);
+    });
+  } else {
+    field("Employment Status", "No jobs listed");
+  }
 
   field("Legal Specifics", getVal("legalSpecify"));
   field("Limited Details", getVal("limitedGuardianshipDetails"));
@@ -736,16 +781,22 @@ function updateUI() {
   if (programServices.length > 0) {
     line("Current Programs & Waivers:");
     programServices.forEach((s, idx) => {
-      const fundDisplay = s.funding === 'Other' ? (s.otherFunding || 'Other') : (s.funding || '—');
+      const fundDisplay = s.funding === "Other" ? s.otherFunding || "Other" : s.funding || "—";
       line(`  [${idx + 1}] Service: ${s.service || "—"} | Provider: ${s.provider || "—"} | Freq: ${s.frequency || "—"} | Funding: ${fundDisplay}`);
+      if (s.justification) {
+        line(`      Justification: ${s.justification}`);
+      }
+      const isWaiver = /waiver/i.test(s.service) || /waiver/i.test(s.funding);
+      if (isWaiver) {
+        line(`      1. Informed of options: ${s.hcbs1 || "—"}`);
+        line(`      2. Informed of range: ${s.hcbs2 || "—"}`);
+        line(`      3. Update method: ${s.hcbs3 || "—"}`);
+        line(`      4. Alternatives considered: ${s.hcbs4 || "—"}`);
+      }
     });
     line("");
   }
-  line("HCBS Waiver Choice & Education:");
-  field("1. Informed of options", getVal("hcbsEducatedOptions"));
-  field("2. Informed of range", getVal("hcbsEducatedRange"));
-  field("3. Update method", getVal("hcbsUpdateMethod"));
-  field("4. Alternatives considered", getVal("hcbsAlternatives"));
+  line("HCBS Choice & Plan Contributors:");
   field("Plan Contributors", getVal("contributors"));
   line("");
 
@@ -1148,6 +1199,65 @@ function renderImportantPeople() {
 }
 
 
+function addEmploymentEntry() {
+  employmentEntries.push({ status: "Part-Time Employed", jobTitle: "", isSupported: false });
+  renderEmploymentEntries();
+  updateUI();
+}
+function removeEmploymentEntry(i) {
+  employmentEntries.splice(i, 1);
+  renderEmploymentEntries();
+  updateUI();
+}
+function updateEmploymentEntry(i, field, value) {
+  employmentEntries[i][field] = value;
+  updateUI();
+}
+function renderEmploymentEntries() {
+  const container = document.getElementById("employmentEntriesContainer");
+  if (!container) return;
+  if (employmentEntries.length === 0) {
+    container.innerHTML = `<p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px">No jobs added. Click below to add one.</p>`;
+    return;
+  }
+  container.innerHTML = employmentEntries.map((e, i) => `
+    <div class="legal-rep-card" style="margin-bottom: 10px; background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span style="font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--gold);">Job / Employment Entry #${i + 1}</span>
+        <button class="remove-rep-btn" onclick="removeEmploymentEntry(${i})">✕</button>
+      </div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Status</label>
+          <select onchange="updateEmploymentEntry(${i}, 'status', this.value)">
+            <option value="Full-Time Employed" ${e.status === 'Full-Time Employed' ? 'selected' : ''}>Full-Time Employed</option>
+            <option value="Part-Time Employed" ${e.status === 'Part-Time Employed' ? 'selected' : ''}>Part-Time Employed</option>
+            <option value="Seasonal Employment" ${e.status === 'Seasonal Employment' ? 'selected' : ''}>Seasonal Employment</option>
+            <option value="Self-Employed" ${e.status === 'Self-Employed' ? 'selected' : ''}>Self-Employed</option>
+            <option value="Workshop" ${e.status === 'Workshop' ? 'selected' : ''}>Workshop</option>
+            <option value="Student / BEST" ${e.status === 'Student / BEST' ? 'selected' : ''}>Student / BEST</option>
+            <option value="Seeking Employment" ${e.status === 'Seeking Employment' ? 'selected' : ''}>Seeking Employment</option>
+            <option value="Day Program / Vocational Training" ${e.status === 'Day Program / Vocational Training' ? 'selected' : ''}>Day Program / Vocational Training</option>
+            <option value="Unemployed — Not Seeking" ${e.status === 'Unemployed — Not Seeking' ? 'selected' : ''}>Unemployed — Not Seeking</option>
+            <option value="Retired" ${e.status === 'Retired' ? 'selected' : ''}>Retired</option>
+            <option value="Student / Not Working" ${e.status === 'Student / Not Working' ? 'selected' : ''}>Student / Not Working</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Job Title / Employer / Description</label>
+          <input type="text" value="${esc(e.jobTitle)}" placeholder="e.g. Dishwasher at Hannibal Diner" oninput="updateEmploymentEntry(${i}, 'jobTitle', this.value)">
+        </div>
+        <div class="field-group" style="justify-content: center;">
+          <label class="eth-check" style="margin-top: 10px; font-size: 11px;">
+            <input type="checkbox" ${e.isSupported ? 'checked' : ''} onchange="updateEmploymentEntry(${i}, 'isSupported', this.checked)">
+            Supported Employment (Job Coach)
+          </label>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
 function addLegalRep() {
   legalReps.push({ name: "", relationship: "", legalType: "Full Guardianship", livesWith: "Yes", phone: "", address: "" });
   renderLegalReps();
@@ -1254,11 +1364,11 @@ function captureFormData() {
     _legalReps: legalReps,
     _commChartRows: commChartRows,
     _importantPeople: importantPeople,
+    _employmentEntries: employmentEntries,
     _coverPhotoData: _coverPhotoData,
     _learningStyles: Array.from(document.querySelectorAll('#learningStyleContainer input[type="checkbox"]:checked')).map(cb => cb.value),
     _healthParams: Array.from(document.querySelectorAll('#healthParamsContainer input[type="checkbox"]:checked')).map(cb => cb.value),
     _communityReferrals: Array.from(document.querySelectorAll('.referral-cb:checked')).map(cb => cb.value),
-    _employmentStatuses: Array.from(document.querySelectorAll('#employmentGrid input[type="checkbox"]:checked')).map(cb => cb.value),
   };
   FORM_FIELDS.forEach((id) => {
     const el = document.getElementById(id);
@@ -1290,6 +1400,7 @@ function restoreFormData(fd) {
   currentSupports = fd._currentSupports || [];
   linkingSupports = fd._linkingSupports || [];
   legalReps = fd._legalReps || [];
+  employmentEntries = fd._employmentEntries || [];
   commChartRows = fd._commChartRows || [];
   importantPeople = fd._importantPeople || [];
   _coverPhotoData = fd._coverPhotoData;
@@ -1305,6 +1416,7 @@ function restoreFormData(fd) {
   renderSupports('current');
   renderSupports('linking');
   renderLegalReps();
+  renderEmploymentEntries();
   renderCommChart();
   renderImportantPeople();
 
@@ -1324,11 +1436,6 @@ function restoreFormData(fd) {
   if (Array.isArray(fd._communityReferrals)) {
     document.querySelectorAll('.referral-cb').forEach(cb => {
       cb.checked = fd._communityReferrals.includes(cb.value);
-    });
-  }
-  if (Array.isArray(fd._employmentStatuses)) {
-    document.querySelectorAll('#employmentGrid input[type="checkbox"]').forEach(cb => {
-      cb.checked = fd._employmentStatuses.includes(cb.value);
     });
   }
 

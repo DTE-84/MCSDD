@@ -447,6 +447,12 @@ textarea {
   font-size: 14px;
   transition: border-color 0.2s;
   font-family: inherit;
+  box-sizing: border-box;
+}
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  width: 100%;
 }
 textarea {
   resize: vertical;
