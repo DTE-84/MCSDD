@@ -568,8 +568,18 @@
               PCSP Assistant
               <span style="font-weight: 300; color: var(--gold)">Pro</span>
             </h1>
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-label); margin-left: 10px; border-left: 1px solid var(--border); padding-left: 10px;">
+              Missouri DMH/DDD Compliance Engine
+            </div>
           </div>
           <div class="btn-bar">
+            <div class="hipaa-badge" style="font-size: 10px; font-weight: 800; color: var(--success); display: flex; align-items: center; gap: 5px; margin-right: 15px; border: 1px solid var(--success); padding: 4px 8px; border-radius: 4px;">
+              <span style="width: 6px; height: 6px; background: var(--success); border-radius: 50%; display: inline-block;"></span>
+              HIPAA SECURE (LOCAL)
+            </div>
+            <button class="btn btn-danger" onclick="wipeSessionData()" title="Wipe all data from browser cache">
+              🗑️ Wipe Data
+            </button>
             <button
               class="btn btn-outline"
               id="themeToggle"
@@ -710,10 +720,7 @@
                 oninput="updateUI()"
               />
             </div>
-            <div class="field-group">
-              <label>Date of Birth</label>
-              <input type="date" id="clientDOB" oninput="updateUI()" />
-            </div>
+            
             <div class="field-group">
               <label>DMH ID #</label>
               <input
@@ -1995,7 +2002,12 @@
               </label>
             </div>
             <div class="field-group full">
-              <label>Home Life / Safety Notes</label>
+              <label>Individualized Backup Plan (Mandatory for Critical Services)</label>
+              <textarea id="backupPlan" placeholder="Identify the backup protocol if a primary service provider is unavailable..." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>Home Life / HCBS Choice Notes</label>
+
               <textarea id="homeLifeNotes" placeholder="Additional details regarding safety and security in the home environment..." oninput="updateUI()"></textarea>
             </div>
           </div>
@@ -2103,11 +2115,14 @@
         </div>
 
        
-        <!-- ---Section 17: Action Plan--->
+        <!-- ---Section 17: Action Plan (MOQO Integrated)--->
          <div class="form-section" id="sec-outcomes">
           <div class="section-title">
-            <span>17</span> Action Plan
+            <span>17</span> Personal Outcomes &amp; Implementation Strategies
           </div>
+          <p style="font-size: 11px; color: var(--text-label); margin-bottom: 15px; font-style: italic;">
+            Aligned with Missouri Quality Outcomes (MOQO) framework. Implementation strategies are mandatory for all waiver-funded services.
+          </p>
           <div id="goalsContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addGoal()" style="margin-top:4px;">
             + Add Action Plan
@@ -2230,6 +2245,16 @@
             anywhere onto this page to open it.
           </p>
         </div>
+
+        <!-- ── Compliance Footer ── -->
+        <footer class="app-footer" style="margin-top: 40px; padding: 40px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-label); font-size: 11px;">
+          <div style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+            <p style="font-weight: 800; color: var(--text-base); margin-bottom: 8px;">PCSP ASSISTANT PRO | VERSION 3.0</p>
+            <p>© 2024-2026 DTE Solutions. All Rights Reserved. Trade Secret & Intellectual Property of Drew.</p>
+            <p style="margin-top: 15px; color: #e07070;"><b>HIPAA NOTICE:</b> This application is a client-side data processor. All data remains in the local browser cache and is never transmitted to external servers. Ensure browser history and cache are cleared when using shared workstations.</p>
+            <p style="margin-top: 10px;">This tool is designed to assist in the drafting of Missouri DMH/DDD Person-Centered Service Plans. Users are responsible for verifying accuracy against current state regulations.</p>
+          </div>
+        </footer>
       </main>
 
       <!-- ── Right Sidebar: Saved Drafts ── -->

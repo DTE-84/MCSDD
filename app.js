@@ -1,6 +1,8 @@
 // ─────────────────────────────────────────────
 //  PCSP Assistant Pro | Marion County DMH
 //  app.js v3.0 — High-Fidelity Revision
+//  © 2024-2026 DTE Solutions. All Rights Reserved.
+//  Trade Secret & Intellectual Property of Drew.
 // ─────────────────────────────────────────────
 
 const APP_NAME = "PCSP Assistant Pro";
@@ -110,6 +112,7 @@ const FORM_FIELDS = [
   "supervisionLevel",
   "riskLevel",
   "oshaPrecaution",
+  "backupPlan",
   "hcbsRule1",
   "hcbsRule2",
   "hcbsRule3",
@@ -835,6 +838,7 @@ function updateUI() {
   field("Supervision Level", getVal("supervisionLevel"));
   field("OSHA Precautions", getVal("oshaPrecaution"));
   field("Risk Level", getVal("riskLevel"));
+  field("Individualized Backup Plan", getVal("backupPlan"));
   
   line("Home Life / HCBS Compliance:");
   line(`  - Rule #1 (Lease): ${document.getElementById("hcbsRule1")?.checked ? "YES" : "NO"}`);
@@ -854,7 +858,7 @@ function updateUI() {
   );
   line("");
 
-  head("17. ACTION PLAN");
+  head("17. PERSONAL OUTCOMES & IMPLEMENTATION STRATEGIES (MOQO)");
   line(
     goalsData
       .map(
@@ -1368,6 +1372,13 @@ function launchApp() {
 document.getElementById("passInput").addEventListener("keydown", (e) => {
   if (e.key === "Enter") checkPass();
 });
+
+function wipeSessionData() {
+  if (confirm("HIPAA SECURITY ALERT: This will permanently wipe all local drafts and session data from this browser. This action cannot be undone. Proceed?")) {
+    localStorage.clear();
+    location.reload();
+  }
+}
 
 // ── EXPORT / IMPORT / PRINT / COPY ──
 function showToast(msg, type = "success") {
