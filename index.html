@@ -800,15 +800,6 @@
               <input type="date" id="clientDOB" oninput="updateUI()" />
             </div>
             <div class="field-group">
-              <label>DMH ID #</label>
-              <input
-                type="text"
-                id="coverDmhID"
-                placeholder="7-digit ID"
-                oninput="updateUI()"
-              />
-            </div>
-            <div class="field-group">
               <label>TCM Agency</label>
               <input
                 type="text"
@@ -1213,30 +1204,23 @@
           <!-- 1K: Employment -->
           <div class="subsection-label">Employment</div>
           <div class="form-grid">
-            <div class="field-group">
-              <label>Employment Status</label>
-              <select id="employmentStatus" onchange="updateUI()">
-                <option value="Full-Time Employed">Full-Time Employed</option>
-                <option value="Part-Time Employed">Part-Time Employed</option>
-                <option value="Seasonal Employment">Seasonal Employment</option>
-                <option value="Self-Employed">Self-Employed</option>
-                <option value="Workshop">Workshop</option>
-                <option value="Student / BEST">Student / BEST</option>
-                <option value="Supported Employment (Job Coach)">
-                  Supported Employment (Job Coach)
-                </option>
-                <option value="Seeking Employment">Seeking Employment</option>
-                <option value="Day Program / Vocational Training">
-                  Day Program / Vocational Training
-                </option>
-                <option value="Unemployed — Not Seeking">
-                  Unemployed — Not Seeking
-                </option>
-                <option value="Retired">Retired</option>
-                <option value="Student / Not Working">
-                  Student / Not Working
-                </option>
-              </select>
+            <div class="field-group full">
+              <label>Employment Status (Select all that apply)</label>
+              <div class="ethnicity-grid" id="employmentGrid">
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Full-Time Employed" onchange="updateUI()" /> Full-Time Employed</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Part-Time Employed" onchange="updateUI()" /> Part-Time Employed</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Seasonal Employment" onchange="updateUI()" /> Seasonal Employment</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Self-Employed" onchange="updateUI()" /> Self-Employed</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Workshop" onchange="updateUI()" /> Workshop</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Student / BEST" onchange="updateUI()" /> Student / BEST</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Supported Employment (Job Coach)" onchange="updateUI()" /> Supported Employment (Job Coach)</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Seeking Employment" onchange="updateUI()" /> Seeking Employment</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Day Program / Vocational Training" onchange="updateUI()" /> Day Program / Vocational Training</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Unemployed — Not Seeking" onchange="updateUI()" /> Unemployed — Not Seeking</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Retired" onchange="updateUI()" /> Retired</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Student / Not Working" onchange="updateUI()" /> Student / Not Working</label>
+                <label class="eth-check"><input type="checkbox" class="employment-cb" value="Multiple Jobs" onchange="updateUI()" /> Multiple Jobs</label>
+              </div>
             </div>
             <div class="field-group half">
               <label>Job Title / Employer / Description</label>

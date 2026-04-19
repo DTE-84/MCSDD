@@ -56,9 +56,7 @@ const FORM_FIELDS = [
   "residenceNotes",
   "schoolName",
   "educationStatus",
-  "employmentStatus",
-  "employmentJob",
-  // Section 2 - Preferences
+  "employmentJob",  // Section 2 - Preferences
   "likesActivities",
   "likesFoods",
   "likesPlaces",
@@ -642,6 +640,12 @@ function updateUI() {
   field("Residency", getVal("residencyType"));
   field("Education", getVal("educationStatus"));
   field("School", getVal("schoolName"));
+  
+  const empS = [];
+  document.querySelectorAll('#employmentGrid input[type="checkbox"]:checked').forEach(cb => empS.push(cb.value));
+  field("Employment Status", empS.length ? empS.join(", ") : "None Specified");
+  field("Job / Employer", getVal("employmentJob"));
+
   field("Legal Specifics", getVal("legalSpecify"));
   field("Limited Details", getVal("limitedGuardianshipDetails"));
   field("Legal Licenses", getVal("legalLicensesProbation"));
@@ -1164,10 +1168,24 @@ function updateRep(i, field, value) {
   }
   updateUI();
 }
+function updateRepAuth(i, cb) {
+  if (!Array.isArray(legalReps[i].legalType)) {
+    // Convert old string format to array if necessary
+    legalReps[i].legalType = legalReps[i].legalType ? [legalReps[i].legalType] : [];
+  }
+  if (cb.checked) {
+    if (!legalReps[i].legalType.includes(cb.value)) {
+      legalReps[i].legalType.push(cb.value);
+    }
+  } else {
+    legalReps[i].legalType = legalReps[i].legalType.filter(a => a !== cb.value);
+  }
+  updateUI();
+}
 function renderLegalReps() {
   const container = document.getElementById("legalRepsContainer");
   if (!container) return;
-  
+
   container.innerHTML = legalReps.map((r, i) => `
     <div class="legal-rep-card">
       <div class="rep-header">
@@ -1183,19 +1201,16 @@ function renderLegalReps() {
           <label>Relationship</label>
           <input type="text" value="${esc(r.relationship)}" placeholder="e.g. Mother, Brother" oninput="updateRep(${i},'relationship',this.value)">
         </div>
-        <div class="field-group">
-          <label>Authority Type</label>
-          <select onchange="updateRep(${i},'legalType',this.value)">
-            <option value="Self / Full Rights" ${r.legalType === 'Self / Full Rights' ? 'selected' : ''}>Self / Full Rights</option>
-            <option value="Full Guardianship" ${r.legalType === 'Full Guardianship' ? 'selected' : ''}>Full Guardianship</option>
-            <option value="Limited Guardianship" ${r.legalType === 'Limited Guardianship' ? 'selected' : ''}>Limited Guardianship</option>
-            <option value="Full Conservatorship" ${r.legalType === 'Full Conservatorship' ? 'selected' : ''}>Full Conservatorship</option>
-            <option value="Limited Conservatorship" ${r.legalType === 'Limited Conservatorship' ? 'selected' : ''}>Limited Conservatorship</option>
-            <option value="Power of Attorney" ${r.legalType === 'Power of Attorney' ? 'selected' : ''}>Power of Attorney</option>
-            <option value="Representative Payee" ${r.legalType === 'Representative Payee' ? 'selected' : ''}>Representative Payee</option>
-            <option value="Physical Custody" ${r.legalType === 'Physical Custody' ? 'selected' : ''}>Physical Custody</option>
-            <option value="Legal Custody" ${r.legalType === 'Legal Custody' ? 'selected' : ''}>Legal Custody</option>
-          </select>
+        <div class="field-group full">
+          <label>Authority Type (Select all that apply)</label>
+          <div class="ethnicity-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            ${['Self / Full Rights', 'Full Guardianship', 'Limited Guardianship', 'Full Conservatorship', 'Limited Conservatorship', 'Power of Attorney', 'Representative Payee', 'Physical Custody', 'Legal Custody'].map(auth => `
+              <label class="eth-check" style="font-size: 10px;">
+                <input type="checkbox" value="${auth}" ${Array.isArray(r.legalType) && r.legalType.includes(auth) ? 'checked' : (r.legalType === auth ? 'checked' : '')} onchange="updateRepAuth(${i}, this)">
+                ${auth}
+              </label>
+            `).join("")}
+          </div>
         </div>
         <div class="field-group">
           <label>Lives with Individual?</label>
@@ -1218,11 +1233,14 @@ function renderLegalReps() {
 }
 function getLegalRepsNarrative() {
   if (!legalReps.length) return "  None on file.";
-  return legalReps.map((rep, i) =>
-    `  Rep #${i + 1}: ${rep.name || "[Name not provided]"} | ${rep.legalType} | Relationship: ${rep.relationship || "N/A"} | Lives with individual: ${rep.livesWith} | Phone: ${rep.phone || "N/A"}${rep.address && rep.livesWith !== "Yes" ? " | Address: " + rep.address : ""}`
-  ).join("\n");
+  return legalReps.map((rep, i) => {
+    const authType = Array.isArray(rep.legalType) ? rep.legalType.join(", ") : (rep.legalType || "N/A");
+    return `  Rep #${i + 1}: ${rep.name || "[Name not provided]"} | ${authType} | Relationship: ${rep.relationship || "N/A"} | Lives with individual: ${rep.livesWith} | Phone: ${rep.phone || "N/A"}${rep.address && rep.livesWith !== "Yes" ? " | Address: " + rep.address : ""}`;
+  }).join("\n");
 }
-function captureLegalReps()   { return JSON.parse(JSON.stringify(legalReps)); }
+function captureLegalReps() {
+  return JSON.parse(JSON.stringify(legalReps));
+}
 function restoreLegalReps(d)  { legalReps = Array.isArray(d) ? d : []; renderLegalReps(); }
 
 // ── PERSISTENCE ──
@@ -1240,6 +1258,7 @@ function captureFormData() {
     _learningStyles: Array.from(document.querySelectorAll('#learningStyleContainer input[type="checkbox"]:checked')).map(cb => cb.value),
     _healthParams: Array.from(document.querySelectorAll('#healthParamsContainer input[type="checkbox"]:checked')).map(cb => cb.value),
     _communityReferrals: Array.from(document.querySelectorAll('.referral-cb:checked')).map(cb => cb.value),
+    _employmentStatuses: Array.from(document.querySelectorAll('#employmentGrid input[type="checkbox"]:checked')).map(cb => cb.value),
   };
   FORM_FIELDS.forEach((id) => {
     const el = document.getElementById(id);
@@ -1305,6 +1324,11 @@ function restoreFormData(fd) {
   if (Array.isArray(fd._communityReferrals)) {
     document.querySelectorAll('.referral-cb').forEach(cb => {
       cb.checked = fd._communityReferrals.includes(cb.value);
+    });
+  }
+  if (Array.isArray(fd._employmentStatuses)) {
+    document.querySelectorAll('#employmentGrid input[type="checkbox"]').forEach(cb => {
+      cb.checked = fd._employmentStatuses.includes(cb.value);
     });
   }
 
