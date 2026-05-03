@@ -23,6 +23,107 @@ let goalsData = []; // Section 9: Action Plan
 let clinicalGoalsTasks = []; // Section 2: Goals/Tasks
 let _coverPhotoData = null;
 
+// ── SECURITY STATE ──
+let _sessionKey = null;
+let _vaultConfig = null; // { salt: base64, challenge: base64 }
+
+const Security = {
+  ITERATIONS: 100000,
+  ALGO: "AES-GCM",
+  KEY_LEN: 256,
+
+  // 1. Derive a 256-bit key from password + salt
+  async deriveKey(password, salt) {
+    const encoder = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(password),
+      "PBKDF2",
+      false,
+      ["deriveBits", "deriveKey"]
+    );
+    return crypto.subtle.deriveKey(
+      {
+        name: "PBKDF2",
+        salt: salt,
+        iterations: this.ITERATIONS,
+        hash: "SHA-256",
+      },
+      keyMaterial,
+      { name: this.ALGO, length: this.KEY_LEN },
+      false,
+      ["encrypt", "decrypt"]
+    );
+  },
+
+  // 2. Encrypt JSON data returning base64 string
+  async encrypt(data, password) {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await this.deriveKey(password, salt);
+    
+    const encoder = new TextEncoder();
+    const encodedData = encoder.encode(JSON.stringify(data));
+    
+    const ciphertext = await crypto.subtle.encrypt(
+      { name: this.ALGO, iv: iv },
+      key,
+      encodedData
+    );
+
+    // Combine: [salt (16)] + [iv (12)] + [ciphertext]
+    const combined = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
+    combined.set(salt, 0);
+    combined.set(iv, salt.length);
+    combined.set(new Uint8Array(ciphertext), salt.length + iv.length);
+    
+    return "PCSPv3:" + btoa(String.fromCharCode(...combined));
+  },
+
+  // 3. Decrypt base64 string returning JSON object
+  async decrypt(encryptedString, password) {
+    if (!encryptedString.startsWith("PCSPv3:")) throw new Error("Invalid encryption signature");
+    
+    const combined = new Uint8Array(
+      atob(encryptedString.replace("PCSPv3:", ""))
+        .split("")
+        .map((c) => c.charCodeAt(0))
+    );
+
+    const salt = combined.slice(0, 16);
+    const iv = combined.slice(16, 28);
+    const ciphertext = combined.slice(28);
+
+    const key = await this.deriveKey(password, salt);
+    
+    try {
+      const decrypted = await crypto.subtle.decrypt(
+        { name: this.ALGO, iv: iv },
+        key,
+        ciphertext
+      );
+      return JSON.parse(new TextDecoder().decode(decrypted));
+    } catch (e) {
+      throw new Error("Decryption failed. Check password integrity.");
+    }
+  },
+
+  // 4. UX Strength Logic
+  getStrength(pass) {
+    if (!pass) return { label: "", color: "" };
+    let score = 0;
+    if (pass.length > 8) score++;
+    if (pass.length > 12) score++;
+    if (/[A-Z]/.test(pass)) score++;
+    if (/[0-9]/.test(pass)) score++;
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+
+    if (score < 3) return { label: "Weak", color: "#ff4d4d" };
+    if (score < 5) return { label: "Medium", color: "#ffd700" };
+    return { label: "Strong", color: "#00ff9d" };
+  }
+};
+
 // ── All form field IDs (used for save/restore) ──
 const FORM_FIELDS = [
   // Section 0 — Cover
@@ -1472,21 +1573,98 @@ function viewDraft(id) {
 }
 
 // ── PASSWORD
-function checkPass() {
-  const val = document.getElementById("passInput").value;
-  const err = document.getElementById("errorMsg");
-  if (val === "MCSDD22") {
-    // Transition to Welcome/README screen instead of app immediately
-    document.getElementById("lockScreen").classList.add("fade-out");
-    setTimeout(() => {
-      document.getElementById("lockScreen").style.display = "none";
-      document.getElementById("welcomeScreen").style.display = "flex";
-    }, 700);
+async function initSecurity() {
+  const config = localStorage.getItem("pcsp_vault_config");
+  const subtitle = document.getElementById("lockSubtitle");
+  const btn = document.getElementById("lockBtn");
+  const passInput = document.getElementById("passInput");
+  const hint = document.getElementById("passStrengthHint");
+
+  if (!config) {
+    subtitle.textContent = "Initialize your unique security vault";
+    btn.textContent = "Initialize Vault";
+    document.getElementById("confirmPassWrap").style.display = "block";
+    passInput.placeholder = "Create master password";
   } else {
-    err.textContent = "Invalid access code. Please try again.";
-    document.getElementById("passInput").value = "";
-    document.getElementById("passInput").focus();
+    _vaultConfig = JSON.parse(config);
+    subtitle.textContent = "Unlock your secure workspace";
+    btn.textContent = "Unlock Vault";
+    document.getElementById("confirmPassWrap").style.display = "none";
+    passInput.placeholder = "Enter master password";
   }
+
+  // Strength hint listener
+  passInput.addEventListener("input", () => {
+    if (!localStorage.getItem("pcsp_vault_config")) {
+      const strength = Security.getStrength(passInput.value);
+      hint.textContent = strength.label ? `Strength: ${strength.label}` : "";
+      hint.style.color = strength.color;
+    } else {
+      hint.textContent = "";
+    }
+  });
+}
+
+async function checkPass() {
+  const pass = document.getElementById("passInput").value;
+  const confirm = document.getElementById("passConfirm").value;
+  const err = document.getElementById("errorMsg");
+  err.textContent = "";
+
+  if (!_vaultConfig) {
+    // Initialization mode
+    if (!pass || pass.length < 8) {
+      err.textContent = "Password must be at least 8 characters.";
+      return;
+    }
+    if (pass !== confirm) {
+      err.textContent = "Passwords do not match.";
+      return;
+    }
+    const strength = Security.getStrength(pass);
+    if (strength.label === "Weak") {
+      err.textContent = "Please choose a stronger password.";
+      return;
+    }
+
+    try {
+      // Create a challenge: encrypt a known string
+      const challengeStr = "vault_verified_2026";
+      const encryptedChallenge = await Security.encrypt({ challenge: challengeStr }, pass);
+      
+      _vaultConfig = { challenge: encryptedChallenge };
+      localStorage.setItem("pcsp_vault_config", JSON.stringify(_vaultConfig));
+      _sessionKey = pass; // Store for this session
+      
+      showToast("Vault initialized successfully!", "success");
+      enterApp();
+    } catch (e) {
+      err.textContent = "Initialization failed: " + e.message;
+    }
+  } else {
+    // Unlock mode
+    try {
+      const decrypted = await Security.decrypt(_vaultConfig.challenge, pass);
+      if (decrypted && decrypted.challenge === "vault_verified_2026") {
+        _sessionKey = pass;
+        enterApp();
+      } else {
+        throw new Error("Invalid password");
+      }
+    } catch (e) {
+      err.textContent = "Incorrect password. Access denied.";
+      document.getElementById("passInput").value = "";
+      document.getElementById("passInput").focus();
+    }
+  }
+}
+
+function enterApp() {
+  document.getElementById("lockScreen").classList.add("fade-out");
+  setTimeout(() => {
+    document.getElementById("lockScreen").style.display = "none";
+    document.getElementById("welcomeScreen").style.display = "flex";
+  }, 700);
 }
 
 function launchApp() {
@@ -1496,12 +1674,14 @@ function launchApp() {
   setTimeout(() => {
     welcome.style.display = "none";
     document.getElementById("appContainer").style.display = "grid";
-    init(); // Ensure UI is fresh
   }, 500);
 }
 
 document.getElementById("passInput").addEventListener("keydown", (e) => {
   if (e.key === "Enter") checkPass();
+});
+document.body.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && document.getElementById("passConfirm") === document.activeElement) checkPass();
 });
 
 function wipeSessionData() {
@@ -1553,10 +1733,23 @@ function scrollToSection(id) {
   }
 }
 
-function exportPCSP() {
+async function exportPCSP() {
   const data = captureFormData();
-  const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: "application/json" });
+  let output;
+  
+  if (_sessionKey) {
+    try {
+      showToast("Encrypting data...", "success");
+      output = await Security.encrypt(data, _sessionKey);
+    } catch (e) {
+      console.error("Encryption failed:", e);
+      output = JSON.stringify(data, null, 2);
+    }
+  } else {
+    output = JSON.stringify(data, null, 2);
+  }
+
+  const blob = new Blob([output], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
@@ -1577,22 +1770,57 @@ function exportPCSP() {
   showToast("Exported .pcsp successfully!", "success");
 }
 
-function importPCSP(event) {
+async function importPCSP(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function (e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      restoreFormData(data);
-      showToast("Loaded .pcsp successfully!", "success");
-    } catch (err) {
-      showToast("Invalid .pcsp file. Could not parse data.", "error");
-    }
-    // reset input so same file can be loaded again if needed
+  reader.onload = async function (e) {
+    await processPcspContent(e.target.result);
     event.target.value = "";
   };
   reader.readAsText(file);
+}
+
+async function processPcspContent(content) {
+  try {
+    let data;
+    if (content.trim().startsWith("PCSPv3:")) {
+      data = await attemptDecryption(content.trim());
+    } else {
+      // Legacy unencrypted JSON
+      data = JSON.parse(content);
+    }
+
+    if (data) {
+      restoreFormData(data);
+      showToast("Loaded .pcsp successfully!", "success");
+    }
+  } catch (err) {
+    console.error("Import Error:", err);
+    showToast("Invalid .pcsp file or incorrect password.", "error");
+  }
+}
+
+async function attemptDecryption(encryptedString) {
+  // 1. Try session key first
+  if (_sessionKey) {
+    try {
+      return await Security.decrypt(encryptedString, _sessionKey);
+    } catch (e) {
+      // Fall through to manual prompt
+    }
+  }
+
+  // 2. Multi-user prompt
+  const pass = prompt("Vault Lock Detected. Enter the password for this specific .pcsp file:");
+  if (pass === null) return null; // User cancelled
+
+  try {
+    return await Security.decrypt(encryptedString, pass);
+  } catch (e) {
+    alert("Decryption failed. The password provided does not match this file's vault signature.");
+    return await attemptDecryption(encryptedString); // Recurse for retry
+  }
 }
 
 // ── DRAG AND DROP HANDLING ──
@@ -1601,7 +1829,7 @@ document.addEventListener("dragover", (e) => {
   e.stopPropagation();
 });
 
-document.addEventListener("drop", (e) => {
+document.addEventListener("drop", async (e) => {
   e.preventDefault();
   e.stopPropagation();
 
@@ -1609,14 +1837,8 @@ document.addEventListener("drop", (e) => {
     const file = e.dataTransfer.files[0];
     if (file.name.endsWith(".pcsp") || file.name.endsWith(".json")) {
       const reader = new FileReader();
-      reader.onload = function (evt) {
-        try {
-          const data = JSON.parse(evt.target.result);
-          restoreFormData(data);
-          showToast("Loaded .pcsp from drag-and-drop!", "success");
-        } catch (err) {
-          showToast("Invalid .pcsp file format.", "error");
-        }
+      reader.onload = async function (evt) {
+        await processPcspContent(evt.target.result);
       };
       reader.readAsText(file);
     }
@@ -1625,6 +1847,7 @@ document.addEventListener("drop", (e) => {
 
 // ── BOOT ──
 function init() {
+  initSecurity();
   renderHistory();
   renderGoalTasks();
   renderGoals();

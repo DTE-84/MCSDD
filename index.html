@@ -261,7 +261,8 @@
       </div>
 
       <h1>MCSDD Employee Portal</h1>
-      <p class="subtitle">Marion County · Developmental Services</p>
+      <p class="subtitle" id="lockSubtitle">Marion County · Developmental Services</p>
+      
       <div class="field-wrap">
         <input
           type="password"
@@ -270,8 +271,21 @@
           autocomplete="off"
         />
       </div>
+
+      <div id="confirmPassWrap" style="display: none;">
+        <div class="field-wrap">
+          <input
+            type="password"
+            id="passConfirm"
+            placeholder="Confirm password"
+            autocomplete="off"
+          />
+        </div>
+        <div id="passStrengthHint" style="font-size: 11px; margin-bottom: 12px; color: #8a8fa8; text-align: left; padding-left: 10px;"></div>
+      </div>
+
       <div id="errorMsg"></div>
-      <button class="btn-primary" onclick="checkPass()">Access Portal</button>
+      <button class="btn-primary" id="lockBtn" onclick="checkPass()">Access Portal</button>
       <div class="lock-footer">
         Authorized personnel only &nbsp;·&nbsp; MCSDD 2024
       </div>
