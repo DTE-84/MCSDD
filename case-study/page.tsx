@@ -42,15 +42,22 @@ export default function CaseStudyPCSP() {
   ];
 
   const domains = [
-    { num: "01", label: "Demographics & Legal" },
-    { num: "02", label: "Communication Profile" },
-    { num: "03", label: "Likes & Dislikes" },
+    { num: "01", label: "Demographics, Contributors & Legal" },
+    { num: "02", label: "Preferences, Likes & Special Interests" },
+    { num: "03", label: "Dislikes" },
     { num: "04", label: "Important People" },
-    { num: "05", label: "Vision for a Good Life" },
-    { num: "06", label: "Health, Safety & Risk" },
-    { num: "07", label: "Legal Rights & Satisfaction" },
-    { num: "08", label: "Contributors & Admin" },
-    { num: "09", label: "Measurable Outcomes" },
+    { num: "05", label: "Hopes, Dreams & Aspirations" },
+    { num: "06", label: "Communication" },
+    { num: "07", label: "Program & Other Services" },
+    { num: "08", label: "Health, Safety & Risk Planning" },
+    { num: "09", label: "Community & Natural Supports" },
+    { num: "10", label: "Ways to Support the Individual" },
+    { num: "12", label: "Independence, Strengths & Assets" },
+    { num: "13", label: "Transition — Youth / Adult / Community" },
+    { num: "14", label: "Behavioral (Legacy)" },
+    { num: "15", label: "Supervision" },
+    { num: "16", label: "Previous & Current Goals" },
+    { num: "17", label: "Action Plan" },
   ];
 
   const impactRows = [
@@ -121,7 +128,7 @@ export default function CaseStudyPCSP() {
     {
       icon: "solar:widget-add-linear",
       title: "Modular Builder",
-      body: "A dropdown-driven building block approach converts casual goal language into standardized SMART goals instantly. Each of the nine PCSP sections is self-contained and collapses cleanly for focused drafting.",
+      body: "A dropdown-driven building block approach converts casual goal language into standardized SMART goals instantly. Each of the sixteen PCSP sections is self-contained and collapses cleanly for focused drafting.",
     },
     {
       icon: "solar:library-linear",
@@ -176,7 +183,7 @@ export default function CaseStudyPCSP() {
     {
       num: "01",
       title: "Regulatory Discovery",
-      body: 'Before writing a line of code, I conducted a full read of Missouri 9 CSR 45-3.010 and the "Good Life" Framework to map every required clinical trigger. The nine-domain PCSP structure, active treatment language requirements, and HCBS federal compliance rules all had to be baked into the logic before the UI could be designed. The first challenge was regulatory, not technical.',
+      body: 'Before writing a line of code, I conducted a full read of Missouri 9 CSR 45-3.010 and the "Good Life" Framework to map every required clinical trigger. The sixteen-section PCSP structure, active treatment language requirements, and HCBS federal compliance rules all had to be baked into the logic before the UI could be designed. The first challenge was regulatory, not technical.',
     },
     {
       num: "02",
@@ -377,7 +384,7 @@ export default function CaseStudyPCSP() {
                 </p>
               </div>
               <p className="text-base text-white/70 leading-relaxed">
-                Each Person Centered Service Plan required documenting nine clinical domains with precision. Missouri state auditors require specific active language structures —{" "}
+                Each Person Centered Service Plan required documenting sixteen clinical sections with precision. Missouri state auditors require specific active language structures —{" "}
                 <em className="text-[#00ffcc]">
                   &quot;Staff will provide instructional support to learn how to use the AAC device&quot;
                 </em>{" "}
@@ -470,8 +477,8 @@ export default function CaseStudyPCSP() {
                   servers. No POST requests. No IT tickets. No licensing cost.
                 </p>
                 <p className="text-base text-white/70 leading-relaxed">
-                  The interface covers all nine PCSP domains in a single unified
-                  workspace, from demographics to measurable outcomes — with a
+                  The interface covers all sixteen PCSP sections in a single unified
+                  workspace, from demographics to the action plan — with a
                   clinical word bank, a dynamic communication chart, an
                   unlimited important-people roster, and a multi-goal outcomes
                   engine baked directly into the logic.
@@ -595,7 +602,7 @@ export default function CaseStudyPCSP() {
               {/* 9 Domains */}
               <div className="p-6 rounded-xl border border-[#00ffcc]/20 bg-white/5">
                 <h4 className="text-[#00ffcc] text-[13px] font-black uppercase tracking-widest mb-6 font-orbitron">
-                  Full Section Architecture — 9 PCSP Domains
+                  Full Section Architecture — 16 PCSP Sections
                 </h4>
                 <div className="grid md:grid-cols-3 gap-3">
                   {domains.map(({ num, label }) => (
