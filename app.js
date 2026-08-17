@@ -210,9 +210,14 @@ const FORM_FIELDS = [
   "riskLevel",
   "oshaPrecaution",
   "backupPlan",
-  "hcbsRule1",
-  "hcbsRule2",
-  "hcbsRule3",
+  "staffSupportNeeds",
+  "needsEmergencyAssistance",
+  "emergencyAssistanceDetails",
+  "leaseDateRenew",
+  "leaseLocation",
+  "hcbsRule1Choice",
+  "hcbsRule2Privacy",
+  "hcbsRule3Support",
   "homeLifeNotes",
   // Section 18 - Comments & Clinical Summary
   "lastAssessment",
@@ -900,6 +905,7 @@ function updateUI() {
   }
   line("HCBS Choice & Plan Contributors:");
   field("Plan Contributors", getVal("contributors"));
+  field("Individualized Backup Plan", getVal("backupPlan"));
   line("");
 
   head("8. MEDICAL");
@@ -994,15 +1000,24 @@ function updateUI() {
 
   head("15. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
   field("Supervision Level", getVal("supervisionLevel"));
-  field("OSHA Precautions", getVal("oshaPrecaution"));
+  field("Staff Precautions", getVal("oshaPrecaution"));
+  field("Staff Support Needs", getVal("staffSupportNeeds"));
   field("Risk Level", getVal("riskLevel"));
-  field("Individualized Backup Plan", getVal("backupPlan"));
-  
+
+  if (document.getElementById("needsEmergencyAssistance")?.checked) {
+    line("Emergency Safety / Home Dangers Assistance:");
+    field("  - Additional Info", getVal("emergencyAssistanceDetails"));
+  }
+
+  line("Lease / Agreement Info:");
+  field("  - Last date of lease / renewed", getVal("leaseDateRenew"));
+  field("  - Document location", getVal("leaseLocation"));
+
   line("Home Life / HCBS Compliance:");
-  line(`  - Rule #1 (Lease): ${document.getElementById("hcbsRule1")?.checked ? "YES" : "NO"}`);
-  line(`  - Rule #2 (Privacy/Locks): ${document.getElementById("hcbsRule2")?.checked ? "YES" : "NO"}`);
-  line(`  - Rule #3 (Freedom to Furnish): ${document.getElementById("hcbsRule3")?.checked ? "YES" : "NO"}`);
-  field("Home Life Notes", getVal("homeLifeNotes"));
+  field("  - Rule #1 (Choice)", getVal("hcbsRule1Choice"));
+  field("  - Rule #2 (Privacy)", getVal("hcbsRule2Privacy"));
+  field("  - Rule #3 (Support)", getVal("hcbsRule3Support"));
+  field("  - Home Life Notes", getVal("homeLifeNotes"));
   line("");
 
   head("16. PREVIOUS GOALS");

@@ -1549,10 +1549,13 @@
             + Add Waiver / Service
           </button>
 
-          <div class="subsection-label">HCBS Waiver Choice &amp; Education</div>
+          <div class="subsection-label">HCBS Waiver Choice &amp; Education / Backup Plan</div>
           <div class="form-grid">
-          
-
+            <div class="field-group full">
+              <label>Individualized Backup Plan (Mandatory for Critical Services)</label>
+              <textarea id="backupPlan" placeholder="Identify the backup protocol if a primary service provider is unavailable..." oninput="updateUI()"></textarea>
+            </div>
+          </div>
         </div>
         <!--Section 8: Medical Profile -->
         <div class="form-section" id="sec-health">
@@ -1690,13 +1693,17 @@
               </select>
             </div>
             <div class="field-group">
-              <label>Staff Precaution (OSHA 3148)</label>
+              <label>Staff Precautions</label>
               <select id="oshaPrecaution" onchange="updateUI()">
                 <option value="Standard universal precautions apply.">Standard Precautions</option>
                 <option value="Two-staff escort required for community.">2-Staff Escort Protocol</option>
                 <option value="Staff to maintain clear path to exit.">Environmental Awareness</option>
                 <option value="Utilize de-escalation (Mandt/NCI).">De-escalation Protocol</option>
               </select>
+            </div>
+            <div class="field-group full">
+              <label>Staff Support Needs (Choking, Aspiration, Mobility, Falls, etc.)</label>
+              <textarea id="staffSupportNeeds" placeholder="Describe support needs for choking, aspiration, mobility, falls, etc." oninput="updateUI()"></textarea>
             </div>
             <div class="field-group full">
               <label>Allergies / Sensitivities</label>
@@ -1908,7 +1915,7 @@
           <div class="section-title"><span>15</span> Supervision(housing) (safety and security)</div>
           <div class="form-grid">
             <div class="field-group">
-              <label>Supervision Level</label>
+              <label>Supervision Level (Covers Housing &amp; Community)</label>
               <select id="supervisionLevel" onchange="updateUI()">
                 <option value="Standard">Standard</option>
                 <option value="Line of Sight">Line of Sight</option>
@@ -1930,33 +1937,48 @@
           </div>
 
           <!-- Home Life Sub-section -->
+          <div class="subsection-label" style="margin-top: 24px;">Emergency Safety / Home Dangers</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <input type="checkbox" id="needsEmergencyAssistance" onchange="toggleEmergencyAssistance()"> 
+                Needs assistance for Emergency Safety / Home Dangers
+              </label>
+            </div>
+            <div class="field-group full" id="emergencyAssistanceDetailsWrapper" style="display: none;">
+              <label>Additional Information for Emergency Assistance</label>
+              <textarea id="emergencyAssistanceDetails" oninput="updateUI()"></textarea>
+            </div>
+          </div>
+
+          <div class="subsection-label" style="margin-top: 24px;">Lease / Agreement Info</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Last date of lease and how often renewed</label>
+              <input type="text" id="leaseDateRenew" oninput="updateUI()">
+            </div>
+            <div class="field-group full">
+              <label>Where can the document be found?</label>
+              <input type="text" id="leaseLocation" oninput="updateUI()">
+            </div>
+          </div>
+
           <div class="subsection-label" style="margin-top: 24px;">Home Life (HCBS Compliance)</div>
           <div class="form-grid">
-             <div class="field-group full">
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500;">
-                <input type="checkbox" id="hcbsRule1" onchange="updateUI()"> 
-                HCBS RULE #1: Individual has a lease or legally enforceable agreement.
-              </label>
+            <div class="field-group full">
+              <label>HCBS Rule #1 (House / Community): Did the person choose their current living arrangement? How is this known? If not, why not?</label>
+              <textarea id="hcbsRule1Choice" oninput="updateUI()"></textarea>
             </div>
             <div class="field-group full">
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500;">
-                <input type="checkbox" id="hcbsRule2" onchange="updateUI()"> 
-                HCBS RULE #2: Individual has privacy in their sleeping or living unit (locks).
-              </label>
+              <label>HCBS Rule #2 (House / Community): Does the person have privacy (share a room, etc)?</label>
+              <textarea id="hcbsRule2Privacy" oninput="updateUI()"></textarea>
             </div>
             <div class="field-group full">
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500;">
-                <input type="checkbox" id="hcbsRule3" onchange="updateUI()"> 
-                HCBS RULE #3: Individual has freedom to furnish and decorate their unit.
-              </label>
-            </div>
-            <div class="field-group full">
-              <label>Individualized Backup Plan (Mandatory for Critical Services)</label>
-              <textarea id="backupPlan" placeholder="Identify the backup protocol if a primary service provider is unavailable..." oninput="updateUI()"></textarea>
+              <label>HCBS Rule #3 (House / Community): Does the home provide the support needed for the individual - how or why not? *Base off of individual need and preference</label>
+              <textarea id="hcbsRule3Support" oninput="updateUI()"></textarea>
             </div>
             <div class="field-group full">
               <label>Home Life / HCBS Choice Notes</label>
-
               <textarea id="homeLifeNotes" placeholder="Additional details regarding safety and security in the home environment..." oninput="updateUI()"></textarea>
             </div>
           </div>
@@ -2214,6 +2236,21 @@
     </div>
 
     <div id="toast" class="toast"></div>
+    <script>
+      function toggleEmergencyAssistance() {
+        const cb = document.getElementById('needsEmergencyAssistance');
+        const wrap = document.getElementById('emergencyAssistanceDetailsWrapper');
+        if (cb && wrap) {
+          if (cb.checked) {
+            wrap.style.display = 'block';
+          } else {
+            wrap.style.display = 'none';
+            document.getElementById('emergencyAssistanceDetails').value = '';
+          }
+          if (typeof updateUI === 'function') updateUI();
+        }
+      }
+    </script>
     <script src="app.js"></script>
   </body>
 </html>
