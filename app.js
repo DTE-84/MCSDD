@@ -204,6 +204,7 @@ const FORM_FIELDS = [
   // Section 14 - Behavioral
   "behavioralStatus",
   "psychotropicProtocol",
+  "behavioralNotes",
   // Section 15 - Supervision
   "supervisionLevel",
   "riskLevel",
@@ -988,6 +989,7 @@ function updateUI() {
   head("14. BEHAVIORAL");
   field("Behavioral Status", getVal("behavioralStatus"));
   field("Psychotropic Protocol", getVal("psychotropicProtocol"));
+  field("Behavioral Notes", getVal("behavioralNotes"));
   line("");
 
   head("15. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
