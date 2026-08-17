@@ -1730,6 +1730,20 @@ function scrollToSection(id) {
     setTimeout(() => {
       el.classList.remove('section-highlight');
     }, 2000);
+    
+    // Auto-close sidebar on mobile after selection
+    if (window.innerWidth <= 1024) {
+      document.body.classList.remove('sidebar-active');
+    }
+  }
+}
+
+function toggleSidebar() {
+  // Mobile uses body class, desktop toggles the grid container
+  if (window.innerWidth <= 1024) {
+    document.body.classList.toggle('sidebar-active');
+  } else {
+    document.getElementById('appContainer').classList.toggle('sidebar-collapsed');
   }
 }
 
