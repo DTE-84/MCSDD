@@ -2170,7 +2170,7 @@
 
                 <div class="field-group full">
                   <label>Surveys</label>
-                  <label class="eth-check"><input type="checkbox" id="tcsmSatisfactionSurvey" onchange="updateUI()"> TCSM Satisfaction Survey Completed</label>
+                  <label class="eth-check"><input type="checkbox" id="tcsmSatisfactionSurvey" onchange="updateUI()"> TCM Satisfaction Survey Completed</label>
                 </div>
                 
                 <div class="field-group full">
@@ -2181,7 +2181,7 @@
               </div>
             </div>
             <div class="field-group full">
-              <label>LOC Limitations / Categories</label>
+              <label>Assessments</label>
               <div class="ethnicity-grid">
                 <label class="eth-check"><input type="checkbox" id="locSelfCare" onchange="updateUI()"> Self Care</label>
                 <label class="eth-check"><input type="checkbox" id="locLearning" onchange="updateUI()"> Learning</label>
@@ -2191,6 +2191,28 @@
                 <label class="eth-check"><input type="checkbox" id="locMobility" onchange="updateUI()"> Mobility</label>
               </div>
             </div>
+
+            <div class="field-group full" style="margin-top: 5px;">
+              <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <label class="eth-check" style="min-width:80px;"><input type="checkbox" id="evalVineland" onchange="updateUI()"> Vineland</label>
+                  <input type="date" id="evalVinelandDate" oninput="updateUI()" style="width: 150px;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <label class="eth-check" style="min-width:80px;"><input type="checkbox" id="evalAbas" onchange="updateUI()"> ABAS-3</label>
+                  <input type="date" id="evalAbasDate" oninput="updateUI()" style="width: 150px;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <label class="eth-check" style="min-width:80px;"><input type="checkbox" id="evalMocabi" onchange="updateUI()"> MOCABI</label>
+                  <input type="date" id="evalMocabiDate" oninput="updateUI()" style="width: 150px;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <label class="eth-check" style="min-width:60px;"><input type="checkbox" id="evalOther" onchange="updateUI()"> Other</label>
+                  <input type="text" id="evalOtherText" placeholder="Specify..." oninput="updateUI()" style="width: 100px;">
+                  <input type="date" id="evalOtherDate" oninput="updateUI()" style="width: 150px;">
+                </div>
+              </div>
+            </div>
             <div class="field-group">
               <label>Last LOC Date</label>
               <input type="date" id="lastLOC" oninput="updateUI()" />
@@ -2198,7 +2220,7 @@
             <div class="field-group">
               <label>Individual has Choices?</label>
               <div style="display:flex; align-items:center; height:100%; margin-top: -6px;">
-                <label class="eth-check"><input type="checkbox" id="hasChoices" onchange="updateUI()"> Yes, Choices provided</label>
+                <label class="eth-check"><input type="checkbox" id="hasChoices" onchange="updateUI()"> Yes, Choices</label>
               </div>
             </div>
             <div class="field-group full">
@@ -2223,6 +2245,21 @@
             <div class="field-group">
               <label>Burial Savings Plan</label>
               <input type="text" id="burialSavingsPlan" oninput="updateUI()" />
+            </div>
+
+            <div class="field-group full" style="border-top: 1px solid var(--border); padding-top: 15px; margin-top: 5px;">
+              <label>Meeting Format</label>
+              <select id="meetingFormat" onchange="updateUI()">
+                <option value="In Person">In Person</option>
+                <option value="Remote / Virtual">Remote / Virtual</option>
+                <option value="Hybrid">Hybrid (Mixed)</option>
+              </select>
+            </div>
+
+            <div class="field-group full">
+              <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px;">Meeting Attendees & Contributions</div>
+              <div id="attendeesContainer"></div>
+              <button class="btn btn-outline" type="button" onclick="addAttendee()" style="margin-top: 8px; margin-bottom: 10px;">+ Add Attendee</button>
             </div>
             <div class="field-group full" style="display:flex; justify-content:center; border-top: 1px dashed var(--border); padding-top:15px; margin-top:10px;">
               <label class="eth-check" style="font-size:14px;"><input type="checkbox" id="attachmentsIncluded" onchange="updateUI()"> Attachments Included</label>

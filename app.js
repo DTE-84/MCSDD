@@ -22,6 +22,7 @@ let linkingSupports = []; // Section 9: Linking Services
 let goalsData = []; // Section 9: Action Plan
 let clinicalGoalsTasks = []; // Section 2: Goals/Tasks
 let dueProcessItems = []; // Section 15: Due Process
+let meetingAttendees = []; // Section 18: Meeting Attendees
 let _coverPhotoData = null;
 
 // ── SECURITY STATE ──
@@ -249,10 +250,20 @@ const FORM_FIELDS = [
   "locLanguage",
   "locMobility",
   "locOtherDomains",
+  "evalVineland",
+  "evalVinelandDate",
+  "evalAbas",
+  "evalAbasDate",
+  "evalMocabi",
+  "evalMocabiDate",
+  "evalOther",
+  "evalOtherText",
+  "evalOtherDate",
   "burialPlanBurial",
   "burialPlanCremation",
   "burialFinancialAllocations",
   "burialSavingsPlan",
+  "meetingFormat",
   "prevGoals",
   "supportNeeded",
   "strengths",
@@ -1133,8 +1144,19 @@ function updateUI() {
   if (document.getElementById("locMobility")?.checked) locList.push("Mobility");
   const otherDomains = getVal("locOtherDomains");
   
-  field("LOC Limitations", locList.length ? locList.join(", ") : "None Selected");
+  field("Assessments", locList.length ? locList.join(", ") : "None Selected");
   if (otherDomains) field("Other Domains", otherDomains);
+  
+  let evals = [];
+  if (document.getElementById("evalVineland")?.checked) evals.push(`Vineland (${getVal("evalVinelandDate") || "No Date"})`);
+  if (document.getElementById("evalAbas")?.checked) evals.push(`ABAS-3 (${getVal("evalAbasDate") || "No Date"})`);
+  if (document.getElementById("evalMocabi")?.checked) evals.push(`MOCABI (${getVal("evalMocabiDate") || "No Date"})`);
+  if (document.getElementById("evalOther")?.checked) evals.push(`Other: ${getVal("evalOtherText")} (${getVal("evalOtherDate") || "No Date"})`);
+  
+  if (evals.length > 0) {
+    field("Evaluations Completed", evals.join(" | "));
+  }
+
   field("Last LOC Date", getVal("lastLOC"));
   
   const hasChoices = document.getElementById("hasChoices")?.checked ? "Yes" : "No";
@@ -1150,7 +1172,7 @@ function updateUI() {
   const sdsAw = document.getElementById("sdsAwareness")?.checked ? "Yes" : "No";
   const sdsInt = getVal("sdsInterest");
   field("Individual/Guardian aware of SDS", sdsInt ? `${sdsAw} (Interest: ${sdsInt})` : sdsAw);
-  field("TCSM Satisfaction Survey", document.getElementById("tcsmSatisfactionSurvey")?.checked ? "Completed/Addressed" : "No");
+  field("TCM Satisfaction Survey", document.getElementById("tcsmSatisfactionSurvey")?.checked ? "Completed/Addressed" : "No");
   
   line("");
   line("If there are concerns with services or support provided by the support coordinator, they may contact the TCM assistant supervisor, Barb Van Abbema, at 573-248-1077 ext. 111, the TCM supervisor, Mahogany Wallis, at 573-248-1077 ext 102 or the SB40 executive director, Cathy Arrowsmith, at 573-248-1077 ext. 104.");
@@ -1166,6 +1188,18 @@ function updateUI() {
   field("Burial Plan", burialOpt.length ? burialOpt.join(" / ") : "None specified");
   field("Burial Financial Allocations", getVal("burialFinancialAllocations"));
   field("Burial Savings Plan", getVal("burialSavingsPlan"));
+
+  line("");
+  field("Meeting Format", getVal("meetingFormat"));
+  if (meetingAttendees.length > 0) {
+    line("Meeting Attendees & Contributions:");
+    meetingAttendees.forEach((a, idx) => {
+      line(`  ${idx + 1}. ${a.name || "[Name]"} | Role: ${a.role || "[Role]"}`);
+      if (a.contribution) line(`     Contribution: ${a.contribution}`);
+    });
+  } else {
+    line("Meeting Attendees: None documented.");
+  }
 
   line("");
   if (document.getElementById("attachmentsIncluded")?.checked) {
@@ -1439,6 +1473,53 @@ function renderDueProcess() {
   });
 }
 
+// ── SECTION 18: ATTENDEES ──
+function addAttendee() {
+  meetingAttendees.push({ name: "", role: "", contribution: "" });
+  renderAttendees();
+  updateUI();
+}
+
+function removeAttendee(idx) {
+  meetingAttendees.splice(idx, 1);
+  renderAttendees();
+  updateUI();
+}
+
+function renderAttendees() {
+  const container = document.getElementById("attendeesContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  meetingAttendees.forEach((a, idx) => {
+    const div = document.createElement("div");
+    div.style.background = "var(--bg-light, #f8f9fa)";
+    div.style.border = "1px solid var(--border, #ddd)";
+    div.style.borderRadius = "8px";
+    div.style.padding = "12px 14px";
+    div.style.marginBottom = "10px";
+    div.style.position = "relative";
+    
+    div.innerHTML = `
+      <button class="remove-rep-btn" type="button" onclick="removeAttendee(${idx})" title="Remove" style="position: absolute; right: 10px; top: 10px;">✕</button>
+      <div class="form-grid" style="margin-top: 10px;">
+        <div class="field-group">
+          <label>Name</label>
+          <input type="text" placeholder="Attendee Name" value="${a.name}" oninput="meetingAttendees[${idx}].name = this.value; updateUI()">
+        </div>
+        <div class="field-group">
+          <label>Role</label>
+          <input type="text" placeholder="Role (e.g. Individual, SC, Guardian)" value="${a.role}" oninput="meetingAttendees[${idx}].role = this.value; updateUI()">
+        </div>
+        <div class="field-group full">
+          <label>Contributions to the Meeting</label>
+          <textarea placeholder="Describe what they added/discussed during the meeting..." oninput="meetingAttendees[${idx}].contribution = this.value; updateUI()">${a.contribution}</textarea>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
 // (Duplicate Funding removed - using the one below)
 
 function restoreFundingVisuals() {
@@ -1671,6 +1752,7 @@ function captureFormData() {
     _importantPeople: importantPeople,
     _employmentEntries: employmentEntries,
     _dueProcessItems: dueProcessItems,
+    _meetingAttendees: meetingAttendees,
     _coverPhotoData: _coverPhotoData,
     _learningStyles: Array.from(document.querySelectorAll('#learningStyleContainer input[type="checkbox"]:checked')).map(cb => cb.value),
     _healthParams: Array.from(document.querySelectorAll('#healthParamsContainer input[type="checkbox"]:checked')).map(cb => cb.value),
@@ -1710,6 +1792,7 @@ function restoreFormData(fd) {
   commChartRows = fd._commChartRows || [];
   importantPeople = fd._importantPeople || [];
   dueProcessItems = fd._dueProcessItems || [];
+  meetingAttendees = fd._meetingAttendees || [];
   _coverPhotoData = fd._coverPhotoData;
   if (_coverPhotoData) {
     document.getElementById("coverPhoto").src = _coverPhotoData;
@@ -1727,6 +1810,7 @@ function restoreFormData(fd) {
   renderCommChart();
   renderImportantPeople();
   renderDueProcess();
+  if (typeof renderAttendees === 'function') renderAttendees();
   if (document.getElementById("dueProcessNA")) {
     toggleDueProcess(document.getElementById("dueProcessNA"));
   }
