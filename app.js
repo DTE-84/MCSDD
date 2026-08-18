@@ -556,31 +556,25 @@ function renderProgramServices() {
       <div style="font-weight: 700; color: var(--text-base); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">Program Definition & Payer Source</div>
       <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
         <div class="field-group">
-          <label>Waiver / Program Type</label>
-          <input type="text" placeholder="e.g. 1915(c) Comprehensive Waiver" value="${esc(p.waiverType)}" oninput="updateProgramServiceField(${p.id},'waiverType',this.value)">
-        </div>
-        <div class="field-group">
-          <label>Payer Source</label>
+          <label>Payer Source / Program Type</label>
           <select onchange="updateProgramServiceField(${p.id},'payerSource',this.value)">
             <option value="">Select Funding Source...</option>
-            <option value="Federal Waiver" ${p.payerSource === "Federal Waiver" ? "selected" : ""}>Federal Waiver</option>
+            <option value="Comprehensive Waiver" ${p.payerSource === "Comprehensive Waiver" ? "selected" : ""}>Comprehensive Waiver</option>
+            <option value="Support Waiver" ${p.payerSource === "Support Waiver" ? "selected" : ""}>Support Waiver</option>
+            <option value="Partnership for Hope Waiver" ${p.payerSource === "Partnership for Hope Waiver" ? "selected" : ""}>Partnership for Hope Waiver</option>
+            <option value="Sarah Lopez Waiver (MOCDD)" ${p.payerSource === "Sarah Lopez Waiver (MOCDD)" ? "selected" : ""}>Sarah Lopez Waiver (MOCDD)</option>
             <option value="State Plan Medicaid" ${p.payerSource === "State Plan Medicaid" ? "selected" : ""}>State Plan Medicaid</option>
             <option value="State General Revenue" ${p.payerSource === "State General Revenue" ? "selected" : ""}>State General Revenue</option>
             <option value="Private / MCO Insurance" ${p.payerSource === "Private / MCO Insurance" ? "selected" : ""}>Private / MCO Insurance</option>
+            <option value="Grant Funding" ${p.payerSource === "Grant Funding" ? "selected" : ""}>Grant Funding</option>
+            <option value="PAC Funding" ${p.payerSource === "PAC Funding" ? "selected" : ""}>PAC Funding</option>
+            <option value="NEAI Funding" ${p.payerSource === "NEAI Funding" ? "selected" : ""}>NEAI Funding</option>
             <option value="Other" ${p.payerSource === "Other" ? "selected" : ""}>Other</option>
           </select>
         </div>
         <div class="field-group">
           <label>Managed Care Org (MCO) / Plan Network ID</label>
           <input type="text" placeholder="e.g. UnitedHealthcare Community Plan" value="${esc(p.mco)}" oninput="updateProgramServiceField(${p.id},'mco',this.value)">
-        </div>
-        <div class="field-group">
-          <label>Cost Cap Restrictions (Max Annual $ Limit)</label>
-          <input type="text" placeholder="e.g. $15,000 / year" value="${esc(p.costCap)}" oninput="updateProgramServiceField(${p.id},'costCap',this.value)">
-        </div>
-        <div class="field-group full">
-          <label>Prior Authorization (PA) Number</label>
-          <input type="text" placeholder="Tracking codes issued by MMIS" value="${esc(p.paNumber)}" oninput="updateProgramServiceField(${p.id},'paNumber',this.value)">
         </div>
       </div>
 
@@ -1011,14 +1005,11 @@ function updateUI() {
     line("Authorized Services & Waivers Matrix:");
     programServices.forEach((s, idx) => {
       line(`  [${idx + 1}] PROGRAM DEFINITION:`);
-      line(`      Waiver/Type : ${s.waiverType || "—"}`);
-      line(`      Payer Source: ${s.payerSource || "—"}`);
-      line(`      MCO / Plan  : ${s.mco || "—"}`);
-      line(`      Cost Cap    : ${s.costCap || "—"}`);
-      line(`      PA Number   : ${s.paNumber || "—"}`);
-      line(`      Amend Status: ${s.isAmendment === "Yes" ? `Yes (Date: ${s.amendDate || "—"})` : "No"}`);
-      line(`      Auth Window : ${s.startDate || "—"} to ${s.endDate || "—"}`);
-      line(`      Justification: ${s.justification || "—"}`);
+      line(`      Payer Source/Type: ${s.payerSource || "—"}`);
+      line(`      MCO / Plan       : ${s.mco || "—"}`);
+      line(`      Amend Status     : ${s.isAmendment === "Yes" ? `Yes (Date: ${s.amendDate || "—"})` : "No"}`);
+      line(`      Auth Window      : ${s.startDate || "—"} to ${s.endDate || "—"}`);
+      line(`      Justification    : ${s.justification || "—"}`);
       
       line(`      SERVICE ARRAY:`);
       line(`        HCPCS Code: ${s.billingCode || "—"}`);
@@ -1026,7 +1017,7 @@ function updateUI() {
       line(`        Freq Caps : ${s.frequencyCaps || "—"}`);
       line(`        Total $   : ${s.totalAllocation || "—"}`);
       
-      const isWaiver = /waiver/i.test(s.waiverType) || /waiver/i.test(s.payerSource);
+      const isWaiver = /waiver/i.test(s.payerSource);
       if (isWaiver) {
         line(`      HCBS Waiver Choice & Education:`);
         line(`        1. Informed of options: ${s.hcbs1 || "—"}`);
