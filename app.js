@@ -21,6 +21,7 @@ let currentSupports = []; // Section 9: Current Services
 let linkingSupports = []; // Section 9: Linking Services
 let goalsData = []; // Section 9: Action Plan
 let clinicalGoalsTasks = []; // Section 2: Goals/Tasks
+let dueProcessItems = []; // Section 15: Due Process
 let _coverPhotoData = null;
 
 // ── SECURITY STATE ──
@@ -206,9 +207,17 @@ const FORM_FIELDS = [
   "psychotropicProtocol",
   "behavioralNotes",
   // Section 15 - Supervision
-  "supervisionLevel",
   "alteredSupervision",
-  "riskLevel",
+  "sup_chemicals", "risk_chemicals",
+  "sup_cooking", "risk_cooking",
+  "sup_911", "risk_911",
+  "sup_emerg_procedures", "risk_emerg_procedures",
+  "sup_stranger", "risk_stranger",
+  "sup_emerg_safety", "risk_emerg_safety",
+  "sup_choking_risk", "risk_choking_risk",
+  "sup_mobility_falls", "risk_mobility_falls",
+  "sup_probation", "risk_probation",
+  "sup_criminal_behavior", "risk_criminal_behavior",
   "oshaPrecaution",
   "backupPlan",
   "staffSupportNeeds",
@@ -1000,13 +1009,28 @@ function updateUI() {
   line("");
 
   head("15. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
-  field("Supervision Level", getVal("supervisionLevel"));
   if (document.getElementById("alteredSupervision")?.checked) {
     line("  * Altered Levels of Supervision applied *");
   }
+  line("Supervision & Risk Domains (Covers Housing & Community):");
+  const domains = [
+    { label: "Chemicals", id: "chemicals" },
+    { label: "Cooking", id: "cooking" },
+    { label: "911", id: "911" },
+    { label: "Support for emergency procedures", id: "emerg_procedures" },
+    { label: "Stranger awareness", id: "stranger" },
+    { label: "Emergency safety / home dangers", id: "emerg_safety" },
+    { label: "Choking risk / aspiration supports needed", id: "choking_risk" },
+    { label: "Mobility support needs / falls", id: "mobility_falls" },
+    { label: "Probation / parole", id: "probation" },
+    { label: "Criminal and other behavior that places person or others at risk", id: "criminal_behavior" }
+  ];
+  domains.forEach(d => {
+    line(`  - ${d.label}: Supervision (${getVal(`sup_${d.id}`)}) | Risk (${getVal(`risk_${d.id}`)})`);
+  });
+  
   field("Staff Precautions", getVal("oshaPrecaution"));
   field("Staff Support Needs", getVal("staffSupportNeeds"));
-  field("Risk Level", getVal("riskLevel"));
 
   if (document.getElementById("needsEmergencyAssistance")?.checked) {
     line("Emergency Safety / Home Dangers Assistance:");
@@ -1022,6 +1046,30 @@ function updateUI() {
   field("  - Rule #2 (Privacy)", getVal("hcbsRule2Privacy"));
   field("  - Rule #3 (Support)", getVal("hcbsRule3Support"));
   field("  - Home Life Notes", getVal("homeLifeNotes"));
+  
+  line("");
+  head("15B. RIGHTS LIMITATIONS & DUE PROCESS");
+  if (document.getElementById("dueProcessNA")?.checked) {
+    line("  - No active limitations.");
+  } else if (document.getElementById("dueProcessAttached")?.checked) {
+    line("  - See Attached.");
+  } else if (dueProcessItems.length === 0) {
+    line("  - No limitations documented.");
+  } else {
+    dueProcessItems.forEach((dp, idx) => {
+      line(`Limitation #${idx + 1}:`);
+      line(`  - Meeting Invitation: ${dp.invitation}`);
+      line(`  - Description: ${dp.description}`);
+      line(`  - Less Intrusive Methods: ${dp.lessIntrusive}`);
+      line(`  - Historical Pattern: ${dp.historical}`);
+      line(`  - Teaching & Support: ${dp.teaching}`);
+      line(`  - Lifting Criteria: ${dp.liftingCriteria}`);
+      line(`  - Monitoring: ${dp.monitoring}`);
+    });
+  }
+  line("");
+  const fName = getVal("firstName") || "the individual";
+  line(`* Contains information regarding right to appeal. "If ${fName} wishes to file a complaint, ${fName} will be referred to the Office of Constituent Services."`);
   line("");
 
   head("16. PREVIOUS GOALS");
@@ -1250,10 +1298,82 @@ function toggleDentalOther() {
       : "none";
 }
 function toggleDueProcess(cb) {
-  document.getElementById("dueProcessFields").style.display = cb.checked
-    ? "none"
-    : "";
+  const container = document.getElementById("dueProcessContainer");
+  const btn = document.getElementById("addDueProcessBtn");
+  if(container) container.style.display = cb.checked ? "none" : "";
+  if(btn) btn.style.display = cb.checked ? "none" : "";
   updateUI();
+}
+
+function addDueProcess() {
+  dueProcessItems.push({
+    invitation: "",
+    description: "",
+    lessIntrusive: "",
+    historical: "",
+    teaching: "",
+    liftingCriteria: "",
+    monitoring: ""
+  });
+  renderDueProcess();
+  updateUI();
+}
+
+function removeDueProcess(idx) {
+  dueProcessItems.splice(idx, 1);
+  renderDueProcess();
+  updateUI();
+}
+
+function renderDueProcess() {
+  const container = document.getElementById("dueProcessContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  dueProcessItems.forEach((dp, idx) => {
+    const div = document.createElement("div");
+    div.style.background = "var(--bg-light, #f8f9fa)";
+    div.style.border = "1px solid var(--border, #ddd)";
+    div.style.borderRadius = "8px";
+    div.style.padding = "12px 14px";
+    div.style.marginBottom = "10px";
+    div.style.position = "relative";
+    
+    div.innerHTML = `
+      <button class="remove-rep-btn" type="button" onclick="removeDueProcess(${idx})" title="Remove" style="position: absolute; right: 10px; top: 10px;">✕</button>
+      <div style="font-weight: 700; margin-bottom: 8px;">Due Process / Limitation #${idx + 1}</div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Due Process Meeting Invitation</label>
+          <textarea placeholder="Document when guardian/individual was invited and their response." oninput="dueProcessItems[${idx}].invitation = this.value; updateUI()">${dp.invitation}</textarea>
+        </div>
+        <div class="field-group">
+          <label>Description of Limitation</label>
+          <textarea placeholder="What is the restriction and where/when is it imposed?" oninput="dueProcessItems[${idx}].description = this.value; updateUI()">${dp.description}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>Less Intrusive Methods Tried (HCBS Requirement)</label>
+          <textarea placeholder="Document specific methods that were attempted but did not work." oninput="dueProcessItems[${idx}].lessIntrusive = this.value; updateUI()">${dp.lessIntrusive}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>Historical Pattern / Source of Data</label>
+          <textarea placeholder="Historical events justifying limitation. Include current data source (e.g. incident reports)." oninput="dueProcessItems[${idx}].historical = this.value; updateUI()">${dp.historical}</textarea>
+        </div>
+        <div class="field-group">
+          <label>Teaching & Support Strategies</label>
+          <textarea placeholder="Goals/tasks to help the individual overcome the need for this support." oninput="dueProcessItems[${idx}].teaching = this.value; updateUI()">${dp.teaching}</textarea>
+        </div>
+        <div class="field-group">
+          <label>Measurable Criteria for Lifting</label>
+          <textarea placeholder="How will the Team know when the limit can be reduced or lifted?" oninput="dueProcessItems[${idx}].liftingCriteria = this.value; updateUI()">${dp.liftingCriteria}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>Monitoring & Data Collection</label>
+          <textarea placeholder="Who documents? Where is data kept? Frequency? Review dates by SC." oninput="dueProcessItems[${idx}].monitoring = this.value; updateUI()">${dp.monitoring}</textarea>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
 }
 
 // (Duplicate Funding removed - using the one below)
@@ -1487,6 +1607,7 @@ function captureFormData() {
     _commChartRows: commChartRows,
     _importantPeople: importantPeople,
     _employmentEntries: employmentEntries,
+    _dueProcessItems: dueProcessItems,
     _coverPhotoData: _coverPhotoData,
     _learningStyles: Array.from(document.querySelectorAll('#learningStyleContainer input[type="checkbox"]:checked')).map(cb => cb.value),
     _healthParams: Array.from(document.querySelectorAll('#healthParamsContainer input[type="checkbox"]:checked')).map(cb => cb.value),
@@ -1525,6 +1646,7 @@ function restoreFormData(fd) {
   employmentEntries = fd._employmentEntries || [];
   commChartRows = fd._commChartRows || [];
   importantPeople = fd._importantPeople || [];
+  dueProcessItems = fd._dueProcessItems || [];
   _coverPhotoData = fd._coverPhotoData;
   if (_coverPhotoData) {
     document.getElementById("coverPhoto").src = _coverPhotoData;
@@ -1541,6 +1663,10 @@ function restoreFormData(fd) {
   renderEmploymentEntries();
   renderCommChart();
   renderImportantPeople();
+  renderDueProcess();
+  if (document.getElementById("dueProcessNA")) {
+    toggleDueProcess(document.getElementById("dueProcessNA"));
+  }
 
   // Restore checkboxes
   if (Array.isArray(fd._learningStyles)) {

@@ -1679,7 +1679,6 @@
               <select id="supervisionLevel" onchange="updateUI()">
                 <option value="Standard">Standard</option>
                 <option value="Line of Sight">Line of Sight</option>
-                <option value="1:1 Constant">1:1 Constant</option>
                 <option value="Altered (See Notes)">Altered Protocol</option>
               </select>
             </div>
@@ -1913,30 +1912,61 @@
         <!-- ── Section 15: Supervision ── -->
         <div class="form-section" id="sec-supervision">
           <div class="section-title"><span>15</span> Supervision(housing) (safety and security)</div>
+          <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <div class="subsection-label" style="margin: 0;">Risk &amp; Supervision Domains (Covers Housing &amp; Community)</div>
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer;">
+              <input type="checkbox" id="alteredSupervision" onchange="updateUI()"> 
+              Altered levels of supervision
+            </label>
+          </div>
+          
+          <div class="form-grid" style="grid-template-columns: 2fr 1fr 1fr; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <div style="font-weight: 600; border-bottom: 1px solid #ccc; padding-bottom: 4px;">Area of Risk</div>
+            <div style="font-weight: 600; border-bottom: 1px solid #ccc; padding-bottom: 4px;">Supervision Level</div>
+            <div style="font-weight: 600; border-bottom: 1px solid #ccc; padding-bottom: 4px;">Risk Level</div>
+
+            <div style="font-size: 13px; font-weight: 500;">Chemicals</div>
+            <select id="sup_chemicals" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_chemicals" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+
+            <div style="font-size: 13px; font-weight: 500;">Cooking</div>
+            <select id="sup_cooking" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_cooking" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+
+            <div style="font-size: 13px; font-weight: 500;">911</div>
+            <select id="sup_911" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_911" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+
+            <div style="font-size: 13px; font-weight: 500;">Support for emergency procedures</div>
+            <select id="sup_emerg_procedures" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_emerg_procedures" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+
+            <div style="font-size: 13px; font-weight: 500;">Stranger awareness</div>
+            <select id="sup_stranger" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_stranger" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+
+            <div style="font-size: 13px; font-weight: 500;">Emergency safety / home dangers</div>
+            <select id="sup_emerg_safety" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_emerg_safety" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+
+            <div style="font-size: 13px; font-weight: 500;">Choking risk / aspiration supports needed</div>
+            <select id="sup_choking_risk" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_choking_risk" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+
+            <div style="font-size: 13px; font-weight: 500;">Mobility support needs / falls</div>
+            <select id="sup_mobility_falls" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_mobility_falls" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+
+            <div style="font-size: 13px; font-weight: 500;">Probation / parole</div>
+            <select id="sup_probation" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_probation" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+
+            <div style="font-size: 13px; font-weight: 500;">Criminal and other behavior that places person or others at risk</div>
+            <select id="sup_criminal_behavior" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="risk_criminal_behavior" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+          </div>
+
           <div class="form-grid">
-            <div class="field-group">
-              <label>Supervision Level (Covers Housing &amp; Community)</label>
-              <select id="supervisionLevel" onchange="updateUI()">
-                <option value="Standard">Standard</option>
-                <option value="Line of Sight">Line of Sight</option>
-                <option value="1:1 Constant">1:1 Constant</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label>Risk Level</label>
-              <select id="riskLevel" onchange="updateUI()">
-                <option value="Low">Low Risk</option>
-                <option value="Moderate">Moderate Risk</option>
-                <option value="High">High Risk</option>
-              </select>
-            </div>
-            <div class="field-group" style="justify-content: center;">
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer; height: 100%;">
-                <input type="checkbox" id="alteredSupervision" onchange="updateUI()"> 
-                Altered levels of supervision
-              </label>
-            </div>
-            <div class="field-group full">
               <label>Evacuation / 911 Plan</label>
               <textarea id="evacPlan" placeholder="Describe steps for emergencies and evacuation." oninput="updateUI()"></textarea>
             </div>
@@ -2000,87 +2030,57 @@
             "
           >
             Rights Limitations &amp; Due Process
-            <label
-              style="
-                font-size: 11px;
-                font-weight: 700;
-                color: var(--marion-blue);
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-              "
-            >
-              <input
-                type="checkbox"
-                id="dueProcessNA"
-                onchange="toggleDueProcess(this)"
-              />
-              No active limitations
-            </label>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <label
+                style="
+                  font-size: 11px;
+                  font-weight: 700;
+                  color: var(--marion-blue);
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="dueProcessAttached"
+                  onchange="updateUI()"
+                />
+                See Attached
+              </label>
+              <label
+                style="
+                  font-size: 11px;
+                  font-weight: 700;
+                  color: var(--marion-blue);
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="dueProcessNA"
+                  onchange="toggleDueProcess(this)"
+                />
+                No active limitations
+              </label>
+            </div>
           </div>
 
-          <div id="dueProcessFields">
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Due Process Meeting Invitation</label>
-                <textarea
-                  id="dpInvitation"
-                  placeholder="Document when guardian/individual was invited and their response."
-                  oninput="updateUI()"
-                ></textarea>
-              </div>
-              <div class="field-group">
-                <label>Description of Limitation</label>
-                <textarea
-                  id="dpDescription"
-                  placeholder="What is the restriction and where/when is it imposed?"
-                  oninput="updateUI()"
-                ></textarea>
-              </div>
-              <div class="field-group full">
-                <label>Less Intrusive Methods Tried (HCBS Requirement)</label>
-                <textarea
-                  id="dpLessIntrusive"
-                  placeholder="Document specific methods that were attempted but did not work."
-                  oninput="updateUI()"
-                ></textarea>
-              </div>
-              <div class="field-group full">
-                <label>Historical Pattern / Source of Data</label>
-                <textarea
-                  id="dpHistorical"
-                  placeholder="Historical events justifying limitation. Include current data source (e.g. incident reports)."
-                  oninput="updateUI()"
-                ></textarea>
-              </div>
-              <div class="field-group">
-                <label>Teaching &amp; Support Strategies</label>
-                <textarea
-                  id="dpTeaching"
-                  placeholder="Goals/tasks to help the individual overcome the need for this support."
-                  oninput="updateUI()"
-                ></textarea>
-              </div>
-              <div class="field-group">
-                <label>Measurable Criteria for Lifting</label>
-                <textarea
-                  id="dpLiftingCriteria"
-                  placeholder="How will the Team know when the limit can be reduced or lifted?"
-                  oninput="updateUI()"
-                ></textarea>
-              </div>
-              <div class="field-group full">
-                <label>Monitoring &amp; Data Collection</label>
-                <textarea
-                  id="dpMonitoring"
-                  placeholder="Who documents? Where is data kept? Frequency? Review dates by SC."
-                  oninput="updateUI()"
-                ></textarea>
-              </div>
-            </div>
+          <div id="dueProcessContainer"></div>
+          <button class="btn btn-outline" type="button" onclick="addDueProcess()" style="margin-bottom: 20px;" id="addDueProcessBtn">
+            + Add Limitation / Due Process
+          </button>
+          
+          <div style="font-size: 11px; color: var(--text-label); font-style: italic; margin-top: -10px; border-top: 1px dashed var(--border); padding-top: 10px;">
+            * Contains information regarding right to appeal. "If _________ wishes to file a complaint, _________ will be referred to the Office of Constituent Services."
           </div>
         </div>
 
