@@ -256,6 +256,8 @@ const FORM_FIELDS = [
   "evalAbasDate",
   "evalMocabi",
   "evalMocabiDate",
+  "evalMaas",
+  "evalMaasDate",
   "evalOther",
   "evalOtherText",
   "evalOtherDate",
@@ -263,6 +265,8 @@ const FORM_FIELDS = [
   "burialPlanCremation",
   "burialFinancialAllocations",
   "burialSavingsPlan",
+  "clientDidNotAttend",
+  "clientDidNotAttendReason",
   "meetingFormat",
   "prevGoals",
   "supportNeeded",
@@ -1144,18 +1148,19 @@ function updateUI() {
   if (document.getElementById("locMobility")?.checked) locList.push("Mobility");
   const otherDomains = getVal("locOtherDomains");
   
-  field("Assessments", locList.length ? locList.join(", ") : "None Selected");
-  if (otherDomains) field("Other Domains", otherDomains);
-  
   let evals = [];
   if (document.getElementById("evalVineland")?.checked) evals.push(`Vineland (${getVal("evalVinelandDate") || "No Date"})`);
   if (document.getElementById("evalAbas")?.checked) evals.push(`ABAS-3 (${getVal("evalAbasDate") || "No Date"})`);
   if (document.getElementById("evalMocabi")?.checked) evals.push(`MOCABI (${getVal("evalMocabiDate") || "No Date"})`);
+  if (document.getElementById("evalMaas")?.checked) evals.push(`MAAS (${getVal("evalMaasDate") || "No Date"})`);
   if (document.getElementById("evalOther")?.checked) evals.push(`Other: ${getVal("evalOtherText")} (${getVal("evalOtherDate") || "No Date"})`);
   
   if (evals.length > 0) {
-    field("Evaluations Completed", evals.join(" | "));
+    field("Assessments Completed", evals.join(" | "));
   }
+
+  field("LOC Domains Affected", locList.length ? locList.join(", ") : "None Selected");
+  if (otherDomains) field("Other Domains", otherDomains);
 
   field("Last LOC Date", getVal("lastLOC"));
   
@@ -1190,6 +1195,11 @@ function updateUI() {
   field("Burial Savings Plan", getVal("burialSavingsPlan"));
 
   line("");
+  if (document.getElementById("clientDidNotAttend")?.checked) {
+    field("Client Attended", `No - ${getVal("clientDidNotAttendReason") || "No reason provided"}`);
+  } else {
+    field("Client Attended", "Yes");
+  }
   field("Meeting Format", getVal("meetingFormat"));
   if (meetingAttendees.length > 0) {
     line("Meeting Attendees & Contributions:");
