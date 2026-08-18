@@ -1172,6 +1172,10 @@ function updateUI() {
     line("*** ATTACHMENTS INCLUDED WITH PCSP ***");
   }
 
+  line("");
+  line(`${displayName ? displayName + ' and/or their Guardian' : 'The individual and/or guardian'} may contact the Office of Constituent Services at 1-800-364-9687 to file an anonymous complaint. All calls will be kept confidential and the caller can choose to remain anonymous.`);
+
+
   // ── SIGNATURE SECTION ──
   line("\n" + "═".repeat(67));
   line("SIGNATURES & APPROVAL");

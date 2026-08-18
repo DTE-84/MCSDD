@@ -2113,12 +2113,7 @@
           <div class="form-grid">
             <div class="field-group full">
               <label>Plan Comments / Clinical Summary</label>
-              <textarea id="planComments" oninput="updateUI()" style="min-height: 150px;">Contributors to PCSP meeting: 
-- How often client will be seen by the SC.
-- Detailed annual service monitoring.  
-- Who is responsible for monitoring the PCSP, and where are they kept.
-
-(Client / Guardian names) may contact the Office of Constituent Services at 1-800-364-9687 to file an anonymous complaint. All calls will be kept confidential and the caller can choose to remain anonymous.</textarea>
+              <textarea id="planComments" oninput="updateUI()" style="min-height: 120px;" placeholder="Contributors to PCSP meeting:&#10;- How often client will be seen by the SC.&#10;- Detailed annual service monitoring.&#10;- Who is responsible for monitoring the PCSP, and where are they kept."></textarea>
             </div>
             <div class="field-group">
               <label>RAS Score</label>
@@ -2231,6 +2226,12 @@
             </div>
             <div class="field-group full" style="display:flex; justify-content:center; border-top: 1px dashed var(--border); padding-top:15px; margin-top:10px;">
               <label class="eth-check" style="font-size:14px;"><input type="checkbox" id="attachmentsIncluded" onchange="updateUI()"> Attachments Included</label>
+            </div>
+            
+            <div class="field-group full">
+              <div style="font-size: 11px; color: var(--text-label); font-style: italic; line-height: 1.4; text-align: center;">
+                (Client / Guardian names) may contact the Office of Constituent Services at 1-800-364-9687 to file an anonymous complaint. All calls will be kept confidential and the caller can choose to remain anonymous.
+              </div>
             </div>
           </div>
         </div>
