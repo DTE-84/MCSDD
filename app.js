@@ -232,6 +232,13 @@ const FORM_FIELDS = [
   // Section 18 - Comments & Clinical Summary
   "lastAssessment",
   "lastLOC",
+  "hasChoices",
+  "choicesDescription",
+  "tcsmSatisfactionSurvey",
+  "sdsAwareness",
+  "sdsInterest",
+  "dissentingOpinions",
+  "attachmentsIncluded",
   "rasSisScore",
   "ponScore",
   "planComments",
@@ -242,6 +249,10 @@ const FORM_FIELDS = [
   "locLanguage",
   "locMobility",
   "locOtherDomains",
+  "burialPlanBurial",
+  "burialPlanCremation",
+  "burialFinancialAllocations",
+  "burialSavingsPlan",
   "prevGoals",
   "supportNeeded",
   "strengths",
@@ -303,13 +314,15 @@ function removePhoto() {
   updateUI();
 }
 
-// ── SECTION 2: GOALS/TASKS ──
+// ── SECTION 2 / 16: GOALS/TASKS ──
 function addGoalTask() {
   clinicalGoalsTasks.push({
     id: Date.now(),
     goal: "",
     task: "",
     progress: "",
+    continued: "",
+    continuedWhy: "",
     meaning: "",
     strengths: "",
     tech: "",
@@ -346,6 +359,14 @@ function renderGoalTasks() {
         <div class="field-group"><label>Goal</label><input type="text" value="${esc(g.goal)}" oninput="updateGoalTaskField(${g.id},'goal',this.value)"></div>
         <div class="field-group"><label>Task</label><input type="text" value="${esc(g.task)}" oninput="updateGoalTaskField(${g.id},'task',this.value)"></div>
         <div class="field-group"><label>Progress</label><input type="text" value="${esc(g.progress)}" oninput="updateGoalTaskField(${g.id},'progress',this.value)"></div>
+        <div class="field-group"><label>Continued Status</label>
+          <select onchange="updateGoalTaskField(${g.id},'continued',this.value)">
+            <option value="">Select...</option>
+            <option value="Continued" ${g.continued === 'Continued' ? 'selected' : ''}>Continued</option>
+            <option value="Not Continued" ${g.continued === 'Not Continued' ? 'selected' : ''}>Not Continued</option>
+          </select>
+        </div>
+        <div class="field-group half"><label>Why (Reasoning)</label><input type="text" value="${esc(g.continuedWhy)}" oninput="updateGoalTaskField(${g.id},'continuedWhy',this.value)"></div>
         <div class="field-group"><label>Meaning</label><input type="text" value="${esc(g.meaning)}" oninput="updateGoalTaskField(${g.id},'meaning',this.value)"></div>
         <div class="field-group"><label>Strengths/Assets</label><input type="text" value="${esc(g.strengths)}" oninput="updateGoalTaskField(${g.id},'strengths',this.value)"></div>
         <div class="field-group"><label>Tech</label><input type="text" value="${esc(g.tech)}" oninput="updateGoalTaskField(${g.id},'tech',this.value)"></div>
@@ -1072,23 +1093,29 @@ function updateUI() {
   line(`* Contains information regarding right to appeal. "If ${fName} wishes to file a complaint, ${fName} will be referred to the Office of Constituent Services."`);
   line("");
 
-  head("16. PREVIOUS GOALS");
+  head("16. PREVIOUS AND CURRENT GOALS AND TASKS");
   line(
     clinicalGoalsTasks
-      .map(
-        (g, i) =>
-          `Goal Entry #${i + 1}: ${g.goal} | Task: ${g.task} | Progress: ${g.progress}`,
-      )
-      .join("\n"),
+      .map((g, i) => {
+        let entry = `Goal Entry #${i + 1}: ${g.goal} | Task: ${g.task} | Progress: ${g.progress}`;
+        if (g.continued) {
+          entry += `\n  - Status: ${g.continued}`;
+          if (g.continuedWhy) {
+            entry += ` (Reason: ${g.continuedWhy})`;
+          }
+        }
+        return entry;
+      })
+      .join("\n\n"),
   );
   line("");
 
-  head("17. PERSONAL OUTCOMES & IMPLEMENTATION STRATEGIES (MOQO)");
+  head("17. ACTION PLAN");
   line(
     goalsData
       .map(
         (g) =>
-          `[${g.domain}] Goal: ${g.goal} | Task: ${g.task} | Responsible: ${g.responsible.join(", ")}`,
+          `[${g.domain}] Goal: ${g.goal} | Task: ${g.task} | Responsible: ${g.responsible.join(", ")} | Frequency: ${g.frequency.join(", ")}`,
       )
       .join("\n"),
   );
@@ -1105,13 +1132,45 @@ function updateUI() {
   if (document.getElementById("locLanguage")?.checked) locList.push("Language");
   if (document.getElementById("locMobility")?.checked) locList.push("Mobility");
   const otherDomains = getVal("locOtherDomains");
-  if (otherDomains) locList.push(`Other: ${otherDomains}`);
   
   field("LOC Limitations", locList.length ? locList.join(", ") : "None Selected");
-  field("Last Assessment", getVal("lastAssessment"));
+  if (otherDomains) field("Other Domains", otherDomains);
   field("Last LOC Date", getVal("lastLOC"));
+  
+  const hasChoices = document.getElementById("hasChoices")?.checked ? "Yes" : "No";
+  const choicesDesc = getVal("choicesDescription");
+  field("Individual has Choices?", choicesDesc ? `${hasChoices} (${choicesDesc})` : hasChoices);
+
+  line("");
+  head("WAIVER RECIPIENTS & COMPLIANCE");
+  const dissent = getVal("dissentingOpinions");
+  field("Dissenting Opinions", dissent ? dissent : "None documented.");
+  field("Conflict of Interest Info Provided", getVal("conflictInfo"));
+  
+  const sdsAw = document.getElementById("sdsAwareness")?.checked ? "Yes" : "No";
+  const sdsInt = getVal("sdsInterest");
+  field("Individual/Guardian aware of SDS", sdsInt ? `${sdsAw} (Interest: ${sdsInt})` : sdsAw);
+  field("TCSM Satisfaction Survey", document.getElementById("tcsmSatisfactionSurvey")?.checked ? "Completed/Addressed" : "No");
+  
+  line("");
+  line("If there are concerns with services or support provided by the support coordinator, they may contact the TCM assistant supervisor, Barb Van Abbema, at 573-248-1077 ext. 111, the TCM supervisor, Mahogany Wallis, at 573-248-1077 ext 102 or the SB40 executive director, Cathy Arrowsmith, at 573-248-1077 ext. 104.");
+  line("");
+  field("Last Assessment", getVal("lastAssessment"));
   field("RAS Score", getVal("rasSisScore"));
   field("PON Score", getVal("ponScore"));
+
+  line("");
+  let burialOpt = [];
+  if (document.getElementById("burialPlanBurial")?.checked) burialOpt.push("Burial");
+  if (document.getElementById("burialPlanCremation")?.checked) burialOpt.push("Cremation");
+  field("Burial Plan", burialOpt.length ? burialOpt.join(" / ") : "None specified");
+  field("Burial Financial Allocations", getVal("burialFinancialAllocations"));
+  field("Burial Savings Plan", getVal("burialSavingsPlan"));
+
+  line("");
+  if (document.getElementById("attachmentsIncluded")?.checked) {
+    line("*** ATTACHMENTS INCLUDED WITH PCSP ***");
+  }
 
   // ── SIGNATURE SECTION ──
   line("\n" + "═".repeat(67));

@@ -2084,18 +2084,18 @@
           </div>
         </div>
 
-        <!-- ── Section 16: Previous Goals ── -->
+        <!-- ── Section 16: Previous and Current Goals and Tasks ── -->
         <div class="form-section" id="sec-prev-goals">
-          <div class="section-title"><span>16</span> Previous Goals</div>
+          <div class="section-title"><span>16</span> Previous and Current Goals and Tasks</div>
           <div id="dynamicGoalsTasksContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addGoalTask()">+ Add Goal / Task Entry</button>
         </div>
 
-       
-        <!-- ---Section 17: Action Plan (MOQO Integrated)--->
-         <div class="form-section" id="sec-outcomes">
+
+        <!-- ---Section 17: Action Plan --->
+        <div class="form-section" id="sec-outcomes">
           <div class="section-title">
-            <span>17</span> Personal Outcomes &amp; Implementation Strategies
+            <span>17</span> Action Plan
           </div>
           <p style="font-size: 11px; color: var(--text-label); margin-bottom: 15px; font-style: italic;">
             Aligned with Missouri Quality Outcomes (MOQO) framework. Implementation strategies are mandatory for all waiver-funded services.
@@ -2112,7 +2112,12 @@
           <div class="form-grid">
             <div class="field-group full">
               <label>Plan Comments / Clinical Summary</label>
-              <textarea id="planComments" oninput="updateUI()"></textarea>
+              <textarea id="planComments" oninput="updateUI()" style="min-height: 150px;">Contributors to PCSP meeting: 
+- How often client will be seen by the SC.
+- Detailed annual service monitoring.  
+- Who is responsible for monitoring the PCSP, and where are they kept.
+
+(Client / Guardian names) may contact the Office of Constituent Services at 1-800-364-9687 to file an anonymous complaint. All calls will be kept confidential and the caller can choose to remain anonymous.</textarea>
             </div>
             <div class="field-group">
               <label>RAS Score</label>
@@ -2127,10 +2132,6 @@
               <input type="date" id="lastAssessment" oninput="updateUI()" />
             </div>
             <div class="field-group">
-              <label>Last LOC Date</label>
-              <input type="date" id="lastLOC" oninput="updateUI()" />
-            </div>
-             <div class="field-group">
               <label>Rights Brochure Addressed?</label>
               <select id="rightsBrochure" onchange="updateUI()">
                 <option value="Yes">Yes - Knowing Your Rights</option>
@@ -2138,21 +2139,50 @@
               </select>
             </div>
             <div class="field-group full">
-              <label>Conflict of Interest Info Provided?</label>
-              <select id="conflictInfo" onchange="updateUI()">
-                <option value="Yes - Documentation shared">
-                  Yes - Documentation shared
-                </option>
-                <option value="N/A">Not Applicable</option>
-              </select>
-            </div>
-             <div class="field-group full">
               <label>Satisfaction with Services (Spelled out by service)</label>
               <textarea
                 id="serviceSatisfaction"
                 placeholder="E.g. Individual is satisfied with TCM, Community Health, and MCSDD Grant programs."
                 oninput="updateUI()"
               ></textarea>
+            </div>
+            <div class="field-group full" style="border: 1px solid var(--border); padding: 15px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+              <div style="font-weight: 600; font-size: 14px; margin-bottom: 12px; color: var(--primary);">Waiver Recipients & Compliance</div>
+              
+              <div class="form-grid">
+                <div class="field-group full">
+                  <label>If ISP Team member have dissenting opinions of other members of the Team discuss (Waiver recipients only)</label>
+                  <textarea id="dissentingOpinions" oninput="updateUI()"></textarea>
+                </div>
+                
+                <div class="field-group full">
+                  <label>Individual is provided clear information regarding any potential conflict of interest (Contingent - Waiver recipients only)</label>
+                  <select id="conflictInfo" onchange="updateUI()">
+                    <option value="Yes - Documentation shared">Yes - Documentation shared</option>
+                    <option value="No">No</option>
+                    <option value="N/A">Not Applicable</option>
+                  </select>
+                </div>
+
+                <div class="field-group full">
+                  <label>Is the individual/guardian aware of SDS and if they are interested in this service at this time?</label>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <label class="eth-check"><input type="checkbox" id="sdsAwareness" onchange="updateUI()"> Yes, aware of SDS</label>
+                    <input type="text" id="sdsInterest" placeholder="Describe interest in SDS services at this time..." oninput="updateUI()" />
+                  </div>
+                </div>
+
+                <div class="field-group full">
+                  <label>Surveys</label>
+                  <label class="eth-check"><input type="checkbox" id="tcsmSatisfactionSurvey" onchange="updateUI()"> TCSM Satisfaction Survey Completed</label>
+                </div>
+                
+                <div class="field-group full">
+                  <div style="font-size: 11px; color: var(--text-label); font-style: italic; line-height: 1.4;">
+                    If there are concerns with services or support provided by the support coordinator, they may contact the TCM assistant supervisor, Barb Van Abbema, at 573-248-1077 ext. 111, the TCM supervisor, Mahogany Wallis, at 573-248-1077 ext 102 or the SB40 executive director, Cathy Arrowsmith, at 573-248-1077 ext. 104.
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="field-group full">
               <label>LOC Limitations / Categories</label>
@@ -2165,9 +2195,41 @@
                 <label class="eth-check"><input type="checkbox" id="locMobility" onchange="updateUI()"> Mobility</label>
               </div>
             </div>
+            <div class="field-group">
+              <label>Last LOC Date</label>
+              <input type="date" id="lastLOC" oninput="updateUI()" />
+            </div>
+            <div class="field-group">
+              <label>Individual has Choices?</label>
+              <div style="display:flex; align-items:center; height:100%; margin-top: -6px;">
+                <label class="eth-check"><input type="checkbox" id="hasChoices" onchange="updateUI()"> Yes, Choices provided</label>
+              </div>
+            </div>
+            <div class="field-group full">
+              <label>List / Describe Choices</label>
+              <input type="text" id="choicesDescription" placeholder="Describe the choices provided..." oninput="updateUI()" />
+            </div>
             <div class="field-group full">
               <label>Other Domains</label>
               <input type="text" id="locOtherDomains" oninput="updateUI()" />
+            </div>
+            <div class="field-group full">
+              <label>Burial Plan</label>
+              <div class="ethnicity-grid">
+                <label class="eth-check"><input type="checkbox" id="burialPlanBurial" onchange="updateUI()"> Burial</label>
+                <label class="eth-check"><input type="checkbox" id="burialPlanCremation" onchange="updateUI()"> Cremation</label>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Burial Financial Allocations</label>
+              <input type="text" id="burialFinancialAllocations" oninput="updateUI()" />
+            </div>
+            <div class="field-group">
+              <label>Burial Savings Plan</label>
+              <input type="text" id="burialSavingsPlan" oninput="updateUI()" />
+            </div>
+            <div class="field-group full" style="display:flex; justify-content:center; border-top: 1px dashed var(--border); padding-top:15px; margin-top:10px;">
+              <label class="eth-check" style="font-size:14px;"><input type="checkbox" id="attachmentsIncluded" onchange="updateUI()"> Attachments Included</label>
             </div>
           </div>
         </div>
