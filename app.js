@@ -146,6 +146,15 @@ const FORM_FIELDS = [
   "religionOther",
   "nativeLanguage",
   "otherLanguages",
+  "communityInvolvement",
+  "communityBarriers",
+  // Section 7 - Global Identifiers
+  "stateMedicaidId",
+  "dddCaseNumber",
+  "regionalOfficeCode",
+  "caseManagerName",
+  "caseManagerEmail",
+  "caseManagerNPI",
   "commMethod",
   "comm-other",
   "insurance",
@@ -240,6 +249,7 @@ const FORM_FIELDS = [
   "sdsInterest",
   "dissentingOpinions",
   "attachmentsIncluded",
+  "attachmentsDetails",
   "rasSisScore",
   "ponScore",
   "planComments",
@@ -497,9 +507,9 @@ function updateProgramServiceField(id, field, val) {
   const p = programServices.find((x) => x.id === id);
   if (p) {
     p[field] = val;
-    if (field === "funding" || field === "service") {
-      renderProgramServices(); // Refresh for "Other" or HCBS grouping
-      if (field === "funding") {
+    if (field === "payerSource" || field === "waiverType") {
+      renderProgramServices(); // Refresh for HCBS grouping
+      if (field === "waiverType") {
         checkAndApplyHCBSTemplateToService(p, val);
       }
     }
@@ -538,37 +548,91 @@ function renderProgramServices() {
   }
   container.innerHTML = programServices
     .map((p, idx) => {
-      const isWaiver = /waiver/i.test(p.service) || /waiver/i.test(p.funding);
+      const isWaiver = /waiver/i.test(p.waiverType) || /waiver/i.test(p.funding) || /waiver/i.test(p.payerSource);
       return `
-    <div class="legal-rep-card" style="border-left: 3px solid var(--marion-blue); margin-bottom:15px;">
-      <div class="rep-header"><span class="rep-title">Waiver / Service #${idx + 1}</span><button class="remove-rep-btn" onclick="removeProgramService(${p.id})">×</button></div>
-      <div class="form-grid">
-        <div class="field-group"><label>Service Name</label><input type="text" value="${esc(p.service)}" oninput="updateProgramServiceField(${p.id},'service',this.value)"></div>
-        <div class="field-group"><label>Provider</label><input type="text" value="${esc(p.provider)}" oninput="updateProgramServiceField(${p.id},'provider',this.value)"></div>
-        <div class="field-group"><label>Frequency</label><input type="text" value="${esc(p.frequency)}" oninput="updateProgramServiceField(${p.id},'frequency',this.value)"></div>
-        <div class="field-group half">
-          <label>Funding Source</label>
-          <select onchange="updateProgramServiceField(${p.id},'funding',this.value)">
+    <div class="legal-rep-card" style="border-left: 3px solid var(--marion-blue); margin-bottom:15px; padding: 15px;">
+      <div class="rep-header"><span class="rep-title">Authorized Service / Program #${idx + 1}</span><button class="remove-rep-btn" onclick="removeProgramService(${p.id})">×</button></div>
+      
+      <div style="font-weight: 700; color: var(--text-base); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">Program Definition & Payer Source</div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="field-group">
+          <label>Waiver / Program Type</label>
+          <input type="text" placeholder="e.g. 1915(c) Comprehensive Waiver" value="${esc(p.waiverType)}" oninput="updateProgramServiceField(${p.id},'waiverType',this.value)">
+        </div>
+        <div class="field-group">
+          <label>Payer Source</label>
+          <select onchange="updateProgramServiceField(${p.id},'payerSource',this.value)">
             <option value="">Select Funding Source...</option>
-            <option value="Comprehensive Waiver" ${p.funding === "Comprehensive Waiver" ? "selected" : ""}>Comprehensive Waiver</option>
-            <option value="Support Waiver" ${p.funding === "Support Waiver" ? "selected" : ""}>Support Waiver</option>
-            <option value="Grant Funding" ${p.funding === "Grant Funding" ? "selected" : ""}>Grant Funding</option>
-            <option value="Sarah Lopez Waiver (MOCDD)" ${p.funding === "Sarah Lopez Waiver (MOCDD)" ? "selected" : ""}>Sarah Lopez (MOCDD)</option>
-            <option value="PAC Funding" ${p.funding === "PAC Funding" ? "selected" : ""}>PAC Funding</option>
-            <option value="NEAI Funding" ${p.funding === "NEAI Funding" ? "selected" : ""}>NEAI Funding</option>
-            <option value="No Funding" ${p.funding === "No Funding" ? "selected" : ""}>No Funding</option>
-            <option value="Partnership for Hope Waiver" ${p.funding === "Partnership for Hope Waiver" ? "selected" : ""}>Partnership for Hope Waiver</option>
-            <option value="Other" ${p.funding === "Other" ? "selected" : ""}>Other</option>
+            <option value="Federal Waiver" ${p.payerSource === "Federal Waiver" ? "selected" : ""}>Federal Waiver</option>
+            <option value="State Plan Medicaid" ${p.payerSource === "State Plan Medicaid" ? "selected" : ""}>State Plan Medicaid</option>
+            <option value="State General Revenue" ${p.payerSource === "State General Revenue" ? "selected" : ""}>State General Revenue</option>
+            <option value="Private / MCO Insurance" ${p.payerSource === "Private / MCO Insurance" ? "selected" : ""}>Private / MCO Insurance</option>
+            <option value="Other" ${p.payerSource === "Other" ? "selected" : ""}>Other</option>
           </select>
         </div>
-        <div class="field-group half" style="display: ${p.funding === "Other" ? "block" : "none"}">
-          <label>Other Funding Source</label>
-          <input type="text" value="${esc(p.otherFunding || "")}" placeholder="Specify funding..." oninput="updateProgramServiceField(${p.id},'otherFunding',this.value)">
+        <div class="field-group">
+          <label>Managed Care Org (MCO) / Plan Network ID</label>
+          <input type="text" placeholder="e.g. UnitedHealthcare Community Plan" value="${esc(p.mco)}" oninput="updateProgramServiceField(${p.id},'mco',this.value)">
+        </div>
+        <div class="field-group">
+          <label>Cost Cap Restrictions (Max Annual $ Limit)</label>
+          <input type="text" placeholder="e.g. $15,000 / year" value="${esc(p.costCap)}" oninput="updateProgramServiceField(${p.id},'costCap',this.value)">
         </div>
         <div class="field-group full">
-          <label>Justification / Explanation</label>
-          <textarea style="min-height: 60px;" placeholder="Explain the need for this service..." oninput="updateProgramServiceField(${p.id},'justification',this.value)">${esc(p.justification)}</textarea>
+          <label>Prior Authorization (PA) Number</label>
+          <input type="text" placeholder="Tracking codes issued by MMIS" value="${esc(p.paNumber)}" oninput="updateProgramServiceField(${p.id},'paNumber',this.value)">
         </div>
+      </div>
+
+      <div style="font-weight: 700; color: var(--text-base); margin-top: 15px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">Effective Date Windows</div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+        <div class="field-group">
+          <label>Authorization Start</label>
+          <input type="date" value="${esc(p.startDate)}" oninput="updateProgramServiceField(${p.id},'startDate',this.value)">
+        </div>
+        <div class="field-group">
+          <label>Authorization End</label>
+          <input type="date" value="${esc(p.endDate)}" oninput="updateProgramServiceField(${p.id},'endDate',this.value)">
+        </div>
+        <div class="field-group">
+          <label>Is this an Amendment?</label>
+          <select onchange="updateProgramServiceField(${p.id},'isAmendment',this.value)">
+            <option value="No" ${p.isAmendment === "No" ? "selected" : ""}>No</option>
+            <option value="Yes" ${p.isAmendment === "Yes" ? "selected" : ""}>Yes</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Amendment Effective Date</label>
+          <input type="date" value="${esc(p.amendDate)}" oninput="updateProgramServiceField(${p.id},'amendDate',this.value)">
+        </div>
+      </div>
+
+      <div style="font-weight: 700; color: var(--text-base); margin-top: 15px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">Authorized Service Arrays (The Core Matrix)</div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="field-group">
+          <label>HCPCS / Billing Code & Modifier</label>
+          <input type="text" placeholder="e.g. T2017" value="${esc(p.billingCode)}" oninput="updateProgramServiceField(${p.id},'billingCode',this.value)">
+        </div>
+        <div class="field-group">
+          <label>Unit of Measure</label>
+          <input type="text" placeholder="e.g. 15-minute increments, hourly" value="${esc(p.unitMeasure)}" oninput="updateProgramServiceField(${p.id},'unitMeasure',this.value)">
+        </div>
+        <div class="field-group">
+          <label>Frequency and Quantity Caps</label>
+          <input type="text" placeholder="e.g. 40 units per week" value="${esc(p.frequencyCaps)}" oninput="updateProgramServiceField(${p.id},'frequencyCaps',this.value)">
+        </div>
+        <div class="field-group">
+          <label>Total Allocation Tracking ($)</label>
+          <input type="text" placeholder="e.g. $12,000" value="${esc(p.totalAllocation)}" oninput="updateProgramServiceField(${p.id},'totalAllocation',this.value)">
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top: 10px;">
+        <div class="field-group full">
+          <label>Justification / Provider Selection</label>
+          <textarea style="min-height: 40px;" placeholder="Explain the need for this service and designated provider..." oninput="updateProgramServiceField(${p.id},'justification',this.value)">${esc(p.justification)}</textarea>
+        </div>
+      </div>
 
         ${
           isWaiver
@@ -931,26 +995,52 @@ function updateUI() {
   line("");
 
   head("7. PROGRAM OR OTHER SERVICES");
+  line("Program Eligibility & Administrative Identifiers:");
+  field("State Medicaid ID (DCN)", getVal("stateMedicaidId"));
+  field("DDD Case Number", getVal("dddCaseNumber"));
+  field("Regional Office Code", getVal("regionalOfficeCode"));
+  
+  line("");
+  line("Case Management & Oversight Authority:");
+  field("Case Manager / SC", getVal("caseManagerName"));
+  field("Secure Email", getVal("caseManagerEmail"));
+  field("Agency NPI", getVal("caseManagerNPI"));
+  line("");
+
   if (programServices.length > 0) {
-    line("Current Programs & Waivers:");
+    line("Authorized Services & Waivers Matrix:");
     programServices.forEach((s, idx) => {
-      const fundDisplay = s.funding === "Other" ? s.otherFunding || "Other" : s.funding || "—";
-      line(`  [${idx + 1}] Service: ${s.service || "—"} | Provider: ${s.provider || "—"} | Freq: ${s.frequency || "—"} | Funding: ${fundDisplay}`);
-      if (s.justification) {
-        line(`      Justification: ${s.justification}`);
-      }
-      const isWaiver = /waiver/i.test(s.service) || /waiver/i.test(s.funding);
+      line(`  [${idx + 1}] PROGRAM DEFINITION:`);
+      line(`      Waiver/Type : ${s.waiverType || "—"}`);
+      line(`      Payer Source: ${s.payerSource || "—"}`);
+      line(`      MCO / Plan  : ${s.mco || "—"}`);
+      line(`      Cost Cap    : ${s.costCap || "—"}`);
+      line(`      PA Number   : ${s.paNumber || "—"}`);
+      line(`      Amend Status: ${s.isAmendment === "Yes" ? `Yes (Date: ${s.amendDate || "—"})` : "No"}`);
+      line(`      Auth Window : ${s.startDate || "—"} to ${s.endDate || "—"}`);
+      line(`      Justification: ${s.justification || "—"}`);
+      
+      line(`      SERVICE ARRAY:`);
+      line(`        HCPCS Code: ${s.billingCode || "—"}`);
+      line(`        Unit Meas : ${s.unitMeasure || "—"}`);
+      line(`        Freq Caps : ${s.frequencyCaps || "—"}`);
+      line(`        Total $   : ${s.totalAllocation || "—"}`);
+      
+      const isWaiver = /waiver/i.test(s.waiverType) || /waiver/i.test(s.payerSource);
       if (isWaiver) {
-        line(`      1. Informed of options: ${s.hcbs1 || "—"}`);
-        line(`      2. Informed of range: ${s.hcbs2 || "—"}`);
-        line(`      3. Update method: ${s.hcbs3 || "—"}`);
-        line(`      4. Alternatives considered: ${s.hcbs4 || "—"}`);
+        line(`      HCBS Waiver Choice & Education:`);
+        line(`        1. Informed of options: ${s.hcbs1 || "—"}`);
+        line(`        2. Informed of range: ${s.hcbs2 || "—"}`);
+        line(`        3. Update method: ${s.hcbs3 || "—"}`);
+        line(`        4. Alternatives considered: ${s.hcbs4 || "—"}`);
       }
+      line("");
     });
+  } else {
+    line("Authorized Services: None documented.");
     line("");
   }
-  line("HCBS Choice & Plan Contributors:");
-  field("Plan Contributors", getVal("contributors"));
+  
   field("Individualized Backup Plan", getVal("backupPlan"));
   line("");
 
@@ -1214,6 +1304,10 @@ function updateUI() {
   line("");
   if (document.getElementById("attachmentsIncluded")?.checked) {
     line("*** ATTACHMENTS INCLUDED WITH PCSP ***");
+    const attDetails = getVal("attachmentsDetails");
+    if (attDetails) {
+      line(`Attachment Details: ${attDetails}`);
+    }
   }
 
   line("");

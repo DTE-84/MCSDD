@@ -1542,8 +1542,40 @@
         <!-- ── Section 7: Program or Other Services ── -->
         <div class="form-section" id="sec-program-services">
           <div class="section-title"><span>7</span> Program or Other Services</div>
+
+          <div class="subsection-label">Program Eligibility & Administrative Identifiers</div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>State Medicaid ID (DCN)</label>
+              <input type="text" id="stateMedicaidId" oninput="updateUI()" placeholder="e.g. 123456789">
+            </div>
+            <div class="field-group">
+              <label>DDD Case Number</label>
+              <input type="text" id="dddCaseNumber" oninput="updateUI()" placeholder="e.g. 9876543">
+            </div>
+            <div class="field-group">
+              <label>County / Regional Office Code</label>
+              <input type="text" id="regionalOfficeCode" oninput="updateUI()" placeholder="e.g. RO-32">
+            </div>
+          </div>
           
-          <div class="subsection-label">Current Programs &amp; Waivers</div>
+          <div class="subsection-label" style="margin-top: 15px;">Case Management & Oversight Authority</div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Assigned Case Manager / SC</label>
+              <input type="text" id="caseManagerName" oninput="updateUI()" placeholder="Name">
+            </div>
+            <div class="field-group">
+              <label>Direct Secure Email</label>
+              <input type="email" id="caseManagerEmail" oninput="updateUI()" placeholder="Email">
+            </div>
+            <div class="field-group">
+              <label>CM Agency NPI (10-digit)</label>
+              <input type="text" id="caseManagerNPI" oninput="updateUI()" placeholder="NPI Number">
+            </div>
+          </div>
+          
+          <div class="subsection-label" style="margin-top: 24px;">Authorized Services & Waivers</div>
           <div id="programServicesContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addProgramService()" style="margin-bottom: 20px;">
             + Add Waiver / Service
@@ -2113,7 +2145,7 @@
           <div class="form-grid">
             <div class="field-group full">
               <label>Plan Comments / Clinical Summary</label>
-              <textarea id="planComments" oninput="updateUI()" style="min-height: 120px;" placeholder="Contributors to PCSP meeting:&#10;- How often client will be seen by the SC.&#10;- Detailed annual service monitoring.&#10;- Who is responsible for monitoring the PCSP, and where are they kept."></textarea>
+              <textarea id="planComments" oninput="updateUI()" style="min-height: 140px;" placeholder="Contributors to PCSP meeting:&#10;- How often client will be seen by the SC.&#10;- Detailed annual service monitoring.&#10;- Who is responsible for monitoring the PCSP, and where are they kept.&#10;- Who discussed the implementation strategies and where are they stored."></textarea>
             </div>
             <div class="field-group">
               <label>RAS Score</label>
@@ -2224,6 +2256,14 @@
               <label>Last LOC Date</label>
               <input type="date" id="lastLOC" oninput="updateUI()" />
             </div>
+            <div class="field-group full">
+              <label>Other Domains</label>
+              <input type="text" id="locOtherDomains" oninput="updateUI()" />
+            </div>
+          </div>
+          
+          <div class="subsection-label" style="margin-top: 24px;">Choices & Alternatives</div>
+          <div class="form-grid">
             <div class="field-group">
               <label>Individual has Choices?</label>
               <div style="display:flex; align-items:center; height:100%; margin-top: -6px;">
@@ -2234,10 +2274,10 @@
               <label>List / Describe Choices</label>
               <input type="text" id="choicesDescription" placeholder="Describe the choices provided..." oninput="updateUI()" />
             </div>
-            <div class="field-group full">
-              <label>Other Domains</label>
-              <input type="text" id="locOtherDomains" oninput="updateUI()" />
-            </div>
+          </div>
+
+          <div class="subsection-label" style="margin-top: 24px;">Burial Plan & Arrangements</div>
+          <div class="form-grid">
             <div class="field-group full">
               <label>Burial Plan</label>
               <div class="ethnicity-grid">
@@ -2281,8 +2321,17 @@
               <div id="attendeesContainer"></div>
               <button class="btn btn-outline" type="button" onclick="addAttendee()" style="margin-top: 8px; margin-bottom: 10px;">+ Add Attendee</button>
             </div>
-            <div class="field-group full" style="display:flex; justify-content:center; border-top: 1px dashed var(--border); padding-top:15px; margin-top:10px;">
-              <label class="eth-check" style="font-size:14px;"><input type="checkbox" id="attachmentsIncluded" onchange="updateUI()"> Attachments Included</label>
+            <div class="field-group full" style="border-top: 1px dashed var(--border); padding-top:15px; margin-top:10px;">
+              <div style="display:flex; justify-content:center;">
+                <label class="eth-check" style="font-size:14px;">
+                  <input type="checkbox" id="attachmentsIncluded" onchange="toggleAttachments()"> Attachments Included
+                </label>
+              </div>
+            </div>
+            
+            <div class="field-group full" id="attachmentsDetailsWrapper" style="display: none; margin-bottom: 15px;">
+              <label>Details of Attachments</label>
+              <textarea id="attachmentsDetails" placeholder="List the attachments included with this PCSP..." oninput="updateUI()"></textarea>
             </div>
             
             <div class="field-group full">
@@ -2373,6 +2422,19 @@
           } else {
             wrap.style.display = 'none';
             document.getElementById('emergencyAssistanceDetails').value = '';
+          }
+          if (typeof updateUI === 'function') updateUI();
+        }
+      }
+      function toggleAttachments() {
+        const cb = document.getElementById('attachmentsIncluded');
+        const wrap = document.getElementById('attachmentsDetailsWrapper');
+        if (cb && wrap) {
+          if (cb.checked) {
+            wrap.style.display = 'block';
+          } else {
+            wrap.style.display = 'none';
+            document.getElementById('attachmentsDetails').value = '';
           }
           if (typeof updateUI === 'function') updateUI();
         }
