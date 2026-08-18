@@ -207,6 +207,7 @@ const FORM_FIELDS = [
   "behavioralNotes",
   // Section 15 - Supervision
   "supervisionLevel",
+  "alteredSupervision",
   "riskLevel",
   "oshaPrecaution",
   "backupPlan",
@@ -1000,6 +1001,9 @@ function updateUI() {
 
   head("15. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
   field("Supervision Level", getVal("supervisionLevel"));
+  if (document.getElementById("alteredSupervision")?.checked) {
+    line("  * Altered Levels of Supervision applied *");
+  }
   field("Staff Precautions", getVal("oshaPrecaution"));
   field("Staff Support Needs", getVal("staffSupportNeeds"));
   field("Risk Level", getVal("riskLevel"));

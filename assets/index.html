@@ -1930,6 +1930,12 @@
                 <option value="High">High Risk</option>
               </select>
             </div>
+            <div class="field-group" style="justify-content: center;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer; height: 100%;">
+                <input type="checkbox" id="alteredSupervision" onchange="updateUI()"> 
+                Altered levels of supervision
+              </label>
+            </div>
             <div class="field-group full">
               <label>Evacuation / 911 Plan</label>
               <textarea id="evacPlan" placeholder="Describe steps for emergencies and evacuation." oninput="updateUI()"></textarea>
