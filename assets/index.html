@@ -257,11 +257,12 @@
   <div id="lockScreen">
     <div class="lock-card">
       <div class="seal">
-        <img src="MCSDDL.svg" alt="MCSDD Logo" class="modal-logo" />
+        <img src="MCSDDLogo.svg" alt="MCSDD Logo" class="modal-logo" />
       </div>
 
       <h1>MCSDD Employee Portal</h1>
-      <p class="subtitle">Marion County · Developmental Services</p>
+      <p class="subtitle" id="lockSubtitle">Marion County · Developmental Services</p>
+      
       <div class="field-wrap">
         <input
           type="password"
@@ -270,8 +271,21 @@
           autocomplete="off"
         />
       </div>
+
+      <div id="confirmPassWrap" style="display: none;">
+        <div class="field-wrap">
+          <input
+            type="password"
+            id="passConfirm"
+            placeholder="Confirm password"
+            autocomplete="off"
+          />
+        </div>
+        <div id="passStrengthHint" style="font-size: 11px; margin-bottom: 12px; color: #8a8fa8; text-align: left; padding-left: 10px;"></div>
+      </div>
+
       <div id="errorMsg"></div>
-      <button class="btn-primary" onclick="checkPass()">Access Portal</button>
+      <button class="btn-primary" id="lockBtn" onclick="checkPass()">Access Portal</button>
       <div class="lock-footer">
         Authorized personnel only &nbsp;·&nbsp; MCSDD 2024
       </div>
@@ -293,11 +307,11 @@
         </div>
         <div class="guide-item">
           <h3><span>02 //</span> Saving Your Work</h3>
-          <p>Click <b>"New Plan"</b> to start fresh, or <b>"Export"</b> to save your draft as a <span style="color:#FFF">.pcsp</span> file. Drafts auto-expire after 30 days to ensure data hygiene.</p>
+          <p>Click <b>"New Plan"</b> to start fresh, or <b>"Export"</b> to save your draft as a <span style="color:#246bce">.pcsp</span> file. Drafts auto-expire after 30 days to ensure data hygiene.</p>
         </div>
         <div class="guide-item">
           <h3><span>03 //</span> Rapid Resumption</h3>
-          <p>Drag and drop any <span style="color:#FFF">.pcsp</span> file anywhere on this screen to instantly reload a previous session with 100% data fidelity.</p>
+          <p>Drag and drop any <span style="color:#246bce">.pcsp</span> file anywhere on this screen to instantly reload a previous session with 100% data fidelity.</p>
         </div>
         <div class="guide-item">
           <h3><span>04 //</span> Audit-Ready Print</h3>
@@ -315,10 +329,33 @@
   <body onload="init()">
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div class="app-container" id="appContainer">
-      <!-- ── Left Sidebar: Marion County Resources ── -->
+      <!-- ── Left Sidebar ── -->
       <aside class="side-panel">
-        <div class="panel-header">Marion County Resources</div>
+        <div class="panel-header">Section Navigation</div>
+        <div class="panel-content" id="sectionNav" style="max-height: 400px; overflow-y: auto; border-bottom: 2px solid var(--border);">
+          <div class="nav-grid" style="display: grid; grid-template-columns: 1fr; gap: 4px;">
+            <div class="nav-item" onclick="scrollToSection('sec-cover-letter')"><span>0.</span> Face Sheet</div>
+            <div class="nav-item" onclick="scrollToSection('sec-demographics')"><span>1.</span> Demographics</div>
+            <div class="nav-item" onclick="scrollToSection('sec-likes')"><span>2.</span> Preferences</div>
+            <div class="nav-item" onclick="scrollToSection('sec-dislikes')"><span>3.</span> Dislikes</div>
+            <div class="nav-item" onclick="scrollToSection('sec-important-people')"><span>4.</span> People</div>
+            <div class="nav-item" onclick="scrollToSection('sec-vision')"><span>5.</span> Dreams/Hopes</div>
+            <div class="nav-item" onclick="scrollToSection('sec-communication')"><span>6.</span> Communication</div>
+            <div class="nav-item" onclick="scrollToSection('sec-program-services')"><span>7.</span> Programs</div>
+            <div class="nav-item" onclick="scrollToSection('sec-health')"><span>8.</span> Health/Risk</div>
+            <div class="nav-item" onclick="scrollToSection('sec-community-support')"><span>9.</span> Natural Support</div>
+            <div class="nav-item" onclick="scrollToSection('sec-support-ways')"><span>10.</span> Strategies</div>
+            <div class="nav-item" onclick="scrollToSection('sec-strengths')"><span>12.</span> Strengths</div>
+            <div class="nav-item" onclick="scrollToSection('sec-transition')"><span>13.</span> Transition</div>
+            <div class="nav-item" onclick="scrollToSection('sec-behavioral-legacy')"><span>14.</span> Behavioral</div>
+            <div class="nav-item" onclick="scrollToSection('sec-supervision')"><span>15.</span> Supervision</div>
+            <div class="nav-item" onclick="scrollToSection('sec-prev-goals')"><span>16.</span> Goals History</div>
+            <div class="nav-item" onclick="scrollToSection('sec-outcomes')"><span>17.</span> Action Plan</div>
+            <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>18.</span> Comments</div>
+          </div>
+        </div>
 
+        <div class="panel-header" style="margin-top: 0;">Marion County Resources</div>
         <div class="panel-content" id="resourceList">
           <div
             class="resource-card"
@@ -540,13 +577,23 @@
             >
               ☰
             </button>
-            <img src="MCSDDL.svg" style="height: 48px; width: auto; margin-right: 15px;" alt="Logo" />
+            <img src="MCSDDLogo.svg" style="height: 48px; width: auto; margin-right: 15px;" alt="Logo" />
             <h1 class="font-serif">
               PCSP Assistant
               <span style="font-weight: 300; color: var(--gold)">Pro</span>
             </h1>
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-label); margin-left: 10px; border-left: 1px solid var(--border); padding-left: 10px;">
+              Missouri DMH/DDD Compliance Engine
+            </div>
           </div>
           <div class="btn-bar">
+            <div class="hipaa-badge" style="font-size: 10px; font-weight: 800; color: var(--success); display: flex; align-items: center; gap: 5px; margin-right: 15px; border: 1px solid var(--success); padding: 4px 8px; border-radius: 4px;">
+              <span style="width: 6px; height: 6px; background: var(--success); border-radius: 50%; display: inline-block;"></span>
+              HIPAA SECURE (LOCAL)
+            </div>
+            <button class="btn btn-danger" onclick="wipeSessionData()" title="Wipe all data from browser cache">
+              🗑️ Wipe Data
+            </button>
             <button
               class="btn btn-outline"
               id="themeToggle"
@@ -687,10 +734,7 @@
                 oninput="updateUI()"
               />
             </div>
-            <div class="field-group">
-              <label>Date of Birth</label>
-              <input type="date" id="clientDOB" oninput="updateUI()" />
-            </div>
+            
             <div class="field-group">
               <label>DMH ID #</label>
               <input
@@ -707,7 +751,7 @@
                 <label class="eth-check"><input type="checkbox" class="funding-cb" value="Comprehensive Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Comprehensive Waiver</label>
                 <label class="eth-check"><input type="checkbox" class="funding-cb" value="Support Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Support Waiver</label>
                 <label class="eth-check"><input type="checkbox" class="funding-cb" value="Grant Funding" onchange="syncFundingCheckboxes(); updateUI()" /> Grant Funding</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Sarah Lopez Waiver (MOCDD)" onchange="syncFundingCheckboxes(); updateUI()" /> Sarah Lopez Waiver(MOCDD)</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Sarah Lopez Waiver (MOCDD)" onchange="syncFundingCheckboxes(); updateUI()" /> Sarah Lopez Wavier(MOCDD)</label>
                 <label class="eth-check"><input type="checkbox" class="funding-cb" value="PAC Funding" onchange="syncFundingCheckboxes(); updateUI()" /> PAC Funding</label>
                 <label class="eth-check"><input type="checkbox" class="funding-cb" value="NEAI Funding" onchange="syncFundingCheckboxes(); updateUI()" /> NEAI Funding</label>
                 <label class="eth-check"><input type="checkbox" class="funding-cb" value="No Funding" onchange="syncFundingCheckboxes(); updateUI()" /> No Funding</label>
@@ -768,15 +812,6 @@
             <div class="field-group">
               <label>Date of Birth</label>
               <input type="date" id="clientDOB" oninput="updateUI()" />
-            </div>
-            <div class="field-group">
-              <label>DMH ID #</label>
-              <input
-                type="text"
-                id="coverDmhID"
-                placeholder="7-digit ID"
-                oninput="updateUI()"
-              />
             </div>
             <div class="field-group">
               <label>TCM Agency</label>
@@ -1182,42 +1217,13 @@
 
           <!-- 1K: Employment -->
           <div class="subsection-label">Employment</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Employment Status</label>
-              <select id="employmentStatus" onchange="updateUI()">
-                <option value="Full-Time Employed">Full-Time Employed</option>
-                <option value="Part-Time Employed">Part-Time Employed</option>
-                <option value="Seasonal Employment">Seasonal Employment</option>
-                <option value="Self-Employed">Self-Employed</option>
-                <option value="Workshop">Workshop</option>
-                <option value="Student / BEST">Student / BEST</option>
-                <option value="Supported Employment (Job Coach)">
-                  Supported Employment (Job Coach)
-                </option>
-                <option value="Seeking Employment">Seeking Employment</option>
-                <option value="Day Program / Vocational Training">
-                  Day Program / Vocational Training
-                </option>
-                <option value="Unemployed — Not Seeking">
-                  Unemployed — Not Seeking
-                </option>
-                <option value="Retired">Retired</option>
-                <option value="Student / Not Working">
-                  Student / Not Working
-                </option>
-              </select>
-            </div>
-            <div class="field-group half">
-              <label>Job Title / Employer / Description</label>
-              <input
-                type="text"
-                id="employmentJob"
-                placeholder="e.g. Dishwasher at Hannibal Diner"
-                oninput="updateUI()"
-              />
-            </div>
+          <div id="employmentEntriesContainer">
+            <!-- Dynamic jobs rendered here -->
           </div>
+          <div style="margin: 10px 0 20px;">
+            <button class="btn btn-outline" onclick="addEmploymentEntry()">+ Add Employment / Job</button>
+          </div>
+
            <!-- 1B: Legal & Marital -->
            <div class="subsection-label">Legal &amp; Marital Status</div>
           <div class="form-grid">
@@ -1543,27 +1549,11 @@
             + Add Waiver / Service
           </button>
 
-          <div class="subsection-label">HCBS Waiver Choice &amp; Education</div>
+          <div class="subsection-label">HCBS Waiver Choice &amp; Education / Backup Plan</div>
           <div class="form-grid">
             <div class="field-group full">
-              <label>1. How was the individual educated and informed of the options listed in the Medicaid waiver, provider and services choice statement?</label>
-              <textarea id="hcbsEducatedOptions" placeholder="Describe how they were informed..." oninput="updateUI()"></textarea>
-            </div>
-            <div class="field-group full">
-              <label>2. How was the individual educated and informed of the full range of HCBS available to support achievement of personally identified goals?</label>
-              <textarea id="hcbsEducatedRange" placeholder="Describe the education on available HCBS..." oninput="updateUI()"></textarea>
-            </div>
-            <div class="field-group full">
-              <label>3. Conflict-Free Resolution: Include a method for the individual to request updates to the plan as needed.</label>
-              <textarea id="hcbsUpdateMethod" placeholder="Include process for requesting updates..." oninput="updateUI()"></textarea>
-            </div>
-            <div class="field-group full">
-              <label>4. Discuss the alternative home and community based settings that were considered by the individual.</label>
-              <textarea id="hcbsAlternatives" placeholder="List alternatives considered..." oninput="updateUI()"></textarea>
-            </div>
-            <div class="field-group full">
-              <label>Plan Contributors</label>
-              <input type="text" id="contributors" placeholder="Who was involved?" oninput="updateUI()" />
+              <label>Individualized Backup Plan (Mandatory for Critical Services)</label>
+              <textarea id="backupPlan" placeholder="Identify the backup protocol if a primary service provider is unavailable..." oninput="updateUI()"></textarea>
             </div>
           </div>
         </div>
@@ -1703,13 +1693,17 @@
               </select>
             </div>
             <div class="field-group">
-              <label>Staff Precaution (OSHA 3148)</label>
+              <label>Staff Precautions</label>
               <select id="oshaPrecaution" onchange="updateUI()">
                 <option value="Standard universal precautions apply.">Standard Precautions</option>
                 <option value="Two-staff escort required for community.">2-Staff Escort Protocol</option>
                 <option value="Staff to maintain clear path to exit.">Environmental Awareness</option>
                 <option value="Utilize de-escalation (Mandt/NCI).">De-escalation Protocol</option>
               </select>
+            </div>
+            <div class="field-group full">
+              <label>Staff Support Needs (Choking, Aspiration, Mobility, Falls, etc.)</label>
+              <textarea id="staffSupportNeeds" placeholder="Describe support needs for choking, aspiration, mobility, falls, etc." oninput="updateUI()"></textarea>
             </div>
             <div class="field-group full">
               <label>Allergies / Sensitivities</label>
@@ -1849,43 +1843,52 @@
               <select id="transitionCategory" onchange="toggleTransitionFields(); updateUI();">
                 <option value="Standard">-- Select Life Stage --</option>
                 <option value="School Age (Under 16)">School Age (Under 16)</option>
-                <option value="Transition Age (16-24)">Transition Age (16-24)</option>
                 <option value="Adult / Employment Age">Adult / Employment Age</option>
                 <option value="Retirement Age (65+)">Retirement Age (65+)</option>
               </select>
             </div>
 
-            <!-- Retirement Logic -->
-            <div class="field-group full" id="retirementFields" style="display:none;">
-              <label>Retirement Status & Context</label>
-              <textarea id="retirementNotes" placeholder="e.g., Person is of retirement age and does not wish to work; or Person retired from [Employer] on [Date]." oninput="updateUI()"></textarea>
-            </div>
-
-            <!-- Under 16 Logic -->
-            <div class="field-group full" id="under16Fields" style="display:none;">
-              <label>Early Transition & Soft Skill Development (Team Discussion)</label>
-              <textarea id="under16Notes" placeholder="Discuss: Self-determination; soft skills; interest/aptitude exploration; adult roles; social capital; early work experiences (volunteerism/shadowing); independent living skills." oninput="updateUI()"></textarea>
-            </div>
-
-            <!-- Discovery Tools & Benefits Counseling -->
-            <div class="field-group full">
-              <label>Discovery Tools / Financial Literacy (DB101, My Next Move, etc.)</label>
-              <textarea id="discoveryTools" placeholder="Document use of DB101, My Next Move, or Youth Transition services. Note benefit counseling and financial literacy planning." oninput="updateUI()"></textarea>
-            </div>
-
-            <!-- Community Support Referrals -->
-            <div class="field-group full">
-              <label>Community Support Programs (Select and verify referrals)</label>
-              <div class="ethnicity-grid" id="referralGrid">
-                <label class="eth-check"><input type="checkbox" class="referral-cb" value="Vocational Rehabilitation" onchange="updateUI()"> Voc Rehab</label>
-                <label class="eth-check"><input type="checkbox" class="referral-cb" value="Centers for Independent Living" onchange="updateUI()"> CILs</label>
-                <label class="eth-check"><input type="checkbox" class="referral-cb" value="County Boards" onchange="updateUI()"> County Boards</label>
-                <label class="eth-check"><input type="checkbox" class="referral-cb" value="Missouri Job Centers" onchange="updateUI()"> MO Job Centers</label>
+            <!-- Under 16 Logic (Progressive Stage 1) -->
+            <div id="under16Container" style="display:none; grid-column: 1 / -1;">
+              <div class="subsection-label" style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Youth Transition (Under 16)</div>
+              <div class="field-group full">
+                <label>Early Transition & Soft Skill Development (Team Discussion)</label>
+                <textarea id="under16Notes" placeholder="Discuss: Self-determination; soft skills; interest/aptitude exploration; adult roles; social capital; early work experiences; independent living skills." oninput="updateUI()"></textarea>
               </div>
-              <textarea id="referralNotes" placeholder="Ensure appropriate referrals have been made and noted here." style="margin-top:10px;" oninput="updateUI()"></textarea>
             </div>
 
-            <div class="field-group full">
+            <!-- Adult / Employment Logic (Progressive Stage 2) -->
+            <div id="adultTransitionContainer" style="display:none; grid-column: 1 / -1;">
+              <div class="subsection-label" style="margin-top: 20px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Adult Transition & Employment (16+)</div>
+              <div class="form-grid">
+                <div class="field-group full">
+                  <label>Discovery Tools / Financial Literacy (DB101, My Next Move, etc.)</label>
+                  <textarea id="discoveryTools" placeholder="Document use of DB101, My Next Move, or Youth Transition services. Note benefit counseling and financial literacy planning." oninput="updateUI()"></textarea>
+                </div>
+
+                <div class="field-group full">
+                  <label>Community Support Programs (Select and verify referrals)</label>
+                  <div class="ethnicity-grid" id="referralGrid">
+                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="Vocational Rehabilitation" onchange="updateUI()"> Voc Rehab</label>
+                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="Centers for Independent Living" onchange="updateUI()"> CILs</label>
+                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="County Boards" onchange="updateUI()"> County Boards</label>
+                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="Missouri Job Centers" onchange="updateUI()"> MO Job Centers</label>
+                  </div>
+                  <textarea id="referralNotes" placeholder="Ensure appropriate referrals have been made and noted here." style="margin-top:10px;" oninput="updateUI()"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Retirement Logic (Progressive Stage 3) -->
+            <div id="retirementContainer" style="display:none; grid-column: 1 / -1;">
+              <div class="subsection-label" style="margin-top: 20px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Retirement Planning (65+)</div>
+              <div class="field-group full">
+                <label>Retirement Status & Context</label>
+                <textarea id="retirementNotes" placeholder="e.g., Person is of retirement age and does not wish to work; or Person retired from [Employer] on [Date]." oninput="updateUI()"></textarea>
+              </div>
+            </div>
+
+            <div class="field-group full" style="margin-top: 20px;">
               <label>Transition Planning Summary</label>
               <textarea
                 id="transitionPlan"
@@ -1909,10 +1912,10 @@
 
         <!-- ── Section 15: Supervision ── -->
         <div class="form-section" id="sec-supervision">
-          <div class="section-title"><span>15</span> Supervision</div>
+          <div class="section-title"><span>15</span> Supervision(housing) (safety and security)</div>
           <div class="form-grid">
             <div class="field-group">
-              <label>Supervision Level</label>
+              <label>Supervision Level (Covers Housing &amp; Community)</label>
               <select id="supervisionLevel" onchange="updateUI()">
                 <option value="Standard">Standard</option>
                 <option value="Line of Sight">Line of Sight</option>
@@ -1932,6 +1935,54 @@
               <textarea id="evacPlan" placeholder="Describe steps for emergencies and evacuation." oninput="updateUI()"></textarea>
             </div>
           </div>
+
+          <!-- Home Life Sub-section -->
+          <div class="subsection-label" style="margin-top: 24px;">Emergency Safety / Home Dangers</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <input type="checkbox" id="needsEmergencyAssistance" onchange="toggleEmergencyAssistance()"> 
+                Needs assistance for Emergency Safety / Home Dangers
+              </label>
+            </div>
+            <div class="field-group full" id="emergencyAssistanceDetailsWrapper" style="display: none;">
+              <label>Additional Information for Emergency Assistance</label>
+              <textarea id="emergencyAssistanceDetails" oninput="updateUI()"></textarea>
+            </div>
+          </div>
+
+          <div class="subsection-label" style="margin-top: 24px;">Lease / Agreement Info</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Last date of lease and how often renewed</label>
+              <input type="text" id="leaseDateRenew" oninput="updateUI()">
+            </div>
+            <div class="field-group full">
+              <label>Where can the document be found?</label>
+              <input type="text" id="leaseLocation" oninput="updateUI()">
+            </div>
+          </div>
+
+          <div class="subsection-label" style="margin-top: 24px;">Home Life (HCBS Compliance)</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>HCBS Rule #1 (House / Community): Did the person choose their current living arrangement? How is this known? If not, why not?</label>
+              <textarea id="hcbsRule1Choice" oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>HCBS Rule #2 (House / Community): Does the person have privacy (share a room, etc)?</label>
+              <textarea id="hcbsRule2Privacy" oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>HCBS Rule #3 (House / Community): Does the home provide the support needed for the individual - how or why not? *Base off of individual need and preference</label>
+              <textarea id="hcbsRule3Support" oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>Home Life / HCBS Choice Notes</label>
+              <textarea id="homeLifeNotes" placeholder="Additional details regarding safety and security in the home environment..." oninput="updateUI()"></textarea>
+            </div>
+          </div>
+
           <!-- 1D: Due Process (Moved from Section 7B) -->
           <div
             class="subsection-label"
@@ -2027,19 +2078,22 @@
           </div>
         </div>
 
-        <!-- ── Section 16: Previous and Current Goals ── -->
+        <!-- ── Section 16: Previous Goals ── -->
         <div class="form-section" id="sec-prev-goals">
-          <div class="section-title"><span>16</span> Previous and Current Goals</div>
+          <div class="section-title"><span>16</span> Previous Goals</div>
           <div id="dynamicGoalsTasksContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addGoalTask()">+ Add Goal / Task Entry</button>
         </div>
 
        
-        <!-- ---Section 17: Action Plan--->
+        <!-- ---Section 17: Action Plan (MOQO Integrated)--->
          <div class="form-section" id="sec-outcomes">
           <div class="section-title">
-            <span>17</span> Action Plan
+            <span>17</span> Personal Outcomes &amp; Implementation Strategies
           </div>
+          <p style="font-size: 11px; color: var(--text-label); margin-bottom: 15px; font-style: italic;">
+            Aligned with Missouri Quality Outcomes (MOQO) framework. Implementation strategies are mandatory for all waiver-funded services.
+          </p>
           <div id="goalsContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addGoal()" style="margin-top:4px;">
             + Add Action Plan
@@ -2162,6 +2216,16 @@
             anywhere onto this page to open it.
           </p>
         </div>
+
+        <!-- ── Compliance Footer ── -->
+        <footer class="app-footer" style="margin-top: 40px; padding: 40px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-label); font-size: 11px;">
+          <div style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+            <p style="font-weight: 800; color: var(--text-base); margin-bottom: 8px;">PCSP ASSISTANT PRO | VERSION 3.0</p>
+            <p>© 2024-2026 DTE Solutions. All Rights Reserved. Trade Secret & Intellectual Property of Drew.</p>
+            <p style="margin-top: 15px; color: #e07070;"><b>HIPAA NOTICE:</b> This application is a client-side data processor. All data remains in the local browser cache and is never transmitted to external servers. Ensure browser history and cache are cleared when using shared workstations.</p>
+            <p style="margin-top: 10px;">This tool is designed to assist in the drafting of Missouri DMH/DDD Person-Centered Service Plans. Users are responsible for verifying accuracy against current state regulations.</p>
+          </div>
+        </footer>
       </main>
 
       <!-- ── Right Sidebar: Saved Drafts ── -->
@@ -2172,6 +2236,21 @@
     </div>
 
     <div id="toast" class="toast"></div>
+    <script>
+      function toggleEmergencyAssistance() {
+        const cb = document.getElementById('needsEmergencyAssistance');
+        const wrap = document.getElementById('emergencyAssistanceDetailsWrapper');
+        if (cb && wrap) {
+          if (cb.checked) {
+            wrap.style.display = 'block';
+          } else {
+            wrap.style.display = 'none';
+            document.getElementById('emergencyAssistanceDetails').value = '';
+          }
+          if (typeof updateUI === 'function') updateUI();
+        }
+      }
+    </script>
     <script src="app.js"></script>
   </body>
 </html>
