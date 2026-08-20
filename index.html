@@ -1575,6 +1575,76 @@
             </div>
           </div>
           
+          <div class="subsection-label" style="margin-top: 15px;">MO HealthNet (Medicaid) Status</div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Eligibility Code (ME Code)</label>
+              <input type="text" id="medicaidEligibilityCode" oninput="updateUI()" placeholder="e.g. ME 13, ME 85">
+            </div>
+            <div class="field-group">
+              <label>Spend Down Status / Amount</label>
+              <input type="text" id="medicaidSpendDown" oninput="updateUI()" placeholder="e.g. $125.00 / month">
+            </div>
+            <div class="field-group">
+              <label>Managed Care Plan</label>
+              <input type="text" id="medicaidManagedCarePlan" oninput="updateUI()" placeholder="e.g. Home State Health">
+            </div>
+          </div>
+
+          <div class="subsection-label" style="margin-top: 15px;">Social Security Benefits</div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Benefit Type</label>
+              <select id="ssBenefitType" onchange="updateUI()">
+                <option value="">Select Type...</option>
+                <option value="SSI (Supplemental Security Income)">SSI (Supplemental Security Income)</option>
+                <option value="SSDI (Social Security Disability Insurance)">SSDI (Social Security Disability Insurance)</option>
+                <option value="SSA (Survivor's Benefits)">SSA (Survivor's Benefits)</option>
+                <option value="None">None</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Payment Amount</label>
+              <input type="text" id="ssPaymentAmount" oninput="updateUI()" placeholder="Monthly dollar amount">
+            </div>
+            <div class="field-group">
+              <label>Representative Payee</label>
+              <input type="text" id="ssRepPayee" oninput="updateUI()" placeholder="Who receives the check?">
+            </div>
+          </div>
+
+          <div class="subsection-label" style="margin-top: 15px;">Other Government Assistance</div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Food Stamps (SNAP)</label>
+              <input type="text" id="govAssistSnap" oninput="updateUI()" placeholder="Status and monthly amount">
+            </div>
+            <div class="field-group">
+              <label>Housing Assistance</label>
+              <input type="text" id="govAssistHousing" oninput="updateUI()" placeholder="Section 8, HUD, etc.">
+            </div>
+            <div class="field-group">
+              <label>Medicare (Dual-Eligible)</label>
+              <input type="text" id="govAssistMedicare" oninput="updateUI()" placeholder="Part A, B, or D enrollment">
+            </div>
+          </div>
+
+          <div class="subsection-label" style="margin-top: 15px;">Non-Division Supports (Community-Based)</div>
+          <div class="form-grid">
+            <div class="field-group">
+              <label>DHSS Services</label>
+              <input type="text" id="nonDivDhss" oninput="updateUI()" placeholder="State Plan Personal Care, etc.">
+            </div>
+            <div class="field-group">
+              <label>Vocational Rehabilitation (VR)</label>
+              <input type="text" id="nonDivVr" oninput="updateUI()" placeholder="Active, Case Closed, etc.">
+            </div>
+            <div class="field-group">
+              <label>Education / IEP Status</label>
+              <input type="text" id="nonDivEducation" oninput="updateUI()" placeholder="IEP status and school district">
+            </div>
+          </div>
+          
           <div class="subsection-label" style="margin-top: 24px;">Authorized Services & Waivers</div>
           <div id="programServicesContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addProgramService()" style="margin-bottom: 20px;">

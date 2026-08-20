@@ -155,6 +155,19 @@ const FORM_FIELDS = [
   "caseManagerName",
   "caseManagerEmail",
   "caseManagerNPI",
+  "medicaidEligibilityCode",
+  "medicaidSpendDown",
+  "medicaidManagedCarePlan",
+  "ssBenefitType",
+  "ssPaymentAmount",
+  "ssRepPayee",
+  "govAssistSnap",
+  "govAssistHousing",
+  "govAssistMedicare",
+  "nonDivDhss",
+  "nonDivVr",
+  "nonDivEducation",
+  "backupPlan",
   "commMethod",
   "comm-other",
   "insurance",
@@ -554,7 +567,7 @@ function renderProgramServices() {
       <div class="rep-header"><span class="rep-title">Authorized Service / Program #${idx + 1}</span><button class="remove-rep-btn" onclick="removeProgramService(${p.id})">×</button></div>
       
       <div style="font-weight: 700; color: var(--text-base); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">Program Definition & Payer Source</div>
-      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
         <div class="field-group">
           <label>Payer Source / Program Type</label>
           <select onchange="updateProgramServiceField(${p.id},'payerSource',this.value)">
@@ -570,6 +583,16 @@ function renderProgramServices() {
             <option value="PAC Funding" ${p.payerSource === "PAC Funding" ? "selected" : ""}>PAC Funding</option>
             <option value="NEAI Funding" ${p.payerSource === "NEAI Funding" ? "selected" : ""}>NEAI Funding</option>
             <option value="Other" ${p.payerSource === "Other" ? "selected" : ""}>Other</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Program Enrollment Status</label>
+          <select onchange="updateProgramServiceField(${p.id},'programStatus',this.value)">
+            <option value="">Select Status...</option>
+            <option value="Active" ${p.programStatus === "Active" ? "selected" : ""}>Active</option>
+            <option value="Inactive" ${p.programStatus === "Inactive" ? "selected" : ""}>Inactive</option>
+            <option value="Waitlist" ${p.programStatus === "Waitlist" ? "selected" : ""}>Waitlist</option>
+            <option value="Pending Approval" ${p.programStatus === "Pending Approval" ? "selected" : ""}>Pending Approval</option>
           </select>
         </div>
         <div class="field-group">
@@ -999,6 +1022,31 @@ function updateUI() {
   field("Case Manager / SC", getVal("caseManagerName"));
   field("Secure Email", getVal("caseManagerEmail"));
   field("Agency NPI", getVal("caseManagerNPI"));
+
+  line("");
+  line("MO HealthNet (Medicaid) Status:");
+  field("Eligibility Code (ME Code)", getVal("medicaidEligibilityCode"));
+  field("Spend Down", getVal("medicaidSpendDown"));
+  field("Managed Care Plan", getVal("medicaidManagedCarePlan"));
+
+  line("");
+  line("Social Security Benefits:");
+  field("Benefit Type", getVal("ssBenefitType"));
+  field("Payment Amount", getVal("ssPaymentAmount"));
+  field("Representative Payee", getVal("ssRepPayee"));
+
+  line("");
+  line("Other Government Assistance:");
+  field("Food Stamps (SNAP)", getVal("govAssistSnap"));
+  field("Housing Assistance", getVal("govAssistHousing"));
+  field("Medicare", getVal("govAssistMedicare"));
+
+  line("");
+  line("Non-Division Supports (Community-Based):");
+  field("DHSS Services", getVal("nonDivDhss"));
+  field("Vocational Rehab (VR)", getVal("nonDivVr"));
+  field("Education / IEP Status", getVal("nonDivEducation"));
+  
   line("");
 
   if (programServices.length > 0) {
@@ -1006,6 +1054,7 @@ function updateUI() {
     programServices.forEach((s, idx) => {
       line(`  [${idx + 1}] PROGRAM DEFINITION:`);
       line(`      Payer Source/Type: ${s.payerSource || "—"}`);
+      line(`      Enrollment Status: ${s.programStatus || "—"}`);
       line(`      MCO / Plan       : ${s.mco || "—"}`);
       line(`      Amend Status     : ${s.isAmendment === "Yes" ? `Yes (Date: ${s.amendDate || "—"})` : "No"}`);
       line(`      Auth Window      : ${s.startDate || "—"} to ${s.endDate || "—"}`);
