@@ -332,7 +332,7 @@
       <!-- ── Left Sidebar ── -->
       <aside class="side-panel">
         <div class="panel-header">Section Navigation</div>
-        <div class="panel-content" id="sectionNav" style="max-height: 400px; overflow-y: auto; border-bottom: 2px solid var(--border);">
+        <div class="panel-content" id="sectionNav" style="border-bottom: 2px solid var(--border);">
           <div class="nav-grid" style="display: grid; grid-template-columns: 1fr; gap: 4px;">
             <div class="nav-item" onclick="scrollToSection('sec-cover-letter')"><span>0.</span> Face Sheet</div>
             <div class="nav-item" onclick="scrollToSection('sec-demographics')"><span>1.</span> Demographics</div>
@@ -1544,29 +1544,32 @@
           <div class="section-title"><span>7</span> Program or Other Services</div>
 
           <div class="subsection-label">Employment Status</div>
-          <div class="form-grid">
-            <div class="field-group">
+          <div class="form-grid" style="margin-bottom: 32px;">
+            <div class="field-group full" style="grid-column: 1 / -1;">
               <label>Employment Status</label>
               <select id="employmentStatus7" onchange="toggleEmploymentStatus7(); updateUI()">
                 <option value="">Select...</option>
                 <option value="Employed">Employed</option>
                 <option value="Unemployed">Unemployed</option>
+                <option value="Retired">Retired</option>
+                <option value="Student Employed">Student Employed</option>
+                <option value="Student Unemployed">Student Unemployed</option>
               </select>
             </div>
-            <div id="futureEmploymentGroup" style="display: none; grid-column: span 2;">
-              <div class="form-grid">
-                <div class="field-group full" style="grid-column: 1 / -1;">
-                  <label>Reasons for excluding employment as an outcome</label>
-                  <textarea id="unemployedReasons7" oninput="updateUI()" placeholder="Describe reasons..."></textarea>
-                </div>
-                <div class="field-group full" style="grid-column: 1 / -1;">
-                  <label>Activities, experiences, and conversations promoting future career planning results</label>
-                  <textarea id="unemployedActivities7" oninput="updateUI()" placeholder="Outline activities..."></textarea>
-                </div>
-                <div class="field-group full" style="grid-column: 1 / -1;">
-                  <label>How often do you speak with the client about future employment?</label>
-                  <input type="text" id="futureEmploymentDiscussions" oninput="updateUI()" placeholder="Enter frequency and details">
-                </div>
+          </div>
+          <div id="futureEmploymentGroup" style="display: none; margin-bottom: 20px;">
+            <div class="form-grid">
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label>Reasons for excluding employment as an outcome</label>
+                <textarea id="unemployedReasons7" oninput="updateUI()" placeholder="Describe reasons..."></textarea>
+              </div>
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label>Activities, experiences, and conversations promoting future career planning results</label>
+                <textarea id="unemployedActivities7" oninput="updateUI()" placeholder="Outline activities..."></textarea>
+              </div>
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label>How often do you speak with the client about future employment?</label>
+                <input type="text" id="futureEmploymentDiscussions" oninput="updateUI()" placeholder="Enter frequency and details">
               </div>
             </div>
           </div>
@@ -1586,7 +1589,7 @@
                 <input type="number" id="avgHoursWorked7" oninput="updateUI()" placeholder="e.g. 20">
               </div>
               <div class="field-group full" style="grid-column: 1 / -1;">
-                <label>Competitive & Integrated Setting?</label>
+                <label>Competitive & Integrated setting</label>
                 <input type="text" id="competitiveIntegratedWork7" oninput="updateUI()" placeholder="Yes, or explain why not...">
               </div>
               <div class="field-group full" style="grid-column: 1 / -1;">

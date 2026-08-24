@@ -1082,7 +1082,7 @@ function updateUI() {
     field("Employer Name", getVal("employerName7"));
     field("Job Title", getVal("jobTitle7"));
     field("Avg. Hours/Week", getVal("avgHoursWorked7"));
-    field("Competitive & Integrated?", getVal("competitiveIntegratedWork7"));
+    field("Competitive & Integrated", getVal("competitiveIntegratedWork7"));
     const groupSupport = getVal("groupSupportedEmploymentJustification7");
     if (groupSupport) {
       field("Group Supported Justification", groupSupport);
@@ -1715,10 +1715,10 @@ function toggleEmploymentStatus7() {
   const employedGroup = document.getElementById("employedDetailsGroup");
   
   if (unemployedGroup) {
-    unemployedGroup.style.display = (status === "Unemployed") ? "" : "none";
+    unemployedGroup.style.display = (status === "Unemployed" || status === "Student Unemployed" || status === "Retired") ? "" : "none";
   }
   if (employedGroup) {
-    employedGroup.style.display = (status === "Employed") ? "block" : "none";
+    employedGroup.style.display = (status === "Employed" || status === "Student Employed") ? "block" : "none";
   }
 }
 
