@@ -1141,6 +1141,7 @@ function updateUI() {
     } else {
       hcbsServices.forEach((s, idx) => {
         line(`  [${idx + 1}] Service / Program: ${s.serviceName || "—"}`);
+        field("      Program", Array.isArray(s.q5Funding) && s.q5Funding.length > 0 ? s.q5Funding.join(", ") : "");
         field("      Signee", s.whoSigned);
         field("      Name of Signee", s.signeeNames);
         field("      Provider and Services Choice Statement Effective Signed Date", s.signedDate);
@@ -1169,7 +1170,6 @@ function updateUI() {
         field("      4. Alternatives considered", s.q4);
         line("");
         line("      -- Employment --");
-        field("      5. Funding for program/employment", Array.isArray(s.q5Funding) && s.q5Funding.length > 0 ? s.q5Funding.join(", ") : "");
         field("      6. Hours of the program", s.q6);
         field("      7. Medications at Program DMH facility", s.q7);
         line("");
@@ -2121,6 +2121,27 @@ function renderHcbsServices() {
             ${serviceOptions.map(opt => `<option value="${opt}" ${s.serviceName === opt ? 'selected' : ''}>${opt}</option>`).join("")}
           </select>
         </div>
+        <div class="field-group full" style="margin-top: 5px;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Program:</label>
+          <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" value="Comprehensive Waiver" ${s.q5Funding && s.q5Funding.includes("Comprehensive Waiver") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
+              Comprehensive Waiver
+            </label>
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" value="Support Waiver" ${s.q5Funding && s.q5Funding.includes("Support Waiver") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
+              Support Waiver
+            </label>
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" value="Sarah Lopez Waiver(MOCDD)" ${s.q5Funding && s.q5Funding.includes("Sarah Lopez Waiver(MOCDD)") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
+              Sarah Lopez Waiver(MOCDD)
+            </label>
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" value="Partnership for Hope Waiver(PFH)" ${s.q5Funding && s.q5Funding.includes("Partnership for Hope Waiver(PFH)") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
+              Partnership for Hope Waiver(PFH)
+            </label>
+          </div>
+        </div>
       </div>
 
       <div class="field-group full" style="border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-top: 15px; background: rgba(0,0,0,0.1);">
@@ -2222,27 +2243,7 @@ function renderHcbsServices() {
         <div class="field-group full" style="margin-top: 10px;">
           <h5 style="color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; font-size: 13px; text-transform: uppercase;">Employment</h5>
         </div>
-        <div class="field-group full">
-          <label>5. Discuss funding for program/employment.</label>
-          <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
-            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
-              <input type="checkbox" value="Comprehensive Waiver" ${s.q5Funding && s.q5Funding.includes("Comprehensive Waiver") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
-              Comprehensive Waiver
-            </label>
-            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
-              <input type="checkbox" value="Support Waiver" ${s.q5Funding && s.q5Funding.includes("Support Waiver") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
-              Support Waiver
-            </label>
-            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
-              <input type="checkbox" value="Sarah Lopez Waiver(MOCDD)" ${s.q5Funding && s.q5Funding.includes("Sarah Lopez Waiver(MOCDD)") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
-              Sarah Lopez Waiver(MOCDD)
-            </label>
-            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
-              <input type="checkbox" value="Partnership for Hope Waiver(PFH)" ${s.q5Funding && s.q5Funding.includes("Partnership for Hope Waiver(PFH)") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
-              Partnership for Hope Waiver(PFH)
-            </label>
-          </div>
-        </div>
+
         <div class="field-group full">
           <label>6. Discuss hours of the program.</label>
           <textarea oninput="updateHcbsService(${i}, 'q6', this.value)">${esc(s.q6 || "")}</textarea>
