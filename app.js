@@ -181,6 +181,12 @@ const FORM_FIELDS = [
   "hcbsGlobalUpdatesExt2",
   "hcbsGlobalUpdatesCoord2",
   "hcbsGlobalUpdatesEmail",
+  "hcbsEmpQ1",
+  "hcbsEmpQ2",
+  "hcbsEduQ1",
+  "hcbsEduQ2",
+  "hcbsEduQ3",
+  "hcbsEduQ4",
   "commMethod",
   "comm-other",
   "insurance",
@@ -1169,22 +1175,22 @@ function updateUI() {
         field("      2. Informed of range", s.q2);
         field("      3. Alternatives considered", s.q4);
         line("");
-        line("      -- Employment --");
-        field("      1. Hours of the program", s.q6);
-        field("      2. Medications at Program DMH facility", s.q7);
-        line("");
-        line("      -- Education --");
-        field("      1. IEP and supports for school", s.q8);
-        field("      2. Current release signed for school date", s.q9);
-        field("      3. Dates requested IEP if not received", s.q10);
-        field("      4. Additional Funding/Supports", s.q11);
         
         if (s.hasBackupPlan) {
-          line("");
           line("      -- Backup Plan --");
-          field("      Individualized Backup Plan", s.backupPlanDetails);
+          if (Array.isArray(s.backupPlanDetailsArray) && s.backupPlanDetailsArray.length > 0) {
+            s.backupPlanDetailsArray.forEach((bp, bpIdx) => {
+              if (bp.trim()) line(`      • ${bp.trim()}`);
+            });
+          } else if (s.backupPlanDetails) { // fallback for old data
+            line(`      • ${s.backupPlanDetails}`);
+          }
+          line("");
+        } else {
+          line("      -- Backup Plan --");
+          line("      It is recommended to document that the individual's needs were assessed, and based on that assessment no additional individualized Backup Plans were identified.");
+          line("");
         }
-        line("");
       });
       
       const ext1 = getVal("hcbsGlobalUpdatesExt1") || "____";
@@ -1195,6 +1201,18 @@ function updateUI() {
       
       line("  For all Waivered services and programs, Individual to request updates as needed may contact:");
       line(`  If updates are needed to the plan, contact the SC team at (573) 248-1077, ext. ${ext1} Coordinator: ${coord1} or ext. ${ext2} Coordinator: ${coord2} or by E-Mail: ${email}`);
+      line("");
+      
+      line("  -- Employment --");
+      field("      1. Hours of the program", getVal("hcbsEmpQ1"));
+      field("      2. Medications at Program DMH facility", getVal("hcbsEmpQ2"));
+      line("");
+      
+      line("  -- Education --");
+      field("      1. IEP and supports for school", getVal("hcbsEduQ1"));
+      field("      2. Current release signed for school date", getVal("hcbsEduQ2"));
+      field("      3. Dates requested IEP if not received", getVal("hcbsEduQ3"));
+      field("      4. Additional Funding/Supports", getVal("hcbsEduQ4"));
       line("");
     }
   }
@@ -2032,8 +2050,8 @@ function addHcbsService() {
     signeeNames: "",
     sig2Date: "", sig2Who: "", sig2Names: "",
     sig3Date: "", sig3Who: "", sig3Names: "",
-    q1: "", q2: "", q4: "", q5Funding: [], q6: "", q7: "", q8: "", q9: "", q10: "", q11: "",
-    hasBackupPlan: false, backupPlanDetails: ""
+    q1: "", q2: "", q4: "", q5Funding: [],
+    hasBackupPlan: false, backupPlanDetailsArray: [""]
   });
   renderHcbsServices();
   updateUI();
@@ -2053,6 +2071,30 @@ function updateHcbsFunding(i, value, isChecked) {
     if (!hcbsServices[i].q5Funding.includes(value)) hcbsServices[i].q5Funding.push(value);
   } else {
     hcbsServices[i].q5Funding = hcbsServices[i].q5Funding.filter(v => v !== value);
+  }
+  updateUI();
+}
+
+function addHcbsBackupDetail(i) {
+  if (!Array.isArray(hcbsServices[i].backupPlanDetailsArray)) {
+    hcbsServices[i].backupPlanDetailsArray = [];
+  }
+  hcbsServices[i].backupPlanDetailsArray.push("");
+  renderHcbsServices();
+  updateUI();
+}
+
+function removeHcbsBackupDetail(i, dIdx) {
+  if (Array.isArray(hcbsServices[i].backupPlanDetailsArray)) {
+    hcbsServices[i].backupPlanDetailsArray.splice(dIdx, 1);
+  }
+  renderHcbsServices();
+  updateUI();
+}
+
+function updateHcbsBackupDetail(i, dIdx, val) {
+  if (Array.isArray(hcbsServices[i].backupPlanDetailsArray)) {
+    hcbsServices[i].backupPlanDetailsArray[dIdx] = val;
   }
   updateUI();
 }
@@ -2240,38 +2282,6 @@ function renderHcbsServices() {
           <label>3. Discuss the alternative home and community based settings that were considered by the individual.</label>
           <textarea oninput="updateHcbsService(${i}, 'q4', this.value)">${esc(s.q4 || "")}</textarea>
         </div>
-        <div class="field-group full" style="margin-top: 10px;">
-          <h5 style="color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; font-size: 13px; text-transform: uppercase;">Employment</h5>
-        </div>
-
-        <div class="field-group full">
-          <label>1. Discuss hours of the program.</label>
-          <textarea oninput="updateHcbsService(${i}, 'q6', this.value)">${esc(s.q6 || "")}</textarea>
-        </div>
-        <div class="field-group full">
-          <label>2. Discuss if medications are taken at Program DMH facility.</label>
-          <textarea oninput="updateHcbsService(${i}, 'q7', this.value)">${esc(s.q7 || "")}</textarea>
-        </div>
-
-        <div class="field-group full" style="margin-top: 10px;">
-          <h5 style="color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; font-size: 13px; text-transform: uppercase;">Education</h5>
-        </div>
-        <div class="field-group full">
-          <label>1. Discuss IEP and supports for school.</label>
-          <textarea oninput="updateHcbsService(${i}, 'q8', this.value)">${esc(s.q8 || "")}</textarea>
-        </div>
-        <div class="field-group full">
-          <label>2. Current release signed for school date:</label>
-          <input type="text" value="${esc(s.q9 || "")}" placeholder="Date..." oninput="updateHcbsService(${i}, 'q9', this.value)">
-        </div>
-        <div class="field-group full">
-          <label>3. Dates requested IEP if IEP not received (include log notes):</label>
-          <textarea placeholder="_____,______,___" oninput="updateHcbsService(${i}, 'q10', this.value)">${esc(s.q10 || "")}</textarea>
-        </div>
-        <div class="field-group full">
-          <label>4. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
-          <textarea oninput="updateHcbsService(${i}, 'q11', this.value)">${esc(s.q11 || "")}</textarea>
-        </div>
         
         <div class="field-group full" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
           <label style="font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 10px; display: block; text-transform: uppercase;">Individualized Backup Plan</label>
@@ -2280,8 +2290,20 @@ function renderHcbsServices() {
             This service/program has a designated backup plan (Mandatory for Critical Services)
           </label>
           ${s.hasBackupPlan ? `
-          <textarea style="margin-top: 5px;" placeholder="Identify the backup protocol if a primary service provider is unavailable..." oninput="updateHcbsService(${i}, 'backupPlanDetails', this.value)">${esc(s.backupPlanDetails || "")}</textarea>
-          ` : ""}
+            <div style="margin-top: 10px;">
+              ${(s.backupPlanDetailsArray || [""]).map((detail, dIdx) => `
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                  <textarea placeholder="Backup plan bullet point..." style="flex: 1; min-height: 40px;" oninput="updateHcbsBackupDetail(${i}, ${dIdx}, this.value)">${esc(detail)}</textarea>
+                  ${(s.backupPlanDetailsArray || [""]).length > 1 ? `<button type="button" class="remove-rep-btn" style="position: static; margin-top: 5px;" onclick="removeHcbsBackupDetail(${i}, ${dIdx})">×</button>` : ''}
+                </div>
+              `).join('')}
+              <button type="button" class="btn btn-outline" style="font-size: 11px;" onclick="addHcbsBackupDetail(${i})">+ Add Bullet Point</button>
+            </div>
+          ` : `
+            <div style="font-size: 12px; color: var(--text-muted); font-style: italic; margin-top: 5px; padding-left: 28px;">
+              It is recommended to document that the individual's needs were assessed, and based on that assessment no additional individualized Backup Plans were identified.
+            </div>
+          `}
         </div>
       </div>
     </div>
@@ -2431,6 +2453,25 @@ function restoreFormData(fd) {
   clinicalGoalsTasks = fd._clinicalGoalsTasks || [];
   programServices = fd._programServices || [];
   hcbsServices = fd._hcbsServices || [];
+  
+  // Migration: If employment/education was saved inside the first hcbsService, move it to global
+  if (hcbsServices.length > 0) {
+    const firstS = hcbsServices[0];
+    if (firstS.q6 !== undefined && !fd.hcbsEmpQ1 && document.getElementById('hcbsEmpQ1')) document.getElementById('hcbsEmpQ1').value = firstS.q6 || "";
+    if (firstS.q7 !== undefined && !fd.hcbsEmpQ2 && document.getElementById('hcbsEmpQ2')) document.getElementById('hcbsEmpQ2').value = firstS.q7 || "";
+    if (firstS.q8 !== undefined && !fd.hcbsEduQ1 && document.getElementById('hcbsEduQ1')) document.getElementById('hcbsEduQ1').value = firstS.q8 || "";
+    if (firstS.q9 !== undefined && !fd.hcbsEduQ2 && document.getElementById('hcbsEduQ2')) document.getElementById('hcbsEduQ2').value = firstS.q9 || "";
+    if (firstS.q10 !== undefined && !fd.hcbsEduQ3 && document.getElementById('hcbsEduQ3')) document.getElementById('hcbsEduQ3').value = firstS.q10 || "";
+    if (firstS.q11 !== undefined && !fd.hcbsEduQ4 && document.getElementById('hcbsEduQ4')) document.getElementById('hcbsEduQ4').value = firstS.q11 || "";
+  }
+  
+  hcbsServices.forEach(s => {
+    if (s.backupPlanDetails && (!s.backupPlanDetailsArray || s.backupPlanDetailsArray.length === 0)) {
+      s.backupPlanDetailsArray = [s.backupPlanDetails];
+    } else if (!s.backupPlanDetailsArray) {
+      s.backupPlanDetailsArray = [""];
+    }
+  });
   currentSupports = fd._currentSupports || [];
   linkingSupports = fd._linkingSupports || [];
   legalReps = fd._legalReps || [];

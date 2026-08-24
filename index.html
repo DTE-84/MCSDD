@@ -1649,6 +1649,10 @@
               + Add HCBS Service/Program
             </button>
             
+            <div style="font-size: 13px; color: var(--text-base); margin-bottom: 20px; font-style: italic; border-left: 3px solid var(--marion-blue); padding-left: 10px;">
+              The Support Coordinator(s) is responsible for monitoring the plan and services. Monitoring also includes a review of the backup plan. If changes are needed to the backup plan, the PCSP will be updated to reflect those changes.
+            </div>
+            
             <div class="field-group full" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
               <label>For all Waivered services and programs, Individual to request updates as needed may contact:</label>
               <div style="background: rgba(0,0,0,0.1); padding: 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--text-base); margin-top: 5px;">
@@ -1662,6 +1666,44 @@
                 <input type="text" id="hcbsGlobalUpdatesCoord2" style="width: 120px; padding: 4px 8px;" placeholder="_______" oninput="updateUI()">
                 <span>or by E-Mail:</span>
                 <input type="text" id="hcbsGlobalUpdatesEmail" style="flex: 1; min-width: 150px; padding: 4px 8px;" placeholder="_____________" oninput="updateUI()">
+              </div>
+            </div>
+            
+            <div class="field-group full" style="margin-top: 25px;">
+              <h5 style="color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 15px; font-size: 14px; text-transform: uppercase;">Employment</h5>
+              
+              <div class="form-grid">
+                <div class="field-group full">
+                  <label>1. Discuss hours of the program.</label>
+                  <textarea id="hcbsEmpQ1" oninput="updateUI()"></textarea>
+                </div>
+                <div class="field-group full">
+                  <label>2. Discuss if medications are taken at Program DMH facility.</label>
+                  <textarea id="hcbsEmpQ2" oninput="updateUI()"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group full" style="margin-top: 25px;">
+              <h5 style="color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 15px; font-size: 14px; text-transform: uppercase;">Education</h5>
+              
+              <div class="form-grid">
+                <div class="field-group full">
+                  <label>1. Discuss IEP and supports for school.</label>
+                  <textarea id="hcbsEduQ1" oninput="updateUI()"></textarea>
+                </div>
+                <div class="field-group full">
+                  <label>2. Current release signed for school date:</label>
+                  <input type="date" id="hcbsEduQ2" oninput="updateUI()">
+                </div>
+                <div class="field-group full">
+                  <label>3. Dates requested IEP if IEP not received:</label>
+                  <textarea id="hcbsEduQ3" placeholder="_____,______,___" oninput="updateUI()"></textarea>
+                </div>
+                <div class="field-group full">
+                  <label>4. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
+                  <textarea id="hcbsEduQ4" oninput="updateUI()"></textarea>
+                </div>
               </div>
             </div>
           </div>
