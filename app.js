@@ -1188,7 +1188,7 @@ function updateUI() {
           line("");
         } else {
           line("      -- Backup Plan --");
-          line("      It is recommended to document that the individual's needs were assessed, and based on that assessment no additional individualized Backup Plans were identified.");
+          line("      The individual's needs were assessed, and based on that assessment, no additional individualized Backup Plans were identified as necessary at this time.");
           line("");
         }
       });
@@ -2186,9 +2186,9 @@ function renderHcbsServices() {
         </div>
       </div>
 
-      <div class="field-group full" style="border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-top: 15px; background: rgba(0,0,0,0.1);">
+      <div class="field-group full" style="border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-top: 15px;">
         <label style="font-size: 12px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Primary Signature</label>
-        <div class="form-grid">
+        <div class="form-grid" style="align-items: end;">
           <div class="field-group">
             <label>Signee</label>
             <select onchange="updateHcbsService(${i}, 'whoSigned', this.value)">
@@ -2206,7 +2206,7 @@ function renderHcbsServices() {
             <input type="text" value="${esc(s.signedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'signedDate', this.value)">
           </div>
         </div>
-        <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin-top: -5px;">
+        <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin-top: 15px;">
           <div style="margin-bottom: 5px;">
             <label class="eth-check" style="color: var(--gold);">
               <input type="checkbox" ${s.isUpdate ? "checked" : ""} onchange="updateHcbsService(${i}, 'isUpdate', this.checked); renderHcbsServices();">
@@ -2222,9 +2222,9 @@ function renderHcbsServices() {
         </div>
         <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add Additional Signature</button>
         
-        <div style="display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+        <div style="display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
           <label style="font-size: 11px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Additional Signature</label>
-          <div class="form-grid">
+          <div class="form-grid" style="align-items: end;">
             <div class="field-group">
               <label>Signee</label>
               <select onchange="updateHcbsService(${i}, 'sig2Who', this.value)">
@@ -2244,9 +2244,9 @@ function renderHcbsServices() {
           </div>
           <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add 3rd Signature</button>
           
-          <div style="display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+          <div style="display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
             <label style="font-size: 11px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">3rd Signature</label>
-            <div class="form-grid">
+            <div class="form-grid" style="align-items: end;">
               <div class="field-group">
                 <label>Signee</label>
                 <select onchange="updateHcbsService(${i}, 'sig3Who', this.value)">
@@ -2283,7 +2283,7 @@ function renderHcbsServices() {
           <textarea oninput="updateHcbsService(${i}, 'q4', this.value)">${esc(s.q4 || "")}</textarea>
         </div>
         
-        <div class="field-group full" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+        <div class="field-group full" style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 15px;">
           <label style="font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 10px; display: block; text-transform: uppercase;">Individualized Backup Plan</label>
           <label class="eth-check" style="margin-bottom: 10px; color: var(--text-base);">
             <input type="checkbox" ${s.hasBackupPlan ? 'checked' : ''} onchange="updateHcbsService(${i}, 'hasBackupPlan', this.checked); renderHcbsServices();">
@@ -2301,7 +2301,7 @@ function renderHcbsServices() {
             </div>
           ` : `
             <div style="font-size: 12px; color: var(--text-muted); font-style: italic; margin-top: 5px; padding-left: 28px;">
-              It is recommended to document that the individual's needs were assessed, and based on that assessment no additional individualized Backup Plans were identified.
+              The individual's needs were assessed, and based on that assessment, no additional individualized Backup Plans were identified as necessary at this time.
             </div>
           `}
         </div>
