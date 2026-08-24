@@ -1645,17 +1645,28 @@
           
           <div id="hcbsFieldsContainer" style="display: none; margin-bottom: 20px;">
             <div id="hcbsServicesList"></div>
-            <button class="btn btn-outline" type="button" onclick="addHcbsService()" style="margin-top: 10px;">
+            <button class="btn btn-outline" type="button" onclick="addHcbsService()" style="margin-top: 10px; margin-bottom: 20px;">
               + Add HCBS Service/Program
             </button>
-          </div>
-
-          <div class="form-grid">
-            <div class="field-group full">
-              <label>Individualized Backup Plan (Mandatory for Critical Services)</label>
-              <textarea id="backupPlan" placeholder="Identify the backup protocol if a primary service provider is unavailable..." oninput="updateUI()"></textarea>
+            
+            <div class="field-group full" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+              <label>For all Waivered services and programs, Individual to request updates as needed may contact:</label>
+              <div style="background: rgba(0,0,0,0.1); padding: 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--text-base); margin-top: 5px;">
+                <span>If updates are needed to the plan, contact the SC team at (573) 248-1077, ext.</span>
+                <input type="text" id="hcbsGlobalUpdatesExt1" style="width: 60px; padding: 4px 8px;" placeholder="____" oninput="updateUI()">
+                <span>Coordinator:</span>
+                <input type="text" id="hcbsGlobalUpdatesCoord1" style="width: 120px; padding: 4px 8px;" placeholder="_______" oninput="updateUI()">
+                <span>or ext.</span>
+                <input type="text" id="hcbsGlobalUpdatesExt2" style="width: 60px; padding: 4px 8px;" placeholder="____" oninput="updateUI()">
+                <span>Coordinator:</span>
+                <input type="text" id="hcbsGlobalUpdatesCoord2" style="width: 120px; padding: 4px 8px;" placeholder="_______" oninput="updateUI()">
+                <span>or by E-Mail:</span>
+                <input type="text" id="hcbsGlobalUpdatesEmail" style="flex: 1; min-width: 150px; padding: 4px 8px;" placeholder="_____________" oninput="updateUI()">
+              </div>
             </div>
           </div>
+
+
 
           <div class="subsection-label" style="margin-top: 24px;">Self-Directed Services (SDS)</div>
           <div class="form-grid">

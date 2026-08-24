@@ -176,7 +176,11 @@ const FORM_FIELDS = [
   "sdsFamilyOpposed7",
   "sdsFamilyHouseholdTasks7",
   "sdsFamilyBestMeetNeeds7",
-  "backupPlan",
+  "hcbsGlobalUpdatesExt1",
+  "hcbsGlobalUpdatesCoord1",
+  "hcbsGlobalUpdatesExt2",
+  "hcbsGlobalUpdatesCoord2",
+  "hcbsGlobalUpdatesEmail",
   "commMethod",
   "comm-other",
   "insurance",
@@ -1162,7 +1166,6 @@ function updateUI() {
         }
         field("      1. Informed of options", s.q1);
         field("      2. Informed of range", s.q2);
-        field("      3. Update method", `If updates are needed to the plan, the team may contact the SC team at 573-248-1077, ext. ${s.q3Ext || "____"} or ext. ${s.q3Ext2 || "____"}. Or by E-Mail: ${s.q3Email || "____"}`);
         field("      4. Alternatives considered", s.q4);
         line("");
         line("      -- Employment --");
@@ -1175,13 +1178,27 @@ function updateUI() {
         field("      9. Current release signed for school date", s.q9);
         field("      10. Dates requested IEP if not received", s.q10);
         field("      11. Additional Funding/Supports", s.q11);
+        
+        if (s.hasBackupPlan) {
+          line("");
+          line("      -- Backup Plan --");
+          field("      Individualized Backup Plan", s.backupPlanDetails);
+        }
         line("");
       });
+      
+      const ext1 = getVal("hcbsGlobalUpdatesExt1") || "____";
+      const coord1 = getVal("hcbsGlobalUpdatesCoord1") || "_______";
+      const ext2 = getVal("hcbsGlobalUpdatesExt2") || "____";
+      const coord2 = getVal("hcbsGlobalUpdatesCoord2") || "_______";
+      const email = getVal("hcbsGlobalUpdatesEmail") || "_____________";
+      
+      line("  For all Waivered services and programs, Individual to request updates as needed may contact:");
+      line(`  If updates are needed to the plan, contact the SC team at (573) 248-1077, ext. ${ext1} Coordinator: ${coord1} or ext. ${ext2} Coordinator: ${coord2} or by E-Mail: ${email}`);
+      line("");
     }
   }
-  
-  field("Individualized Backup Plan", getVal("backupPlan"));
-  line("");
+
 
   const sdsUtil = getVal("sdsUtilized7");
   if (sdsUtil === "Yes") {
@@ -2015,7 +2032,8 @@ function addHcbsService() {
     signeeNames: "",
     sig2Date: "", sig2Who: "", sig2Names: "",
     sig3Date: "", sig3Who: "", sig3Names: "",
-    q1: "", q2: "", q3Ext: "", q3Ext2: "", q3Email: "", q4: "", q5Funding: [], q6: "", q7: "", q8: "", q9: "", q10: "", q11: ""
+    q1: "", q2: "", q4: "", q5Funding: [], q6: "", q7: "", q8: "", q9: "", q10: "", q11: "",
+    hasBackupPlan: false, backupPlanDetails: ""
   });
   renderHcbsServices();
   updateUI();
@@ -2120,24 +2138,24 @@ function renderHcbsServices() {
             <label>Name of Signee</label>
             <input type="text" value="${esc(s.signeeNames || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'signeeNames', this.value)">
           </div>
-          <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 250px;">
-              <label>Provider and Services Choice Statement Effective Signed Date</label>
-              <input type="text" value="${esc(s.signedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'signedDate', this.value)">
-            </div>
-            <div style="margin-bottom: 14px;">
-              <label class="eth-check" style="color: var(--gold);">
-                <input type="checkbox" ${s.isUpdate ? "checked" : ""} onchange="updateHcbsService(${i}, 'isUpdate', this.checked); renderHcbsServices();">
-                Updated edit to previously signed Statement
-              </label>
-            </div>
-            ${s.isUpdate ? `
-            <div style="flex: 1; min-width: 250px;">
-              <label>Previous Signed Date</label>
-              <input type="text" value="${esc(s.prevSignedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'prevSignedDate', this.value)">
-            </div>
-            ` : ""}
+          <div class="field-group">
+            <label>Provider and Services Choice Statement Effective Signed Date</label>
+            <input type="text" value="${esc(s.signedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'signedDate', this.value)">
           </div>
+        </div>
+        <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin-top: -5px;">
+          <div style="margin-bottom: 5px;">
+            <label class="eth-check" style="color: var(--gold);">
+              <input type="checkbox" ${s.isUpdate ? "checked" : ""} onchange="updateHcbsService(${i}, 'isUpdate', this.checked); renderHcbsServices();">
+              Updated edit to previously signed Statement
+            </label>
+          </div>
+          ${s.isUpdate ? `
+          <div style="flex: 1; min-width: 250px; margin-bottom: 5px;">
+            <label>Previous Signed Date</label>
+            <input type="text" value="${esc(s.prevSignedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'prevSignedDate', this.value)">
+          </div>
+          ` : ""}
         </div>
         <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add Additional Signature</button>
         
@@ -2196,17 +2214,7 @@ function renderHcbsServices() {
           <label>2. How was the individual educated and informed of the full range of HCBS available to support achievement of personally identified goals?</label>
           <textarea oninput="updateHcbsService(${i}, 'q2', this.value)">${esc(s.q2 || "")}</textarea>
         </div>
-        <div class="field-group full">
-          <label>3. Conflict-Free Resolution: Include a method for the individual to request updates to the plan as needed.</label>
-          <div style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--text-base);">
-            <span>If updates are needed to the plan, the team may contact the SC team at 573-248-1077, ext.</span>
-            <input type="text" value="${esc(s.q3Ext || "")}" style="width: 70px; padding: 4px 8px;" placeholder="____" oninput="updateHcbsService(${i}, 'q3Ext', this.value)">
-            <span>or ext.</span>
-            <input type="text" value="${esc(s.q3Ext2 || "")}" style="width: 70px; padding: 4px 8px;" placeholder="____" oninput="updateHcbsService(${i}, 'q3Ext2', this.value)">
-            <span>Or by E-Mail:</span>
-            <input type="text" value="${esc(s.q3Email || "")}" style="flex: 1; min-width: 150px; padding: 4px 8px;" placeholder="Email address(es)..." oninput="updateHcbsService(${i}, 'q3Email', this.value)">
-          </div>
-        </div>
+
         <div class="field-group full">
           <label>4. Discuss the alternative home and community based settings that were considered by the individual.</label>
           <textarea oninput="updateHcbsService(${i}, 'q4', this.value)">${esc(s.q4 || "")}</textarea>
@@ -2262,6 +2270,17 @@ function renderHcbsServices() {
         <div class="field-group full">
           <label>11. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
           <textarea oninput="updateHcbsService(${i}, 'q11', this.value)">${esc(s.q11 || "")}</textarea>
+        </div>
+        
+        <div class="field-group full" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+          <label style="font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 10px; display: block; text-transform: uppercase;">Individualized Backup Plan</label>
+          <label class="eth-check" style="margin-bottom: 10px; color: var(--text-base);">
+            <input type="checkbox" ${s.hasBackupPlan ? 'checked' : ''} onchange="updateHcbsService(${i}, 'hasBackupPlan', this.checked); renderHcbsServices();">
+            This service/program has a designated backup plan (Mandatory for Critical Services)
+          </label>
+          ${s.hasBackupPlan ? `
+          <textarea style="margin-top: 5px;" placeholder="Identify the backup protocol if a primary service provider is unavailable..." oninput="updateHcbsService(${i}, 'backupPlanDetails', this.value)">${esc(s.backupPlanDetails || "")}</textarea>
+          ` : ""}
         </div>
       </div>
     </div>
