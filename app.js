@@ -1167,17 +1167,17 @@ function updateUI() {
         }
         field("      1. Informed of options", s.q1);
         field("      2. Informed of range", s.q2);
-        field("      4. Alternatives considered", s.q4);
+        field("      3. Alternatives considered", s.q4);
         line("");
         line("      -- Employment --");
-        field("      6. Hours of the program", s.q6);
-        field("      7. Medications at Program DMH facility", s.q7);
+        field("      1. Hours of the program", s.q6);
+        field("      2. Medications at Program DMH facility", s.q7);
         line("");
         line("      -- Education --");
-        field("      8. IEP and supports for school", s.q8);
-        field("      9. Current release signed for school date", s.q9);
-        field("      10. Dates requested IEP if not received", s.q10);
-        field("      11. Additional Funding/Supports", s.q11);
+        field("      1. IEP and supports for school", s.q8);
+        field("      2. Current release signed for school date", s.q9);
+        field("      3. Dates requested IEP if not received", s.q10);
+        field("      4. Additional Funding/Supports", s.q11);
         
         if (s.hasBackupPlan) {
           line("");
@@ -2237,7 +2237,7 @@ function renderHcbsServices() {
         </div>
 
         <div class="field-group full">
-          <label>4. Discuss the alternative home and community based settings that were considered by the individual.</label>
+          <label>3. Discuss the alternative home and community based settings that were considered by the individual.</label>
           <textarea oninput="updateHcbsService(${i}, 'q4', this.value)">${esc(s.q4 || "")}</textarea>
         </div>
         <div class="field-group full" style="margin-top: 10px;">
@@ -2245,11 +2245,11 @@ function renderHcbsServices() {
         </div>
 
         <div class="field-group full">
-          <label>6. Discuss hours of the program.</label>
+          <label>1. Discuss hours of the program.</label>
           <textarea oninput="updateHcbsService(${i}, 'q6', this.value)">${esc(s.q6 || "")}</textarea>
         </div>
         <div class="field-group full">
-          <label>7. Discuss if medications are taken at Program DMH facility.</label>
+          <label>2. Discuss if medications are taken at Program DMH facility.</label>
           <textarea oninput="updateHcbsService(${i}, 'q7', this.value)">${esc(s.q7 || "")}</textarea>
         </div>
 
@@ -2257,19 +2257,19 @@ function renderHcbsServices() {
           <h5 style="color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; font-size: 13px; text-transform: uppercase;">Education</h5>
         </div>
         <div class="field-group full">
-          <label>8. Discuss IEP and supports for school.</label>
+          <label>1. Discuss IEP and supports for school.</label>
           <textarea oninput="updateHcbsService(${i}, 'q8', this.value)">${esc(s.q8 || "")}</textarea>
         </div>
         <div class="field-group full">
-          <label>9. Current release signed for school date:</label>
+          <label>2. Current release signed for school date:</label>
           <input type="text" value="${esc(s.q9 || "")}" placeholder="Date..." oninput="updateHcbsService(${i}, 'q9', this.value)">
         </div>
         <div class="field-group full">
-          <label>10. Dates requested IEP if IEP not received (include log notes):</label>
+          <label>3. Dates requested IEP if IEP not received (include log notes):</label>
           <textarea placeholder="_____,______,___" oninput="updateHcbsService(${i}, 'q10', this.value)">${esc(s.q10 || "")}</textarea>
         </div>
         <div class="field-group full">
-          <label>11. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
+          <label>4. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
           <textarea oninput="updateHcbsService(${i}, 'q11', this.value)">${esc(s.q11 || "")}</textarea>
         </div>
         
