@@ -1543,107 +1543,84 @@
         <div class="form-section" id="sec-program-services">
           <div class="section-title"><span>7</span> Program or Other Services</div>
 
-          <div class="subsection-label">Program Eligibility & Administrative Identifiers</div>
+          <div class="subsection-label">Employment Status</div>
           <div class="form-grid">
             <div class="field-group">
-              <label>State Medicaid ID (DCN)</label>
-              <input type="text" id="stateMedicaidId" oninput="updateUI()" placeholder="e.g. 123456789">
-            </div>
-            <div class="field-group">
-              <label>DDD Case Number</label>
-              <input type="text" id="dddCaseNumber" oninput="updateUI()" placeholder="e.g. 9876543">
-            </div>
-            <div class="field-group">
-              <label>County / Regional Office Code</label>
-              <input type="text" id="regionalOfficeCode" oninput="updateUI()" placeholder="e.g. RO-32">
-            </div>
-          </div>
-          
-          <div class="subsection-label" style="margin-top: 15px;">Case Management & Oversight Authority</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Assigned Case Manager / SC</label>
-              <input type="text" id="caseManagerName" oninput="updateUI()" placeholder="Name">
-            </div>
-            <div class="field-group">
-              <label>Direct Secure Email</label>
-              <input type="email" id="caseManagerEmail" oninput="updateUI()" placeholder="Email">
-            </div>
-            <div class="field-group">
-              <label>CM Agency NPI (10-digit)</label>
-              <input type="text" id="caseManagerNPI" oninput="updateUI()" placeholder="NPI Number">
-            </div>
-          </div>
-          
-          <div class="subsection-label" style="margin-top: 15px;">MO HealthNet (Medicaid) Status</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Eligibility Code (ME Code)</label>
-              <input type="text" id="medicaidEligibilityCode" oninput="updateUI()" placeholder="e.g. ME 13, ME 85">
-            </div>
-            <div class="field-group">
-              <label>Spend Down Status / Amount</label>
-              <input type="text" id="medicaidSpendDown" oninput="updateUI()" placeholder="e.g. $125.00 / month">
-            </div>
-            <div class="field-group">
-              <label>Managed Care Plan</label>
-              <input type="text" id="medicaidManagedCarePlan" oninput="updateUI()" placeholder="e.g. Home State Health">
-            </div>
-          </div>
-
-          <div class="subsection-label" style="margin-top: 15px;">Social Security Benefits</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Benefit Type</label>
-              <select id="ssBenefitType" onchange="updateUI()">
-                <option value="">Select Type...</option>
-                <option value="SSI (Supplemental Security Income)">SSI (Supplemental Security Income)</option>
-                <option value="SSDI (Social Security Disability Insurance)">SSDI (Social Security Disability Insurance)</option>
-                <option value="SSA (Survivor's Benefits)">SSA (Survivor's Benefits)</option>
-                <option value="None">None</option>
+              <label>Employment Status</label>
+              <select id="employmentStatus7" onchange="toggleEmploymentStatus7(); updateUI()">
+                <option value="">Select...</option>
+                <option value="Employed">Employed</option>
+                <option value="Unemployed">Unemployed</option>
               </select>
             </div>
-            <div class="field-group">
-              <label>Payment Amount</label>
-              <input type="text" id="ssPaymentAmount" oninput="updateUI()" placeholder="Monthly dollar amount">
-            </div>
-            <div class="field-group">
-              <label>Representative Payee</label>
-              <input type="text" id="ssRepPayee" oninput="updateUI()" placeholder="Who receives the check?">
-            </div>
-          </div>
-
-          <div class="subsection-label" style="margin-top: 15px;">Other Government Assistance</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Food Stamps (SNAP)</label>
-              <input type="text" id="govAssistSnap" oninput="updateUI()" placeholder="Status and monthly amount">
-            </div>
-            <div class="field-group">
-              <label>Housing Assistance</label>
-              <input type="text" id="govAssistHousing" oninput="updateUI()" placeholder="Section 8, HUD, etc.">
-            </div>
-            <div class="field-group">
-              <label>Medicare (Dual-Eligible)</label>
-              <input type="text" id="govAssistMedicare" oninput="updateUI()" placeholder="Part A, B, or D enrollment">
+            <div id="futureEmploymentGroup" style="display: none; grid-column: span 2;">
+              <div class="form-grid">
+                <div class="field-group full" style="grid-column: 1 / -1;">
+                  <label>Reasons for excluding employment as an outcome</label>
+                  <textarea id="unemployedReasons7" oninput="updateUI()" placeholder="Describe reasons..."></textarea>
+                </div>
+                <div class="field-group full" style="grid-column: 1 / -1;">
+                  <label>Activities, experiences, and conversations promoting future career planning results</label>
+                  <textarea id="unemployedActivities7" oninput="updateUI()" placeholder="Outline activities..."></textarea>
+                </div>
+                <div class="field-group full" style="grid-column: 1 / -1;">
+                  <label>How often do you speak with the client about future employment?</label>
+                  <input type="text" id="futureEmploymentDiscussions" oninput="updateUI()" placeholder="Enter frequency and details">
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="subsection-label" style="margin-top: 15px;">Non-Division Supports (Community-Based)</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>DHSS Services</label>
-              <input type="text" id="nonDivDhss" oninput="updateUI()" placeholder="State Plan Personal Care, etc.">
-            </div>
-            <div class="field-group">
-              <label>Vocational Rehabilitation (VR)</label>
-              <input type="text" id="nonDivVr" oninput="updateUI()" placeholder="Active, Case Closed, etc.">
-            </div>
-            <div class="field-group">
-              <label>Education / IEP Status</label>
-              <input type="text" id="nonDivEducation" oninput="updateUI()" placeholder="IEP status and school district">
+          <div id="employedDetailsGroup" style="display: none; margin-bottom: 20px;">
+            <div class="form-grid">
+              <div class="field-group">
+                <label>Name of Employer</label>
+                <input type="text" id="employerName7" oninput="updateUI()" placeholder="Employer Name">
+              </div>
+              <div class="field-group">
+                <label>Job Title</label>
+                <input type="text" id="jobTitle7" oninput="updateUI()" placeholder="Job Title">
+              </div>
+              <div class="field-group">
+                <label>Avg. Hours/Week</label>
+                <input type="number" id="avgHoursWorked7" oninput="updateUI()" placeholder="e.g. 20">
+              </div>
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label>Competitive & Integrated Setting?</label>
+                <input type="text" id="competitiveIntegratedWork7" oninput="updateUI()" placeholder="Yes, or explain why not...">
+              </div>
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label>Group Supported Employment (If applicable)</label>
+                <textarea id="groupSupportedEmploymentJustification7" oninput="updateUI()" placeholder="Justify need if they demonstrate capacity for individual setting..."></textarea>
+              </div>
+              
+              <div class="field-group full" style="grid-column: 1 / -1; margin-top: 10px;">
+                <label>Are waivered employment services being utilized to maintain employment?</label>
+                <select id="waiveredServicesUtilized7" onchange="toggleWaiveredServices7(); updateUI()">
+                  <option value="">Select...</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              <div id="waiveredServicesGroup" style="display: none; grid-column: 1 / -1;">
+                <div class="form-grid">
+                  <div class="field-group full" style="grid-column: 1 / -1;">
+                    <label>How are natural supports being developed?</label>
+                    <textarea id="naturalSupportsDevelopment7" oninput="updateUI()"></textarea>
+                  </div>
+                  <div class="field-group full" style="grid-column: 1 / -1;">
+                    <label>How is the specific targeted job skill being developed?</label>
+                    <textarea id="targetedJobSkillDevelopment7" oninput="updateUI()"></textarea>
+                  </div>
+                  <div class="field-group full" style="grid-column: 1 / -1;">
+                    <label>Methodology for evaluating the need to continue the services</label>
+                    <textarea id="methodologyEvaluatingNeed7" oninput="updateUI()"></textarea>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
           
           <div class="subsection-label" style="margin-top: 24px;">Authorized Services & Waivers</div>
           <div id="programServicesContainer"></div>

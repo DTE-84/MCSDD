@@ -149,24 +149,19 @@ const FORM_FIELDS = [
   "communityInvolvement",
   "communityBarriers",
   // Section 7 - Global Identifiers
-  "stateMedicaidId",
-  "dddCaseNumber",
-  "regionalOfficeCode",
-  "caseManagerName",
-  "caseManagerEmail",
-  "caseManagerNPI",
-  "medicaidEligibilityCode",
-  "medicaidSpendDown",
-  "medicaidManagedCarePlan",
-  "ssBenefitType",
-  "ssPaymentAmount",
-  "ssRepPayee",
-  "govAssistSnap",
-  "govAssistHousing",
-  "govAssistMedicare",
-  "nonDivDhss",
-  "nonDivVr",
-  "nonDivEducation",
+  "employmentStatus7",
+  "unemployedReasons7",
+  "unemployedActivities7",
+  "futureEmploymentDiscussions",
+  "employerName7",
+  "jobTitle7",
+  "avgHoursWorked7",
+  "competitiveIntegratedWork7",
+  "groupSupportedEmploymentJustification7",
+  "waiveredServicesUtilized7",
+  "naturalSupportsDevelopment7",
+  "targetedJobSkillDevelopment7",
+  "methodologyEvaluatingNeed7",
   "backupPlan",
   "commMethod",
   "comm-other",
@@ -1012,42 +1007,35 @@ function updateUI() {
   line("");
 
   head("7. PROGRAM OR OTHER SERVICES");
-  line("Program Eligibility & Administrative Identifiers:");
-  field("State Medicaid ID (DCN)", getVal("stateMedicaidId"));
-  field("DDD Case Number", getVal("dddCaseNumber"));
-  field("Regional Office Code", getVal("regionalOfficeCode"));
   
+  line("Employment Status:");
+  const empStatus7 = getVal("employmentStatus7");
+  field("Status", empStatus7);
+  if (empStatus7 === "Unemployed") {
+    field("Reasons for excluding employment", getVal("unemployedReasons7"));
+    field("Career Planning Activities", getVal("unemployedActivities7"));
+    field("Future Employment Discussions", getVal("futureEmploymentDiscussions"));
+  } else if (empStatus7 === "Employed") {
+    field("Employer Name", getVal("employerName7"));
+    field("Job Title", getVal("jobTitle7"));
+    field("Avg. Hours/Week", getVal("avgHoursWorked7"));
+    field("Competitive & Integrated?", getVal("competitiveIntegratedWork7"));
+    const groupSupport = getVal("groupSupportedEmploymentJustification7");
+    if (groupSupport) {
+      field("Group Supported Justification", groupSupport);
+    }
+    
+    const waiveredUtilized = getVal("waiveredServicesUtilized7");
+    field("Waivered Employment Services Utilized?", waiveredUtilized);
+    if (waiveredUtilized === "Yes") {
+      field("Natural Supports Development", getVal("naturalSupportsDevelopment7"));
+      field("Targeted Job Skill Development", getVal("targetedJobSkillDevelopment7"));
+      field("Evaluating Need Methodology", getVal("methodologyEvaluatingNeed7"));
+    }
+  }
   line("");
-  line("Case Management & Oversight Authority:");
-  field("Case Manager / SC", getVal("caseManagerName"));
-  field("Secure Email", getVal("caseManagerEmail"));
-  field("Agency NPI", getVal("caseManagerNPI"));
 
-  line("");
-  line("MO HealthNet (Medicaid) Status:");
-  field("Eligibility Code (ME Code)", getVal("medicaidEligibilityCode"));
-  field("Spend Down", getVal("medicaidSpendDown"));
-  field("Managed Care Plan", getVal("medicaidManagedCarePlan"));
 
-  line("");
-  line("Social Security Benefits:");
-  field("Benefit Type", getVal("ssBenefitType"));
-  field("Payment Amount", getVal("ssPaymentAmount"));
-  field("Representative Payee", getVal("ssRepPayee"));
-
-  line("");
-  line("Other Government Assistance:");
-  field("Food Stamps (SNAP)", getVal("govAssistSnap"));
-  field("Housing Assistance", getVal("govAssistHousing"));
-  field("Medicare", getVal("govAssistMedicare"));
-
-  line("");
-  line("Non-Division Supports (Community-Based):");
-  field("DHSS Services", getVal("nonDivDhss"));
-  field("Vocational Rehab (VR)", getVal("nonDivVr"));
-  field("Education / IEP Status", getVal("nonDivEducation"));
-  
-  line("");
 
   if (programServices.length > 0) {
     line("Authorized Services & Waivers Matrix:");
@@ -1546,6 +1534,27 @@ function toggleDueProcess(cb) {
   updateUI();
 }
 
+function toggleEmploymentStatus7() {
+  const status = document.getElementById("employmentStatus7").value;
+  const unemployedGroup = document.getElementById("futureEmploymentGroup");
+  const employedGroup = document.getElementById("employedDetailsGroup");
+  
+  if (unemployedGroup) {
+    unemployedGroup.style.display = (status === "Unemployed") ? "" : "none";
+  }
+  if (employedGroup) {
+    employedGroup.style.display = (status === "Employed") ? "block" : "none";
+  }
+}
+
+function toggleWaiveredServices7() {
+  const utilized = document.getElementById("waiveredServicesUtilized7").value;
+  const group = document.getElementById("waiveredServicesGroup");
+  if (group) {
+    group.style.display = (utilized === "Yes") ? "block" : "none";
+  }
+}
+
 function addDueProcess() {
   dueProcessItems.push({
     invitation: "",
@@ -1980,6 +1989,8 @@ function restoreFormData(fd) {
 
   updateUI();
   toggleTransitionFields(); // Ensure section 13 visibility is correct
+  toggleEmploymentStatus7(); // Ensure employment status visibility is correct
+  toggleWaiveredServices7(); // Ensure waivered services visibility is correct
 }
 
 function saveToHistory() {
