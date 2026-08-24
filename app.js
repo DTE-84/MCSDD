@@ -162,6 +162,18 @@ const FORM_FIELDS = [
   "naturalSupportsDevelopment7",
   "targetedJobSkillDevelopment7",
   "methodologyEvaluatingNeed7",
+  "isHcbsWaivered",
+  "hcbs1",
+  "hcbs2",
+  "hcbs3",
+  "hcbs4",
+  "hcbs5",
+  "hcbs6",
+  "hcbs7",
+  "hcbs8",
+  "hcbs9",
+  "hcbs10",
+  "hcbs11",
   "sdsUtilized7",
   "sdsDesignatedRep7",
   "sdsHoursOfProgram7",
@@ -318,8 +330,11 @@ const FORM_FIELDS = [
   "specialists",
   "preventionDiet",
   "residentialScreenings",
+  "psychotropicDetails",
   "psychotropicProtocol",
   "selfAdmin",
+  "selfAdminGoalAdded",
+  "selfAdminSupports",
   "healthRisks",
   "evacPlan",
   "dnrStatus",
@@ -1095,6 +1110,7 @@ function updateUI() {
 
 
 
+  /*
   if (programServices.length > 0) {
     line("Authorized Services & Waivers Matrix:");
     programServices.forEach((s, idx) => {
@@ -1130,7 +1146,26 @@ function updateUI() {
       line("");
     });
   } else {
-    line("Authorized Services: None documented.");
+    // line("Authorized Services: None documented.");
+    // line("");
+  }
+  */
+
+  const isHcbsWaivered = getVal("isHcbsWaivered");
+  field("Is individual receiving HCBS Waiver services?", isHcbsWaivered);
+  if (isHcbsWaivered === "Yes") {
+    line("HCBS Waiver Choice & Education:");
+    field("1. Informed of options", getVal("hcbs1"));
+    field("2. Informed of range", getVal("hcbs2"));
+    field("3. Update method", getVal("hcbs3"));
+    field("4. Alternatives considered", getVal("hcbs4"));
+    field("5. Funding for program/employment", getVal("hcbs5"));
+    field("6. Hours of the program", getVal("hcbs6"));
+    field("7. Medications at Program DMH facility", getVal("hcbs7"));
+    field("8. IEP and supports for school", getVal("hcbs8"));
+    field("9. Current release signed for school date", getVal("hcbs9"));
+    field("10. Dates requested IEP if not received", getVal("hcbs10"));
+    field("11. Additional Funding/Supports", getVal("hcbs11"));
     line("");
   }
   
@@ -1179,8 +1214,18 @@ function updateUI() {
   field("Prevention (Diet, Exercise, Counseling)", getVal("preventionDiet"));
   field("Residential Immunizations & Cancer Screenings", getVal("residentialScreenings"));
   field("Current Medications (Name, Dosage, Purpose)", getVal("medicationDetails"));
+  field("Psychotropic Medications (Purpose, Dosage, Risk Factors)", getVal("psychotropicDetails"));
   field("PRN Psychotropic Protocol", getVal("psychotropicProtocol"));
-  field("Self-Administration of Meds", getVal("selfAdmin"));
+  
+  const selfAdminStatus = getVal("selfAdmin");
+  field("Self-Administration of Meds", selfAdminStatus);
+  if (selfAdminStatus === "Needs Supports") {
+    const goalAdded = document.getElementById("selfAdminGoalAdded")?.checked;
+    field(" - Goal Added in Action Plan", goalAdded ? "Yes" : "No (Required)");
+  }
+  if (selfAdminStatus === "Independent" || selfAdminStatus === "Needs Supports") {
+    field(" - Supports Needed to Maintain Skill", getVal("selfAdminSupports"));
+  }
   line("");
 
   head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
@@ -1584,6 +1629,25 @@ function toggleNAField(f, c) {
   el.value = cb.checked ? "N/A" : "";
   el.disabled = cb.checked;
   updateUI();
+}
+function toggleHcbsFields() {
+  const val = document.getElementById("isHcbsWaivered").value;
+  const container = document.getElementById("hcbsFieldsContainer");
+  if (container) {
+    container.style.display = (val === "Yes") ? "block" : "none";
+  }
+}
+function toggleSelfAdmin8() {
+  const val = document.getElementById("selfAdmin").value;
+  const goalGroup = document.getElementById("selfAdminGoalContainer");
+  const supportsGroup = document.getElementById("selfAdminSupportsContainer");
+  
+  if (goalGroup) {
+    goalGroup.style.display = (val === "Needs Supports") ? "block" : "none";
+  }
+  if (supportsGroup) {
+    supportsGroup.style.display = (val === "Independent" || val === "Needs Supports") ? "block" : "none";
+  }
 }
 function toggleEthnicityOther(cb) {
   document.getElementById("ethnicityOtherGroup").style.display = cb.checked
@@ -2111,8 +2175,10 @@ function restoreFormData(fd) {
   toggleTransitionFields(); // Ensure section 13 visibility is correct
   toggleEmploymentStatus7(); // Ensure employment status visibility is correct
   toggleWaiveredServices7(); // Ensure waivered services visibility is correct
+  toggleHcbsFields();
   toggleSDS7();
   toggleSDSPaidFamily7();
+  toggleSelfAdmin8();
 }
 
 function saveToHistory() {

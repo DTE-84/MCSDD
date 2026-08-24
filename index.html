@@ -1622,13 +1622,73 @@
           </div>
 
           
-          <div class="subsection-label" style="margin-top: 24px;">Authorized Services & Waivers</div>
+          <!-- <div class="subsection-label" style="margin-top: 24px;">Authorized Services & Waivers</div>
           <div id="programServicesContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addProgramService()" style="margin-bottom: 20px;">
             + Add Waiver / Service
-          </button>
+          </button> -->
 
           <div class="subsection-label">HCBS Waiver Choice &amp; Education / Backup Plan</div>
+          <div class="form-grid">
+            <div class="field-group full" style="grid-column: 1 / -1;">
+              <label>Is the individual receiving HCBS Waiver services?</label>
+              <select id="isHcbsWaivered" onchange="toggleHcbsFields(); updateUI()">
+                <option value="">Select...</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+          
+          <div id="hcbsFieldsContainer" style="display: none; margin-bottom: 20px;">
+            <div class="form-grid">
+              <div class="field-group full">
+                <label>1. How was the individual educated and informed of the options listed in the Medicaid waiver, provider and services choice statement?</label>
+                <textarea id="hcbs1" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>2. How was the individual educated and informed of the full range of HCBS available to support achievement of personally identified goals?</label>
+                <textarea id="hcbs2" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>3. Conflict-Free Resolution: Include a method for the individual to request updates to the plan as needed.</label>
+                <textarea id="hcbs3" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>4. Discuss the alternative home and community based settings that were considered by the individual.</label>
+                <textarea id="hcbs4" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>5. Discuss funding for program/employment.</label>
+                <textarea id="hcbs5" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>6. Discuss hours of the program.</label>
+                <textarea id="hcbs6" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>7. Discuss if medications are taken at Program DMH facility.</label>
+                <textarea id="hcbs7" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>8. Discuss IEP and supports for school.</label>
+                <textarea id="hcbs8" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>9. Current release signed for school date:</label>
+                <input type="text" id="hcbs9" placeholder="Date..." oninput="updateUI()">
+              </div>
+              <div class="field-group full">
+                <label>10. Dates requested IEP if IEP not received (include log notes):</label>
+                <textarea id="hcbs10" placeholder="_____,______,___" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>11. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
+                <textarea id="hcbs11" oninput="updateUI()"></textarea>
+              </div>
+            </div>
+          </div>
+
           <div class="form-grid">
             <div class="field-group full">
               <label>Individualized Backup Plan (Mandatory for Critical Services)</label>
@@ -1803,17 +1863,40 @@
               <label>Current Medications</label>
               <textarea id="medicationDetails" placeholder="List all meds. Include purpose of medications for medical issues (e.g. hypertension, diabetes, etc.)" oninput="updateUI()"></textarea>
             </div>
+            
+            <div class="field-group full">
+              <label>Psychotropic Medications (Purpose, Dosage, Risk Factors)</label>
+              <textarea id="psychotropicDetails" placeholder="List each psychotropic medication, its purpose, dosage, and associated risk factors." oninput="updateUI()"></textarea>
+            </div>
+
             <div class="field-group full">
               <label>PRN Psychotropic Med Protocol (If Applicable)</label>
-              <textarea id="psychotropicProtocol" placeholder="State purpose of each psychotropic, dosage by psychotropic meds, risk factors, and triggers for administration." oninput="updateUI()"></textarea>
+              <textarea id="psychotropicProtocol" placeholder="State specific triggers and protocol for administration of PRN psychotropics." oninput="updateUI()"></textarea>
             </div>
-            <div class="field-group">
-              <label>Self-Administration of Meds</label>
-              <select id="selfAdmin" onchange="updateUI()">
-                <option value="Independent">Independent</option>
-                <option value="Needs Supports (Goal Required)">Needs Supports (Add to Action Plan)</option>
-                <option value="Not Capable">Not Capable</option>
-              </select>
+            
+            <div class="field-group full" style="border: 1px solid var(--border); padding: 15px; border-radius: 8px; background: rgba(0,0,0,0.02);">
+              <label style="font-size: 12px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Self-Administration of Meds</label>
+              <div class="form-grid">
+                <div class="field-group">
+                  <label>Status</label>
+                  <select id="selfAdmin" onchange="toggleSelfAdmin8(); updateUI()">
+                    <option value="">Select...</option>
+                    <option value="Independent">Independent</option>
+                    <option value="Needs Supports">Needs Supports</option>
+                    <option value="Not Capable">Not Capable</option>
+                  </select>
+                </div>
+                <div class="field-group" id="selfAdminGoalContainer" style="display: none; align-self: end; margin-bottom: 5px;">
+                  <label class="eth-check" style="color: var(--gold);">
+                    <input type="checkbox" id="selfAdminGoalAdded" onchange="updateUI()">
+                    Goal added in action plan (Required)
+                  </label>
+                </div>
+                <div class="field-group full" id="selfAdminSupportsContainer" style="display: none;">
+                  <label>Supports needed to maintain this skill</label>
+                  <textarea id="selfAdminSupports" placeholder="Describe the supports required..." oninput="updateUI()"></textarea>
+                </div>
+              </div>
             </div>
             <div class="field-group">
               <label>Health Parameters to Track</label>
