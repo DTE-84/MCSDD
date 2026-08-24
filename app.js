@@ -338,9 +338,13 @@ const FORM_FIELDS = [
   "selfAdmin",
   "selfAdminGoalAdded",
   "selfAdminSupports",
+  "healthParamsOther",
   "healthRisks",
   "evacPlan",
   "dnrStatus",
+  "seizureProtocols",
+  "bowelProtocols",
+  "mentalHealthSupports",
   // Misc
   "ethnicityOther",
   "legalSpecify",
@@ -1027,24 +1031,7 @@ function updateUI() {
   field("Concerns", getVal("concerns"));
   line("");
 
-  head("6. HEALTH, SAFETY & RISK PLANNING");
-  field("Diagnosis", getVal("diagnosis"));
-  field("Personal Outcomes", getVal("personalOutcomes"));
-  field("HRST Status", getVal("hrstStatus"));
-  field("Medical History", getVal("medHistory"));
-  field("PCP", getVal("pcpName"));
-  field("Specialists", getVal("specialists"));
-  field("Medications", getVal("medicationDetails"));
-  
-  const healthP = [];
-  document.querySelectorAll('#healthParamsContainer input[type="checkbox"]:checked').forEach(cb => healthP.push(cb.value));
-  field("Tracked Parameters", healthP.length ? healthP.join(", ") : "None Specified");
-
-  field("Risk Level", getVal("riskLevel"));
-  field("Supervision", getVal("supervisionLevel"));
-  field("Behavioral Status", getVal("behavioralStatus"));
-  field("Allergies", getVal("allergies"));
-  line("");
+  /* Removed duplicate section 6 output (moved to Section 8) */
 
   head("6.1 COMMUNICATION");
   field("Primary Language", getVal("commPrimaryLanguage"));
@@ -1233,6 +1220,19 @@ function updateUI() {
   if (selfAdminStatus === "Independent" || selfAdminStatus === "Needs Supports") {
     field(" - Supports Needed to Maintain Skill", getVal("selfAdminSupports"));
   }
+  const healthP = [];
+  document.querySelectorAll('#healthParamsContainer input[type="checkbox"]:checked').forEach(cb => healthP.push(cb.value));
+  field("Parameters or Protocols for Diagnosis", healthP.length ? healthP.join(", ") : "None Selected");
+  field("Other Parameters / Protocols", getVal("healthParamsOther"));
+  field("Known Suspected Health Risks", getVal("healthRisks"));
+  field("Seizure Protocols", getVal("seizureProtocols"));
+  field("Bowel Problems / Protocols", getVal("bowelProtocols"));
+  field("Mental Health Supports (Residential)", getVal("mentalHealthSupports"));
+  field("Risk Level", getVal("riskLevel"));
+  field("Supervision Level", getVal("supervisionLevel"));
+  field("Behavioral Status", getVal("behavioralStatus"));
+  field("Allergies / Sensitivities / Reactions", getVal("allergies"));
+  field("DNR / CPR Status", getVal("dnrStatus"));
   line("");
 
   head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");

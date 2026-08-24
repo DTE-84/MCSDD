@@ -1916,21 +1916,28 @@
                 </div>
               </div>
             </div>
-            <div class="field-group">
-              <label>Health Parameters to Track</label>
-              <div class="multi-select-container" id="healthParamsContainer">
-                <div class="multi-select-display" onclick="toggleMultiSelect('healthParamsContainer')">
-                  <div class="selected-tags" id="healthParamsTags">
-                    <span class="placeholder">Select Parameters...</span>
+            <div class="field-group full" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div>
+                <label>Parameters or Protocols for Diagnosis (If Applicable)</label>
+                <div class="multi-select-container" id="healthParamsContainer">
+                  <div class="multi-select-display" onclick="toggleMultiSelect('healthParamsContainer')">
+                    <div class="selected-tags" id="healthParamsTags">
+                      <span class="placeholder">Select Parameters...</span>
+                    </div>
+                  </div>
+                  <div class="multi-select-dropdown">
+                    <label class="multi-option"><input type="checkbox" value="Weight" onchange="updateHealthParams()"><span>Weight</span></label>
+                    <label class="multi-option"><input type="checkbox" value="Blood Pressure" onchange="updateHealthParams()"><span>Blood Pressure</span></label>
+                    <label class="multi-option"><input type="checkbox" value="Blood Sugar" onchange="updateHealthParams()"><span>Blood Sugar</span></label>
+                    <label class="multi-option"><input type="checkbox" value="Hypertension" onchange="updateHealthParams()"><span>Hypertension</span></label>
+                    <label class="multi-option"><input type="checkbox" value="Seizure Logs" onchange="updateHealthParams()"><span>Seizure Logs</span></label>
+                    <label class="multi-option"><input type="checkbox" value="Bowel Logs" onchange="updateHealthParams()"><span>Bowel Movement Logs</span></label>
                   </div>
                 </div>
-                <div class="multi-select-dropdown">
-                  <label class="multi-option"><input type="checkbox" value="Weight" onchange="updateHealthParams()"><span>Weight</span></label>
-                  <label class="multi-option"><input type="checkbox" value="Blood Pressure" onchange="updateHealthParams()"><span>Blood Pressure</span></label>
-                  <label class="multi-option"><input type="checkbox" value="Blood Sugar" onchange="updateHealthParams()"><span>Blood Sugar</span></label>
-                  <label class="multi-option"><input type="checkbox" value="Seizure Logs" onchange="updateHealthParams()"><span>Seizure Logs</span></label>
-                  <label class="multi-option"><input type="checkbox" value="Bowel Logs" onchange="updateHealthParams()"><span>Bowel Movement Logs</span></label>
-                </div>
+              </div>
+              <div>
+                <label>Other Parameters / Protocols (Etc.)</label>
+                <textarea id="healthParamsOther" placeholder="Describe any other parameters or protocols..." oninput="updateUI()" style="min-height: 42px;"></textarea>
               </div>
             </div>
           </div>
@@ -1939,15 +1946,15 @@
           <div class="subsection-label">Known Health Risks &amp; Emergency Planning</div>
           <div class="form-grid">
             <div class="field-group full">
-              <label>Identified Health Risks</label>
-              <textarea id="healthRisks" placeholder="Choking/Aspiration, Fall Risk, Skin Breakdown, Dehydration, etc." oninput="updateUI()"></textarea>
+              <label>Known Suspected Health Risks (If Applicable)</label>
+              <textarea id="healthRisks" placeholder="Choking / Aspiration risks, Fall Risk, Skin Breakdown, Dehydration, etc." oninput="updateUI()"></textarea>
             </div>
           
             <div class="field-group">
               <label>DNR / CPR Status</label>
               <select id="dnrStatus" onchange="updateUI()">
                 <option value="Full Code (CPR)">Full Code (CPR)</option>
-                <option value="Non-Hospital DNR">Non-Hospital DNR</option>
+                <option value="Non-Hospital DMH-DNR">Non-Hospital DMH-DNR</option>
                 <option value="Alternative to CPR (Waivered)">Alternative to CPR (Waivered)</option>
               </select>
             </div>
@@ -1990,8 +1997,25 @@
               <textarea id="staffSupportNeeds" placeholder="Describe support needs for choking, aspiration, mobility, falls, etc." oninput="updateUI()"></textarea>
             </div>
             <div class="field-group full">
-              <label>Allergies / Sensitivities</label>
+              <label>Allergies / Sensitivities / Reactions - if applicable</label>
               <textarea id="allergies" placeholder="Food, drug, or environmental allergies and reactions." oninput="updateUI()"></textarea>
+            </div>
+          </div>
+
+          <!-- 8E: Specific Protocols & Mental Health -->
+          <div class="subsection-label">Specific Protocols &amp; Mental Health Supports</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Seizure Protocols</label>
+              <textarea id="seizureProtocols" placeholder="Seizure logs, protocols for contacting physician, etc." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>Bowel Problems / Protocols</label>
+              <textarea id="bowelProtocols" placeholder="Bowel movement records, protocols for contacting physician, etc." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full">
+              <label>(Residential services) Mental Health Supports - if applicable</label>
+              <textarea id="mentalHealthSupports" placeholder="Counseling, therapy, medications, etc." oninput="updateUI()"></textarea>
             </div>
           </div>
         </div>
