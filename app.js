@@ -162,6 +162,18 @@ const FORM_FIELDS = [
   "naturalSupportsDevelopment7",
   "targetedJobSkillDevelopment7",
   "methodologyEvaluatingNeed7",
+  "sdsUtilized7",
+  "sdsDesignatedRep7",
+  "sdsHoursOfProgram7",
+  "sdsServicesList7",
+  "sdsTrainingExemptions7",
+  "sdsBackupPlan7",
+  "sdsBudgetAllocationMatch7",
+  "sdsDhssAuthChecked7",
+  "sdsPaidFamilyMember7",
+  "sdsFamilyOpposed7",
+  "sdsFamilyHouseholdTasks7",
+  "sdsFamilyBestMeetNeeds7",
   "backupPlan",
   "commMethod",
   "comm-other",
@@ -1072,6 +1084,35 @@ function updateUI() {
   field("Individualized Backup Plan", getVal("backupPlan"));
   line("");
 
+  const sdsUtil = getVal("sdsUtilized7");
+  if (sdsUtil === "Yes") {
+    line("Self-Directed Services (SDS) Checklist:");
+    field("Designated Representative", getVal("sdsDesignatedRep7"));
+    field("Discuss Hours of Program", getVal("sdsHoursOfProgram7"));
+    field("Services being Self-Directed", getVal("sdsServicesList7"));
+    field("Training Exemptions Justification", getVal("sdsTrainingExemptions7"));
+    field("SDS Back-up Plan", getVal("sdsBackupPlan7"));
+    
+    const budgetMatch = document.getElementById("sdsBudgetAllocationMatch7")?.checked;
+    field("SDS Budget Allocation Complete & Matches", budgetMatch ? "Yes" : "No");
+    
+    const dhssChecked = document.getElementById("sdsDhssAuthChecked7")?.checked;
+    field("DHSS State Plan Authorization Checked", dhssChecked ? "Yes" : "No");
+    
+    const paidFam = getVal("sdsPaidFamilyMember7");
+    field("Paid Family Member Providing Supports?", paidFam);
+    if (paidFam === "Yes") {
+      field("Is individual opposed to family member providing support?", getVal("sdsFamilyOpposed7"));
+      
+      const solelyIndiv = document.getElementById("sdsFamilyHouseholdTasks7")?.checked;
+      field("Supports solely for individual (not household tasks)", solelyIndiv ? "Yes" : "No");
+      
+      const bestMeet = document.getElementById("sdsFamilyBestMeetNeeds7")?.checked;
+      field("PCSP Team agrees family member best meets needs", bestMeet ? "Yes" : "No");
+    }
+    line("");
+  }
+
   head("8. MEDICAL");
   field("Diagnosis", getVal("diagnosis"));
   field("Medications", getVal("medicationDetails"));
@@ -1555,6 +1596,22 @@ function toggleWaiveredServices7() {
   }
 }
 
+function toggleSDS7() {
+  const utilized = document.getElementById("sdsUtilized7").value;
+  const group = document.getElementById("sdsGroup7");
+  if (group) {
+    group.style.display = (utilized === "Yes") ? "block" : "none";
+  }
+}
+
+function toggleSDSPaidFamily7() {
+  const paidFam = document.getElementById("sdsPaidFamilyMember7").value;
+  const group = document.getElementById("sdsPaidFamilyGroup7");
+  if (group) {
+    group.style.display = (paidFam === "Yes") ? "block" : "none";
+  }
+}
+
 function addDueProcess() {
   dueProcessItems.push({
     invitation: "",
@@ -1991,6 +2048,8 @@ function restoreFormData(fd) {
   toggleTransitionFields(); // Ensure section 13 visibility is correct
   toggleEmploymentStatus7(); // Ensure employment status visibility is correct
   toggleWaiveredServices7(); // Ensure waivered services visibility is correct
+  toggleSDS7();
+  toggleSDSPaidFamily7();
 }
 
 function saveToHistory() {

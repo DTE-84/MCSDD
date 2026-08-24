@@ -1635,6 +1635,96 @@
               <textarea id="backupPlan" placeholder="Identify the backup protocol if a primary service provider is unavailable..." oninput="updateUI()"></textarea>
             </div>
           </div>
+
+          <div class="subsection-label" style="margin-top: 24px;">Self-Directed Services (SDS)</div>
+          <div class="form-grid">
+            <div class="field-group full" style="grid-column: 1 / -1;">
+              <label>Are Self-Directed Services (SDS) being utilized?</label>
+              <select id="sdsUtilized7" onchange="toggleSDS7(); updateUI()">
+                <option value="">Select...</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+          
+          <div id="sdsGroup7" style="display: none; margin-top: 15px;">
+            <div class="form-grid">
+              <div class="field-group">
+                <label>Designated Representative</label>
+                <input type="text" id="sdsDesignatedRep7" oninput="updateUI()" placeholder="Name, or state 'None Appointed'">
+              </div>
+              <div class="field-group">
+                <label>Discuss Hours of Program</label>
+                <input type="text" id="sdsHoursOfProgram7" oninput="updateUI()" placeholder="Hours details...">
+              </div>
+              
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label>List services being self-directed and what they entail</label>
+                <textarea id="sdsServicesList7" oninput="updateUI()"></textarea>
+              </div>
+              
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label>Justify any training exemptions for personal assistance (see training checklist)</label>
+                <textarea id="sdsTrainingExemptions7" oninput="updateUI()"></textarea>
+              </div>
+              
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label>SDS Back-up Plan (Provisions for scheduled employees not providing supports)</label>
+                <textarea id="sdsBackupPlan7" oninput="updateUI()" placeholder="May refer to separate documents attached to the plan..."></textarea>
+              </div>
+              
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label class="eth-check">
+                  <input type="checkbox" id="sdsBudgetAllocationMatch7" onchange="updateUI()">
+                  SDS Budget Allocation tool is complete and matches the money amount on the Authorization form (for new individuals to SDS program)
+                </label>
+              </div>
+              
+              <div class="field-group full" style="grid-column: 1 / -1;">
+                <label class="eth-check">
+                  <input type="checkbox" id="sdsDhssAuthChecked7" onchange="updateUI()">
+                  If receiving Medicaid State Plan personal care services through DHSS - authorization for services system has been checked to ensure these services are not being self-directed or waivered.
+                </label>
+              </div>
+              
+              <div class="field-group full" style="grid-column: 1 / -1; margin-top: 15px;">
+                <label>Is a Paid Family Member providing supports?</label>
+                <select id="sdsPaidFamilyMember7" onchange="toggleSDSPaidFamily7(); updateUI()">
+                  <option value="">Select...</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+            </div>
+            
+            <div id="sdsPaidFamilyGroup7" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.02); border: 1px solid var(--border);">
+              <div class="form-grid">
+                <div class="field-group full" style="grid-column: 1 / -1;">
+                  <label>Is the individual opposed to the family member providing the support?</label>
+                  <select id="sdsFamilyOpposed7" onchange="updateUI()">
+                    <option value="">Select...</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                
+                <div class="field-group full" style="grid-column: 1 / -1;">
+                  <label class="eth-check">
+                    <input type="checkbox" id="sdsFamilyHouseholdTasks7" onchange="updateUI()">
+                    The supports to be provided are solely for the individual and not household tasks expected to be shared with people who live in the family unit.
+                  </label>
+                </div>
+                
+                <div class="field-group full" style="grid-column: 1 / -1;">
+                  <label class="eth-check">
+                    <input type="checkbox" id="sdsFamilyBestMeetNeeds7" onchange="updateUI()">
+                    The PCSP team agrees that the family member providing the individual assistance will best meet the individual's needs.
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <!--Section 8: Medical Profile -->
         <div class="form-section" id="sec-health">
