@@ -1137,33 +1137,40 @@ function updateUI() {
     } else {
       hcbsServices.forEach((s, idx) => {
         line(`  [${idx + 1}] Service / Program: ${s.serviceName || "—"}`);
+        field("      Signee", s.whoSigned);
+        field("      Name of Signee", s.signeeNames);
         field("      Provider and Services Choice Statement Effective Signed Date", s.signedDate);
         field("      Updated edit to previously signed Statement", s.isUpdate ? "Yes" : "No");
-        field("      Who Signed?", s.whoSigned);
-        field("      Name(s) of Signee(s)", s.signeeNames);
+        if (s.isUpdate) {
+          field("      Previous Signed Date", s.prevSignedDate);
+        }
         line("");
         
         if (s.sig2Date || s.sig2Who || s.sig2Names) {
           line("      Additional Signature:");
-          field("        Effective Signed Date", s.sig2Date);
-          field("        Who Signed?", s.sig2Who);
+          field("        Signee", s.sig2Who);
           field("        Name of Signee", s.sig2Names);
+          field("        Effective Signed Date", s.sig2Date);
           line("");
         }
         if (s.sig3Date || s.sig3Who || s.sig3Names) {
           line("      3rd Signature:");
-          field("        Effective Signed Date", s.sig3Date);
-          field("        Who Signed?", s.sig3Who);
+          field("        Signee", s.sig3Who);
           field("        Name of Signee", s.sig3Names);
+          field("        Effective Signed Date", s.sig3Date);
           line("");
         }
         field("      1. Informed of options", s.q1);
         field("      2. Informed of range", s.q2);
-        field("      3. Update method", s.q3);
+        field("      3. Update method", `If updates are needed to the plan, the team may contact the SC team at 573-248-1077, ext. ${s.q3Ext || "____"} or ext. ${s.q3Ext2 || "____"}. Or by E-Mail: ${s.q3Email || "____"}`);
         field("      4. Alternatives considered", s.q4);
-        field("      5. Funding for program/employment", s.q5);
+        line("");
+        line("      -- Employment --");
+        field("      5. Funding for program/employment", Array.isArray(s.q5Funding) && s.q5Funding.length > 0 ? s.q5Funding.join(", ") : "");
         field("      6. Hours of the program", s.q6);
         field("      7. Medications at Program DMH facility", s.q7);
+        line("");
+        line("      -- Education --");
         field("      8. IEP and supports for school", s.q8);
         field("      9. Current release signed for school date", s.q9);
         field("      10. Dates requested IEP if not received", s.q10);
@@ -2003,11 +2010,12 @@ function addHcbsService() {
     serviceName: "",
     signedDate: "",
     isUpdate: false,
+    prevSignedDate: "",
     whoSigned: "",
     signeeNames: "",
     sig2Date: "", sig2Who: "", sig2Names: "",
     sig3Date: "", sig3Who: "", sig3Names: "",
-    q1: "", q2: "", q3: "", q4: "", q5: "", q6: "", q7: "", q8: "", q9: "", q10: "", q11: ""
+    q1: "", q2: "", q3Ext: "", q3Ext2: "", q3Email: "", q4: "", q5Funding: [], q6: "", q7: "", q8: "", q9: "", q10: "", q11: ""
   });
   renderHcbsServices();
   updateUI();
@@ -2016,6 +2024,18 @@ function addHcbsService() {
 function removeHcbsService(i) {
   hcbsServices.splice(i, 1);
   renderHcbsServices();
+  updateUI();
+}
+
+function updateHcbsFunding(i, value, isChecked) {
+  if (!Array.isArray(hcbsServices[i].q5Funding)) {
+    hcbsServices[i].q5Funding = [];
+  }
+  if (isChecked) {
+    if (!hcbsServices[i].q5Funding.includes(value)) hcbsServices[i].q5Funding.push(value);
+  } else {
+    hcbsServices[i].q5Funding = hcbsServices[i].q5Funding.filter(v => v !== value);
+  }
   updateUI();
 }
 
@@ -2088,20 +2108,8 @@ function renderHcbsServices() {
       <div class="field-group full" style="border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-top: 15px; background: rgba(0,0,0,0.1);">
         <label style="font-size: 12px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Primary Signature</label>
         <div class="form-grid">
-          <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 250px;">
-              <label>Provider and Services Choice Statement Effective Signed Date</label>
-              <input type="text" value="${esc(s.signedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'signedDate', this.value)">
-            </div>
-            <div style="margin-bottom: 14px;">
-              <label class="eth-check" style="color: var(--gold);">
-                <input type="checkbox" ${s.isUpdate ? "checked" : ""} onchange="updateHcbsService(${i}, 'isUpdate', this.checked)">
-                Updated edit to previously signed Statement
-              </label>
-            </div>
-          </div>
           <div class="field-group">
-            <label>Who Signed?</label>
+            <label>Signee</label>
             <select onchange="updateHcbsService(${i}, 'whoSigned', this.value)">
               <option value="">Select...</option>
               <option value="Individual" ${s.whoSigned === 'Individual' ? 'selected' : ''}>Individual</option>
@@ -2112,18 +2120,32 @@ function renderHcbsServices() {
             <label>Name of Signee</label>
             <input type="text" value="${esc(s.signeeNames || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'signeeNames', this.value)">
           </div>
+          <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+              <label>Provider and Services Choice Statement Effective Signed Date</label>
+              <input type="text" value="${esc(s.signedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'signedDate', this.value)">
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label class="eth-check" style="color: var(--gold);">
+                <input type="checkbox" ${s.isUpdate ? "checked" : ""} onchange="updateHcbsService(${i}, 'isUpdate', this.checked); renderHcbsServices();">
+                Updated edit to previously signed Statement
+              </label>
+            </div>
+            ${s.isUpdate ? `
+            <div style="flex: 1; min-width: 250px;">
+              <label>Previous Signed Date</label>
+              <input type="text" value="${esc(s.prevSignedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'prevSignedDate', this.value)">
+            </div>
+            ` : ""}
+          </div>
         </div>
         <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add Additional Signature</button>
         
         <div style="display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
           <label style="font-size: 11px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Additional Signature</label>
           <div class="form-grid">
-            <div class="field-group full">
-              <label>Effective Signed Date</label>
-              <input type="text" value="${esc(s.sig2Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig2Date', this.value)">
-            </div>
             <div class="field-group">
-              <label>Who Signed?</label>
+              <label>Signee</label>
               <select onchange="updateHcbsService(${i}, 'sig2Who', this.value)">
                 <option value="">Select...</option>
                 <option value="Individual" ${s.sig2Who === 'Individual' ? 'selected' : ''}>Individual</option>
@@ -2134,18 +2156,18 @@ function renderHcbsServices() {
               <label>Name of Signee</label>
               <input type="text" value="${esc(s.sig2Names || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'sig2Names', this.value)">
             </div>
+            <div class="field-group full">
+              <label>Effective Signed Date</label>
+              <input type="text" value="${esc(s.sig2Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig2Date', this.value)">
+            </div>
           </div>
           <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add 3rd Signature</button>
           
           <div style="display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
             <label style="font-size: 11px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">3rd Signature</label>
             <div class="form-grid">
-              <div class="field-group full">
-                <label>Effective Signed Date</label>
-                <input type="text" value="${esc(s.sig3Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig3Date', this.value)">
-              </div>
               <div class="field-group">
-                <label>Who Signed?</label>
+                <label>Signee</label>
                 <select onchange="updateHcbsService(${i}, 'sig3Who', this.value)">
                   <option value="">Select...</option>
                   <option value="Individual" ${s.sig3Who === 'Individual' ? 'selected' : ''}>Individual</option>
@@ -2155,6 +2177,10 @@ function renderHcbsServices() {
               <div class="field-group">
                 <label>Name of Signee</label>
                 <input type="text" value="${esc(s.sig3Names || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'sig3Names', this.value)">
+              </div>
+              <div class="field-group full">
+                <label>Effective Signed Date</label>
+                <input type="text" value="${esc(s.sig3Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig3Date', this.value)">
               </div>
             </div>
           </div>
@@ -2172,15 +2198,42 @@ function renderHcbsServices() {
         </div>
         <div class="field-group full">
           <label>3. Conflict-Free Resolution: Include a method for the individual to request updates to the plan as needed.</label>
-          <textarea oninput="updateHcbsService(${i}, 'q3', this.value)">${esc(s.q3 || "")}</textarea>
+          <div style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--text-base);">
+            <span>If updates are needed to the plan, the team may contact the SC team at 573-248-1077, ext.</span>
+            <input type="text" value="${esc(s.q3Ext || "")}" style="width: 70px; padding: 4px 8px;" placeholder="____" oninput="updateHcbsService(${i}, 'q3Ext', this.value)">
+            <span>or ext.</span>
+            <input type="text" value="${esc(s.q3Ext2 || "")}" style="width: 70px; padding: 4px 8px;" placeholder="____" oninput="updateHcbsService(${i}, 'q3Ext2', this.value)">
+            <span>Or by E-Mail:</span>
+            <input type="text" value="${esc(s.q3Email || "")}" style="flex: 1; min-width: 150px; padding: 4px 8px;" placeholder="Email address(es)..." oninput="updateHcbsService(${i}, 'q3Email', this.value)">
+          </div>
         </div>
         <div class="field-group full">
           <label>4. Discuss the alternative home and community based settings that were considered by the individual.</label>
           <textarea oninput="updateHcbsService(${i}, 'q4', this.value)">${esc(s.q4 || "")}</textarea>
         </div>
+        <div class="field-group full" style="margin-top: 10px;">
+          <h5 style="color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; font-size: 13px; text-transform: uppercase;">Employment</h5>
+        </div>
         <div class="field-group full">
           <label>5. Discuss funding for program/employment.</label>
-          <textarea oninput="updateHcbsService(${i}, 'q5', this.value)">${esc(s.q5 || "")}</textarea>
+          <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" value="Comprehensive Waiver" ${s.q5Funding && s.q5Funding.includes("Comprehensive Waiver") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
+              Comprehensive Waiver
+            </label>
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" value="Support Waiver" ${s.q5Funding && s.q5Funding.includes("Support Waiver") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
+              Support Waiver
+            </label>
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" value="Sarah Lopez Waiver(MOCDD)" ${s.q5Funding && s.q5Funding.includes("Sarah Lopez Waiver(MOCDD)") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
+              Sarah Lopez Waiver(MOCDD)
+            </label>
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" value="Partnership for Hope Waiver(PFH)" ${s.q5Funding && s.q5Funding.includes("Partnership for Hope Waiver(PFH)") ? 'checked' : ''} onchange="updateHcbsFunding(${i}, this.value, this.checked)">
+              Partnership for Hope Waiver(PFH)
+            </label>
+          </div>
         </div>
         <div class="field-group full">
           <label>6. Discuss hours of the program.</label>
@@ -2189,6 +2242,10 @@ function renderHcbsServices() {
         <div class="field-group full">
           <label>7. Discuss if medications are taken at Program DMH facility.</label>
           <textarea oninput="updateHcbsService(${i}, 'q7', this.value)">${esc(s.q7 || "")}</textarea>
+        </div>
+
+        <div class="field-group full" style="margin-top: 10px;">
+          <h5 style="color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; font-size: 13px; text-transform: uppercase;">Education</h5>
         </div>
         <div class="field-group full">
           <label>8. Discuss IEP and supports for school.</label>
