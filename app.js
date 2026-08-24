@@ -163,6 +163,9 @@ const FORM_FIELDS = [
   "targetedJobSkillDevelopment7",
   "methodologyEvaluatingNeed7",
   "isHcbsWaivered",
+  "hcbsSignedDate",
+  "hcbsWhoSigned",
+  "hcbsSigneeNames",
   "hcbs1",
   "hcbs2",
   "hcbs3",
@@ -1155,6 +1158,10 @@ function updateUI() {
   field("Is individual receiving HCBS Waiver services?", isHcbsWaivered);
   if (isHcbsWaivered === "Yes") {
     line("HCBS Waiver Choice & Education:");
+    field("Effective Signed Date", getVal("hcbsSignedDate"));
+    field("Who Signed?", getVal("hcbsWhoSigned"));
+    field("Name(s) of Signee(s)", getVal("hcbsSigneeNames"));
+    line("");
     field("1. Informed of options", getVal("hcbs1"));
     field("2. Informed of range", getVal("hcbs2"));
     field("3. Update method", getVal("hcbs3"));

@@ -1642,6 +1642,24 @@
           
           <div id="hcbsFieldsContainer" style="display: none; margin-bottom: 20px;">
             <div class="form-grid">
+              <div class="field-group">
+                <label>Effective Signed Date</label>
+                <input type="text" id="hcbsSignedDate" placeholder="e.g. MM/DD/YYYY" oninput="updateUI()">
+              </div>
+              <div class="field-group">
+                <label>Who Signed?</label>
+                <select id="hcbsWhoSigned" onchange="updateUI()">
+                  <option value="">Select...</option>
+                  <option value="Individual">Individual</option>
+                  <option value="Guardian">Guardian</option>
+                  <option value="Individual & Guardian">Individual & Guardian</option>
+                </select>
+              </div>
+              <div class="field-group full">
+                <label>Name(s) of Signee(s)</label>
+                <input type="text" id="hcbsSigneeNames" placeholder="Name(s)..." oninput="updateUI()">
+              </div>
+
               <div class="field-group full">
                 <label>1. How was the individual educated and informed of the options listed in the Medicaid waiver, provider and services choice statement?</label>
                 <textarea id="hcbs1" oninput="updateUI()"></textarea>
