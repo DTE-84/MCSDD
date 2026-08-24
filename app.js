@@ -17,6 +17,7 @@ let legalReps = [];
 let commChartRows = [];
 let importantPeople = [];
 let programServices = []; // Section 7: Program Services
+let hcbsServices = []; // Section 7: HCBS Services
 let currentSupports = []; // Section 9: Current Services
 let linkingSupports = []; // Section 9: Linking Services
 let goalsData = []; // Section 9: Action Plan
@@ -163,20 +164,6 @@ const FORM_FIELDS = [
   "targetedJobSkillDevelopment7",
   "methodologyEvaluatingNeed7",
   "isHcbsWaivered",
-  "hcbsSignedDate",
-  "hcbsWhoSigned",
-  "hcbsSigneeNames",
-  "hcbs1",
-  "hcbs2",
-  "hcbs3",
-  "hcbs4",
-  "hcbs5",
-  "hcbs6",
-  "hcbs7",
-  "hcbs8",
-  "hcbs9",
-  "hcbs10",
-  "hcbs11",
   "sdsUtilized7",
   "sdsDesignatedRep7",
   "sdsHoursOfProgram7",
@@ -1145,22 +1132,45 @@ function updateUI() {
   field("Is individual receiving HCBS Waiver services?", isHcbsWaivered);
   if (isHcbsWaivered === "Yes") {
     line("HCBS Waiver Choice & Education:");
-    field("Effective Signed Date", getVal("hcbsSignedDate"));
-    field("Who Signed?", getVal("hcbsWhoSigned"));
-    field("Name(s) of Signee(s)", getVal("hcbsSigneeNames"));
-    line("");
-    field("1. Informed of options", getVal("hcbs1"));
-    field("2. Informed of range", getVal("hcbs2"));
-    field("3. Update method", getVal("hcbs3"));
-    field("4. Alternatives considered", getVal("hcbs4"));
-    field("5. Funding for program/employment", getVal("hcbs5"));
-    field("6. Hours of the program", getVal("hcbs6"));
-    field("7. Medications at Program DMH facility", getVal("hcbs7"));
-    field("8. IEP and supports for school", getVal("hcbs8"));
-    field("9. Current release signed for school date", getVal("hcbs9"));
-    field("10. Dates requested IEP if not received", getVal("hcbs10"));
-    field("11. Additional Funding/Supports", getVal("hcbs11"));
-    line("");
+    if (hcbsServices.length === 0) {
+      line("  No HCBS Services/Programs documented.");
+    } else {
+      hcbsServices.forEach((s, idx) => {
+        line(`  [${idx + 1}] Service / Program: ${s.serviceName || "—"}`);
+        field("      Provider and Services Choice Statement Effective Signed Date", s.signedDate);
+        field("      Updated edit to previously signed Statement", s.isUpdate ? "Yes" : "No");
+        field("      Who Signed?", s.whoSigned);
+        field("      Name(s) of Signee(s)", s.signeeNames);
+        line("");
+        
+        if (s.sig2Date || s.sig2Who || s.sig2Names) {
+          line("      Additional Signature:");
+          field("        Effective Signed Date", s.sig2Date);
+          field("        Who Signed?", s.sig2Who);
+          field("        Name of Signee", s.sig2Names);
+          line("");
+        }
+        if (s.sig3Date || s.sig3Who || s.sig3Names) {
+          line("      3rd Signature:");
+          field("        Effective Signed Date", s.sig3Date);
+          field("        Who Signed?", s.sig3Who);
+          field("        Name of Signee", s.sig3Names);
+          line("");
+        }
+        field("      1. Informed of options", s.q1);
+        field("      2. Informed of range", s.q2);
+        field("      3. Update method", s.q3);
+        field("      4. Alternatives considered", s.q4);
+        field("      5. Funding for program/employment", s.q5);
+        field("      6. Hours of the program", s.q6);
+        field("      7. Medications at Program DMH facility", s.q7);
+        field("      8. IEP and supports for school", s.q8);
+        field("      9. Current release signed for school date", s.q9);
+        field("      10. Dates requested IEP if not received", s.q10);
+        field("      11. Additional Funding/Supports", s.q11);
+        line("");
+      });
+    }
   }
   
   field("Individualized Backup Plan", getVal("backupPlan"));
@@ -1988,6 +1998,219 @@ function renderEmploymentEntries() {
   `).join("");
 }
 
+function addHcbsService() {
+  hcbsServices.push({ 
+    serviceName: "",
+    signedDate: "",
+    isUpdate: false,
+    whoSigned: "",
+    signeeNames: "",
+    sig2Date: "", sig2Who: "", sig2Names: "",
+    sig3Date: "", sig3Who: "", sig3Names: "",
+    q1: "", q2: "", q3: "", q4: "", q5: "", q6: "", q7: "", q8: "", q9: "", q10: "", q11: ""
+  });
+  renderHcbsServices();
+  updateUI();
+}
+
+function removeHcbsService(i) {
+  hcbsServices.splice(i, 1);
+  renderHcbsServices();
+  updateUI();
+}
+
+function updateHcbsService(i, field, value) {
+  hcbsServices[i][field] = value;
+  updateUI();
+}
+
+function renderHcbsServices() {
+  const container = document.getElementById("hcbsServicesList");
+  if (!container) return;
+  if (hcbsServices.length === 0) {
+    container.innerHTML = "";
+    return;
+  }
+  
+  const serviceOptions = [
+    "Applied Behavior Analysis",
+    "Assistive Technology",
+    "Benefits Planning",
+    "Career Planning",
+    "Community Networking",
+    "Community Specialist",
+    "Community Transition",
+    "Crisis Intervention",
+    "Day Habilitation",
+    "Dental",
+    "Environmental Accessibility Adaptations",
+    "Family Peer Support Service",
+    "Group Home",
+    "Health Assessment and Coordination Services",
+    "In-Home Respite",
+    "Individual Directed Goods and Services",
+    "Individual Supported Living",
+    "Individualized Skill Development",
+    "Intensive Therapeutic Residential Habilitation",
+    "Job Development",
+    "Occupational Therapy",
+    "Out of Home Respite",
+    "Personal Assistant",
+    "Physical Therapy",
+    "Prevocational",
+    "Professional Assessment and Monitoring",
+    "Remote Supports",
+    "Shared Living",
+    "Specialized Medical Equipment and Supplies",
+    "Speech Therapy",
+    "Support Broker",
+    "Supported Employment",
+    "Transportation"
+  ];
+  
+  container.innerHTML = hcbsServices.map((s, i) => `
+    <div class="field-group full" style="border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <label style="font-size: 13px; font-weight: 700; color: var(--gold); text-transform: uppercase;">HCBS Service / Program #${i + 1}</label>
+        <button type="button" class="remove-rep-btn" onclick="removeHcbsService(${i})">✕</button>
+      </div>
+      
+      <div class="form-grid">
+        <div class="field-group full">
+          <label>Service / Program Name</label>
+          <select onchange="updateHcbsService(${i}, 'serviceName', this.value)">
+            <option value="">Select...</option>
+            ${serviceOptions.map(opt => `<option value="${opt}" ${s.serviceName === opt ? 'selected' : ''}>${opt}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group full" style="border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-top: 15px; background: rgba(0,0,0,0.1);">
+        <label style="font-size: 12px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Primary Signature</label>
+        <div class="form-grid">
+          <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+              <label>Provider and Services Choice Statement Effective Signed Date</label>
+              <input type="text" value="${esc(s.signedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'signedDate', this.value)">
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label class="eth-check" style="color: var(--gold);">
+                <input type="checkbox" ${s.isUpdate ? "checked" : ""} onchange="updateHcbsService(${i}, 'isUpdate', this.checked)">
+                Updated edit to previously signed Statement
+              </label>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Who Signed?</label>
+            <select onchange="updateHcbsService(${i}, 'whoSigned', this.value)">
+              <option value="">Select...</option>
+              <option value="Individual" ${s.whoSigned === 'Individual' ? 'selected' : ''}>Individual</option>
+              <option value="Guardian" ${s.whoSigned === 'Guardian' ? 'selected' : ''}>Guardian</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Name of Signee</label>
+            <input type="text" value="${esc(s.signeeNames || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'signeeNames', this.value)">
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add Additional Signature</button>
+        
+        <div style="display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+          <label style="font-size: 11px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Additional Signature</label>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Effective Signed Date</label>
+              <input type="text" value="${esc(s.sig2Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig2Date', this.value)">
+            </div>
+            <div class="field-group">
+              <label>Who Signed?</label>
+              <select onchange="updateHcbsService(${i}, 'sig2Who', this.value)">
+                <option value="">Select...</option>
+                <option value="Individual" ${s.sig2Who === 'Individual' ? 'selected' : ''}>Individual</option>
+                <option value="Guardian" ${s.sig2Who === 'Guardian' ? 'selected' : ''}>Guardian</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Name of Signee</label>
+              <input type="text" value="${esc(s.sig2Names || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'sig2Names', this.value)">
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add 3rd Signature</button>
+          
+          <div style="display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">3rd Signature</label>
+            <div class="form-grid">
+              <div class="field-group full">
+                <label>Effective Signed Date</label>
+                <input type="text" value="${esc(s.sig3Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig3Date', this.value)">
+              </div>
+              <div class="field-group">
+                <label>Who Signed?</label>
+                <select onchange="updateHcbsService(${i}, 'sig3Who', this.value)">
+                  <option value="">Select...</option>
+                  <option value="Individual" ${s.sig3Who === 'Individual' ? 'selected' : ''}>Individual</option>
+                  <option value="Guardian" ${s.sig3Who === 'Guardian' ? 'selected' : ''}>Guardian</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Name of Signee</label>
+                <input type="text" value="${esc(s.sig3Names || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'sig3Names', this.value)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top: 15px;">
+        <div class="field-group full">
+          <label>1. How was the individual educated and informed of the options listed in the Medicaid waiver, provider and services choice statement?</label>
+          <textarea oninput="updateHcbsService(${i}, 'q1', this.value)">${esc(s.q1 || "")}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>2. How was the individual educated and informed of the full range of HCBS available to support achievement of personally identified goals?</label>
+          <textarea oninput="updateHcbsService(${i}, 'q2', this.value)">${esc(s.q2 || "")}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>3. Conflict-Free Resolution: Include a method for the individual to request updates to the plan as needed.</label>
+          <textarea oninput="updateHcbsService(${i}, 'q3', this.value)">${esc(s.q3 || "")}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>4. Discuss the alternative home and community based settings that were considered by the individual.</label>
+          <textarea oninput="updateHcbsService(${i}, 'q4', this.value)">${esc(s.q4 || "")}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>5. Discuss funding for program/employment.</label>
+          <textarea oninput="updateHcbsService(${i}, 'q5', this.value)">${esc(s.q5 || "")}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>6. Discuss hours of the program.</label>
+          <textarea oninput="updateHcbsService(${i}, 'q6', this.value)">${esc(s.q6 || "")}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>7. Discuss if medications are taken at Program DMH facility.</label>
+          <textarea oninput="updateHcbsService(${i}, 'q7', this.value)">${esc(s.q7 || "")}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>8. Discuss IEP and supports for school.</label>
+          <textarea oninput="updateHcbsService(${i}, 'q8', this.value)">${esc(s.q8 || "")}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>9. Current release signed for school date:</label>
+          <input type="text" value="${esc(s.q9 || "")}" placeholder="Date..." oninput="updateHcbsService(${i}, 'q9', this.value)">
+        </div>
+        <div class="field-group full">
+          <label>10. Dates requested IEP if IEP not received (include log notes):</label>
+          <textarea placeholder="_____,______,___" oninput="updateHcbsService(${i}, 'q10', this.value)">${esc(s.q10 || "")}</textarea>
+        </div>
+        <div class="field-group full">
+          <label>11. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
+          <textarea oninput="updateHcbsService(${i}, 'q11', this.value)">${esc(s.q11 || "")}</textarea>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
 function addLegalRep() {
   legalReps.push({ name: "", relationship: "", legalType: "Full Guardianship", livesWith: "Yes", phone: "", address: "" });
   renderLegalReps();
@@ -2089,6 +2312,7 @@ function captureFormData() {
     _goalsData: goalsData,
     _clinicalGoalsTasks: clinicalGoalsTasks,
     _programServices: programServices,
+    _hcbsServices: hcbsServices,
     _currentSupports: currentSupports,
     _linkingSupports: linkingSupports,
     _legalReps: legalReps,
@@ -2129,6 +2353,7 @@ function restoreFormData(fd) {
   goalsData = fd._goalsData || [];
   clinicalGoalsTasks = fd._clinicalGoalsTasks || [];
   programServices = fd._programServices || [];
+  hcbsServices = fd._hcbsServices || [];
   currentSupports = fd._currentSupports || [];
   linkingSupports = fd._linkingSupports || [];
   legalReps = fd._legalReps || [];
@@ -2147,6 +2372,7 @@ function restoreFormData(fd) {
   renderGoals();
   renderGoalTasks();
   renderProgramServices();
+  renderHcbsServices();
   renderSupports('current');
   renderSupports('linking');
   renderLegalReps();
@@ -2183,6 +2409,7 @@ function restoreFormData(fd) {
   toggleEmploymentStatus7(); // Ensure employment status visibility is correct
   toggleWaiveredServices7(); // Ensure waivered services visibility is correct
   toggleHcbsFields();
+  toggleHcbsSignatures();
   toggleSDS7();
   toggleSDSPaidFamily7();
   toggleSelfAdmin8();

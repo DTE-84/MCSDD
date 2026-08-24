@@ -1594,7 +1594,7 @@
               </div>
               <div class="field-group full" style="grid-column: 1 / -1;">
                 <label>Group Supported Employment (If applicable)</label>
-                <textarea id="groupSupportedEmploymentJustification7" oninput="updateUI()" placeholder="Justify need if they demonstrate capacity for individual setting..."></textarea>
+                <textarea id="groupSupportedEmploymentJustification7" oninput="updateUI()" placeholder="Justify the need for the service if the individual demonstrates the capacity to work in an individual setting similar to those not receiving HCB services..."></textarea>
               </div>
               
               <div class="field-group full" style="grid-column: 1 / -1; margin-top: 10px;">
@@ -1644,70 +1644,10 @@
           </div>
           
           <div id="hcbsFieldsContainer" style="display: none; margin-bottom: 20px;">
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Effective Signed Date</label>
-                <input type="text" id="hcbsSignedDate" placeholder="e.g. MM/DD/YYYY" oninput="updateUI()">
-              </div>
-              <div class="field-group">
-                <label>Who Signed?</label>
-                <select id="hcbsWhoSigned" onchange="updateUI()">
-                  <option value="">Select...</option>
-                  <option value="Individual">Individual</option>
-                  <option value="Guardian">Guardian</option>
-                  <option value="Individual & Guardian">Individual & Guardian</option>
-                </select>
-              </div>
-              <div class="field-group full">
-                <label>Name(s) of Signee(s)</label>
-                <input type="text" id="hcbsSigneeNames" placeholder="Name(s)..." oninput="updateUI()">
-              </div>
-
-              <div class="field-group full">
-                <label>1. How was the individual educated and informed of the options listed in the Medicaid waiver, provider and services choice statement?</label>
-                <textarea id="hcbs1" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>2. How was the individual educated and informed of the full range of HCBS available to support achievement of personally identified goals?</label>
-                <textarea id="hcbs2" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>3. Conflict-Free Resolution: Include a method for the individual to request updates to the plan as needed.</label>
-                <textarea id="hcbs3" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>4. Discuss the alternative home and community based settings that were considered by the individual.</label>
-                <textarea id="hcbs4" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>5. Discuss funding for program/employment.</label>
-                <textarea id="hcbs5" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>6. Discuss hours of the program.</label>
-                <textarea id="hcbs6" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>7. Discuss if medications are taken at Program DMH facility.</label>
-                <textarea id="hcbs7" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>8. Discuss IEP and supports for school.</label>
-                <textarea id="hcbs8" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>9. Current release signed for school date:</label>
-                <input type="text" id="hcbs9" placeholder="Date..." oninput="updateUI()">
-              </div>
-              <div class="field-group full">
-                <label>10. Dates requested IEP if IEP not received (include log notes):</label>
-                <textarea id="hcbs10" placeholder="_____,______,___" oninput="updateUI()"></textarea>
-              </div>
-              <div class="field-group full">
-                <label>11. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
-                <textarea id="hcbs11" oninput="updateUI()"></textarea>
-              </div>
-            </div>
+            <div id="hcbsServicesList"></div>
+            <button class="btn btn-outline" type="button" onclick="addHcbsService()" style="margin-top: 10px;">
+              + Add HCBS Service/Program
+            </button>
           </div>
 
           <div class="form-grid">
