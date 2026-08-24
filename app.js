@@ -313,8 +313,12 @@ const FORM_FIELDS = [
   "personalOutcomes",
   "hrstStatus",
   "telehealth",
+  "familyMedicalHistory",
+  "adaptiveEquipment",
   "specialists",
   "preventionDiet",
+  "residentialScreenings",
+  "psychotropicProtocol",
   "selfAdmin",
   "healthRisks",
   "evacPlan",
@@ -437,6 +441,13 @@ function addProgramService() {
     hcbs2: "",
     hcbs3: "",
     hcbs4: "",
+    hcbs5: "",
+    hcbs6: "",
+    hcbs7: "",
+    hcbs8: "",
+    hcbs9: "",
+    hcbs10: "",
+    hcbs11: "",
   });
   renderProgramServices();
   updateUI();
@@ -682,6 +693,41 @@ function renderProgramServices() {
           <div>
             <label style="font-size: 11px; margin-bottom: 5px; display: block;">4. Discuss the alternative home and community based settings that were considered by the individual.</label>
             <textarea style="width: 100%; min-height: 60px;" placeholder="Custom input for alternatives considered..." oninput="updateProgramServiceField(${p.id},'hcbs4',this.value)">${esc(p.hcbs4)}</textarea>
+          </div>
+          
+          <div style="margin-top: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">5. Discuss funding for program/employment.</label>
+            <textarea style="width: 100%; min-height: 60px;" oninput="updateProgramServiceField(${p.id},'hcbs5',this.value)">${esc(p.hcbs5)}</textarea>
+          </div>
+          
+          <div style="margin-top: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">6. Discuss hours of the program.</label>
+            <input type="text" style="width: 100%;" oninput="updateProgramServiceField(${p.id},'hcbs6',this.value)" value="${esc(p.hcbs6)}">
+          </div>
+          
+          <div style="margin-top: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">7. Discuss if medications are taken at Program DMH facility.</label>
+            <textarea style="width: 100%; min-height: 60px;" oninput="updateProgramServiceField(${p.id},'hcbs7',this.value)">${esc(p.hcbs7)}</textarea>
+          </div>
+          
+          <div style="margin-top: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">8. Discuss IEP and supports for school.</label>
+            <textarea style="width: 100%; min-height: 60px;" oninput="updateProgramServiceField(${p.id},'hcbs8',this.value)">${esc(p.hcbs8)}</textarea>
+          </div>
+          
+          <div style="margin-top: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">9. Current release signed for school date:</label>
+            <input type="text" style="width: 100%; max-width: 200px;" placeholder="Date..." oninput="updateProgramServiceField(${p.id},'hcbs9',this.value)" value="${esc(p.hcbs9)}">
+          </div>
+          
+          <div style="margin-top: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">10. Dates requested IEP if IEP not received (include log notes):</label>
+            <textarea style="width: 100%; min-height: 60px;" placeholder="_____,______,___" oninput="updateProgramServiceField(${p.id},'hcbs10',this.value)">${esc(p.hcbs10)}</textarea>
+          </div>
+          
+          <div style="margin-top: 15px;">
+            <label style="font-size: 11px; margin-bottom: 5px; display: block;">11. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
+            <textarea style="width: 100%; min-height: 60px;" oninput="updateProgramServiceField(${p.id},'hcbs11',this.value)">${esc(p.hcbs11)}</textarea>
           </div>
         </div>
         `
@@ -1073,6 +1119,13 @@ function updateUI() {
         line(`        2. Informed of range: ${s.hcbs2 || "—"}`);
         line(`        3. Update method: ${s.hcbs3 || "—"}`);
         line(`        4. Alternatives considered: ${s.hcbs4 || "—"}`);
+        line(`        5. Funding for program/employment: ${s.hcbs5 || "—"}`);
+        line(`        6. Hours of the program: ${s.hcbs6 || "—"}`);
+        line(`        7. Medications at Program DMH facility: ${s.hcbs7 || "—"}`);
+        line(`        8. IEP and supports for school: ${s.hcbs8 || "—"}`);
+        line(`        9. Current release signed for school date: ${s.hcbs9 || "—"}`);
+        line(`        10. Dates requested IEP if not received: ${s.hcbs10 || "—"}`);
+        line(`        11. Additional Funding/Supports: ${s.hcbs11 || "—"}`);
       }
       line("");
     });
@@ -1113,11 +1166,21 @@ function updateUI() {
     line("");
   }
 
-  head("8. MEDICAL");
+  head("8. HEALTH, SAFETY & RISK PLANNING (MEDICAL PROFILE)");
   field("Diagnosis", getVal("diagnosis"));
-  field("Medications", getVal("medicationDetails"));
-  field("Medical History", getVal("medHistory"));
-  field("PCP", getVal("pcpName"));
+  field("Personal Outcomes", getVal("personalOutcomes"));
+  field("HRST Status", getVal("hrstStatus"));
+  field("Telehealth Used?", getVal("telehealth"));
+  field("Family Medical History", getVal("familyMedicalHistory"));
+  field("Adaptive / Specialized Medical Equipment", getVal("adaptiveEquipment"));
+  field("Past Physical/Mental Illnesses, Traumatic Experiences, Stressors", getVal("medHistory"));
+  field("Primary Care Physician (PCP)", getVal("pcpName"));
+  field("Other Medical Specialists", getVal("specialists"));
+  field("Prevention (Diet, Exercise, Counseling)", getVal("preventionDiet"));
+  field("Residential Immunizations & Cancer Screenings", getVal("residentialScreenings"));
+  field("Current Medications (Name, Dosage, Purpose)", getVal("medicationDetails"));
+  field("PRN Psychotropic Protocol", getVal("psychotropicProtocol"));
+  field("Self-Administration of Meds", getVal("selfAdmin"));
   line("");
 
   head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");

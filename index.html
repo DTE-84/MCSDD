@@ -1758,9 +1758,20 @@
                 <option value="Yes">Yes</option>
               </select>
             </div>
+            
             <div class="field-group full">
-              <label>Medical History / Traumatic Stressors</label>
-              <textarea id="medHistory" placeholder="Surgeries, Injuries, SIB, Psych Admissions, Loss, Frequent Moves, etc." oninput="updateUI()"></textarea>
+              <label>Family Medical History (If Available)</label>
+              <textarea id="familyMedicalHistory" placeholder="List relevant family medical history..." oninput="updateUI()"></textarea>
+            </div>
+            
+            <div class="field-group full">
+              <label>Adaptive Equipment / Specialized Medical Equipment (SME)</label>
+              <textarea id="adaptiveEquipment" placeholder="List any adaptive or specialized medical equipment used..." oninput="updateUI()"></textarea>
+            </div>
+
+            <div class="field-group full">
+              <label>Past Physical / Mental Illnesses, Traumatic Experiences or Lifestyle Stressors</label>
+              <textarea id="medHistory" placeholder="Surgeries, significant injuries, bowel obstructions/impactions, child abuse, SIB, psychiatric admissions, loss of loved ones, frequent moves, etc." oninput="updateUI()"></textarea>
             </div>
           </div>
 
@@ -1768,16 +1779,20 @@
           <div class="subsection-label">Prevention &amp; Providers</div>
           <div class="form-grid">
             <div class="field-group">
-              <label>Primary Care Physician (PCP)</label>
-              <input type="text" id="pcpName" placeholder="Name, Contact, Frequency" oninput="updateUI()" />
+              <label>Primary Care Physician (PCP) (Residential or General)</label>
+              <textarea id="pcpName" placeholder="Name, contact, service/specialty, and minimum frequency of visits" oninput="updateUI()"></textarea>
             </div>
             <div class="field-group">
-              <label>Specialists (Dental, Vision, etc.)</label>
-              <textarea id="specialists" placeholder="Specialist name, specialty, frequency of visits" oninput="updateUI()"></textarea>
+              <label>Other Medical Specialists (Dental, Vision, Hearing, Podiatrist, Psych, etc.)</label>
+              <textarea id="specialists" placeholder="Name, contact, service/specialty, and minimum frequency of visits" oninput="updateUI()"></textarea>
             </div>
-            <div class="field-group full">
-              <label>Prevention (Diet, Exercise, Screenings)</label>
-              <textarea id="preventionDiet" placeholder="Dietary needs, weight management, immunizations, cancer screenings, etc." oninput="updateUI()"></textarea>
+            <div class="field-group">
+              <label>Prevention (Diet, Exercise, Counseling)</label>
+              <textarea id="preventionDiet" placeholder="Dietary needs, exercise / weight management, counseling, etc." oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group">
+              <label>Residential Immunizations &amp; Cancer Screenings</label>
+              <textarea id="residentialScreenings" placeholder="PAP/Mammogram, Colon/PSA, immunizations..." oninput="updateUI()"></textarea>
             </div>
           </div>
 
@@ -1785,12 +1800,12 @@
           <div class="subsection-label">Medications &amp; Health Protocols</div>
           <div class="form-grid">
             <div class="field-group full">
-              <label>Current Medications (Name, Dosage, Purpose)</label>
-              <textarea id="medicationDetails" placeholder="List all meds. Explicitly state purpose for each (e.g. Hypertension, Diabetes)." oninput="updateUI()"></textarea>
+              <label>Current Medications</label>
+              <textarea id="medicationDetails" placeholder="List all meds. Include purpose of medications for medical issues (e.g. hypertension, diabetes, etc.)" oninput="updateUI()"></textarea>
             </div>
             <div class="field-group full">
-              <label>PRN Psychotropic Protocol (If Applicable)</label>
-              <textarea id="psychotropicProtocol" placeholder="Dosage, Risk Factors, and specific triggers for administration." oninput="updateUI()"></textarea>
+              <label>PRN Psychotropic Med Protocol (If Applicable)</label>
+              <textarea id="psychotropicProtocol" placeholder="State purpose of each psychotropic, dosage by psychotropic meds, risk factors, and triggers for administration." oninput="updateUI()"></textarea>
             </div>
             <div class="field-group">
               <label>Self-Administration of Meds</label>
