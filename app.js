@@ -79,6 +79,120 @@ const HCBS_SUBCATEGORIES = {
     "Residential Monthly Registered Nurse Oversight: T1002 HQ",
     "Residential License Practical Nurse(with Registered Nurse Oversight): T1003 HQ",
     "Residential Hospital Support: S5125"
+  ],
+  "Health Assessment and Coordination Services": [
+    "Health Assessment and Coordination Services (HAC): 99499"
+  ],
+  "Home Delivered Meals": [
+    "Home Delivered Meals: S5170"
+  ],
+  "Individual Directed Goods and Services": [
+    "Individual Directed Goods and Services: T2028"
+  ],
+  "Individualized Skill Development": [
+    "Individualized Skill Development (ISDI), INDIVIDUAL: S5108",
+    "Individualized Skill Development (ISDG), GROUP: S5108 HQ"
+  ],
+  "Individual Supported Living": [
+    "Individualized Supported Living: T2016",
+    "Individualized Supported Living Transportation, Staff and Agency(non-modified): T2001",
+    "Individualized Supported Living Transportation, Agency(modified): T2001 HE",
+    "Individual Supported Living Monthly Registered Nurse Oversight: T1002 TD",
+    "Individual Supported Living LPN(with Registered Nurse Oversight: T1003 TE",
+    "Hospital Supports: S5125"
+  ],
+  "Intensive Therapeutic Residential Habilitation": [
+    "Intensive Therapeutic Residential Habilitation: T2016 HK"
+  ],
+  "In-Home Respite": [
+    "Respite Care, In-Home, Day: S5151",
+    "Respite Care, In-Home, Individual: S5150",
+    "Respite Care, In-Home, Group: S5150 HQ"
+  ],
+  "Job Development": [
+    "Job development, INDIVIDUAL: H0038"
+  ],
+  "Occupational Therapy": [
+    "Occupational Therapy: 97535",
+    "Occupational Therapy, COTA: 97535",
+    "Occupational Therapy, Consultation: 97535"
+  ],
+  "Out of Home Respite": [
+    "Respite Care, Out-of-Home, Day: H0045",
+    "Respite Care, Out-of-Home: T1005"
+  ],
+  "Personal Assistant": [
+    "PA Individual, Self-Directed: T1019 U2",
+    "PA Agency / Contractor: T1019",
+    "PA, Group Size 2-3: T1019 HQ",
+    "PA, Group Size 4-6: T1019 UQ",
+    "PA, Medical, Agency / Contractor: T1019 SC",
+    "PA, Medical, Self-Directed: T1019 SCSC"
+  ],
+  "Scheduled Team Conference": [
+    "Scheduled Team Conference(Team Collaboration):G9007 U2"
+  ],
+  "Physical Therapy": [
+    "Physical Therapy: 97110",
+    "Physical Therapy, Consultation: 97110"
+  ],
+  "Prevocational": [
+    "Pre-vocational Services, Individual: H2025",
+    "Pre-vocational Services, Individual: H2025 HQ"
+  ],
+  "Professional Assessment and Monitoring": [
+    "Professional Assessment and Monitoring, Registered Nurse: T1002",
+    "Professional Assessment and Monitoring, License Practical Nurse: T1003",
+    "Professional Assessment and Monitoring, Dietician: S9470"
+  ],
+  "Remote Supports": [
+    "Remote Support: A9999 GT",
+    "Remote Support Equipment: A9999 GT SE"
+  ],
+  "Shared Living": [
+    "Shared Living (HOST / COMPANION Home): S5136",
+    "Hospital Supports: S5125"
+  ],
+  "Specialized Medical Equipment and Supplies": [
+    "Specialized Medical Equipment and Supplies (SME): T2029"
+  ],
+  "Speech Therapy": [
+    "Speech Therapy: 92507",
+    "Speech Therapy, Consultation: 92507"
+  ],
+  "Support Broker": [
+    "Supporter Broker, Agency (SB): T2041"
+  ],
+  "Supported Employment": [
+    "Supportive Employment, Individual (SEI): H2023",
+    "Supportive Employment, Group (SEG): H2023 HQ"
+  ],
+  "Temporary Residential": [
+    "Temporary Residential, Daily: H0045",
+    "Temporary Residential, 1/4: T1005"
+  ],
+  "Transportation": [
+    "Ambulatory Zone: 1(0-10mi): A0110",
+    "w/N Non-Ambulatory Modification Zone: 1(0-10mi): A0110 HE",
+    "Ambulatory Zone: 2(10+ to 20mi): T2002",
+    "w/Non-Ambulatory Modifications Zone 2(10 + to 20 mi): T2002 HE",
+    "Ambulatory Zone: 3(20+ mi): T2003",
+    "w/Non-Ambulatory Modifications Zone: 3(20 + mi): T2003 HE"
+  ],
+  "Virtual Delivery of Services": [
+    "Adaptive Behavior Treatment w/ Protocol Modification: 97155 HO",
+    "Adaptive Behavior Treatment w/ Protocol Modification: 97155 HN",
+    "Behavior Identification Assessment: 97151 HO",
+    "Behavior Identification Supporting Assessment-Observational: 97152 HO",
+    "Behavior Identification Supporting Assessment-Observational: 97152 HN",
+    "Behavior Identification Supporting Assessment-Observational: 97152 HM",
+    "Benefits Planning: H0038",
+    "Career Planning: T2019",
+    "Environmental Accessibility Adaptations Consultation Only: S5165 TC",
+    "Family Adaptive Behavior Treatment Guidance: 97156 HO",
+    "Family Adaptive Behavior Treatment Guidance: 97156 HN",
+    "Group Adaptive Behavior Treatment w/ Protocol Modification: 97158 HO",
+    "Group Adaptive Behavior Treatment w/ Protocol Modification: 97158 HN"
   ]
 };
 
@@ -2232,6 +2346,7 @@ function renderHcbsServices() {
     "Family Peer Support Service",
     "Group Home",
     "Health Assessment and Coordination Services",
+    "Home Delivered Meals",
     "In-Home Respite",
     "Individual Directed Goods and Services",
     "Individual Supported Living",
@@ -2245,12 +2360,15 @@ function renderHcbsServices() {
     "Prevocational",
     "Professional Assessment and Monitoring",
     "Remote Supports",
+    "Scheduled Team Conference",
     "Shared Living",
     "Specialized Medical Equipment and Supplies",
     "Speech Therapy",
     "Support Broker",
     "Supported Employment",
-    "Transportation"
+    "Temporary Residential",
+    "Transportation",
+    "Virtual Delivery of Services"
   ];
   
   container.innerHTML = hcbsServices.map((s, i) => `
@@ -2294,12 +2412,24 @@ function renderHcbsServices() {
               </div>
             ` : `
               <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${HCBS_SUBCATEGORIES[s.serviceName].map(sub => `
-                  <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
-                    <input type="radio" name="hcbs_sub_${i}" value="${esc(sub)}" ${s.subcategories && s.subcategories.length > 0 && s.subcategories[0].name === sub ? 'checked' : ''} onchange="setHcbsSubcategory(${i}, '${esc(sub)}')">
-                    ${esc(sub)}
-                  </label>
-                `).join('')}
+                ${HCBS_SUBCATEGORIES[s.serviceName].map(sub => {
+                  const isChecked = s.subcategories && s.subcategories.length > 0 && s.subcategories[0].name === sub;
+                  const subObj = isChecked ? s.subcategories[0] : null;
+                  return `
+                  <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <label class="eth-check" style="font-size: 13px; color: var(--text-base); flex: 1; min-width: 250px;">
+                      <input type="radio" name="hcbs_sub_${i}" value="${esc(sub)}" ${isChecked ? 'checked' : ''} onchange="setHcbsSubcategory(${i}, '${esc(sub)}')">
+                      ${esc(sub)}
+                    </label>
+                    ${(isChecked && s.serviceName === 'Out of Home Respite') ? `
+                      <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
+                        <input type="checkbox" ${subObj && subObj.pos21 ? 'checked' : ''} onchange="toggleHcbsSubcategoryPos(${i}, '${esc(sub)}', this.checked)">
+                        -POS21 (Inpatient)
+                      </label>
+                    ` : ''}
+                  </div>
+                  `;
+                }).join('')}
               </div>
             `}
           </div>
