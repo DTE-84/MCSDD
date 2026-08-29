@@ -339,6 +339,10 @@ const FORM_FIELDS = [
   // Section 1 — Demographics
   "coordinator",
   "officeType",
+  "dmhLocation",
+  "isTransferring",
+  "transferredTcm",
+  "transferredOfficeType",
   "maritalStatus",
   "voterStatus",
   "religion",
@@ -1178,7 +1182,16 @@ function updateUI() {
   line(getLegalRepsNarrative());
   line("");
   field("TCM Agency", getVal("coordinator"));
+  field("DMH Office Type", getVal("officeType"));
+  if (getVal("officeType")) {
+    field("DMH Facility Location", getVal("dmhLocation"));
+  }
   field("Marital", getVal("maritalStatus"));
+  if (document.getElementById("isTransferring")?.checked) {
+    field("Transferring", "Yes");
+    field("Transferred TCM Agency", getVal("transferredTcm"));
+    field("Transferred DMH Office Type", getVal("transferredOfficeType"));
+  }
   field("Residency", getVal("residencyType"));
   field("Education", getVal("educationStatus"));
   field("School", getVal("schoolName"));
@@ -1336,8 +1349,9 @@ function updateUI() {
 
   const isHcbsWaivered = getVal("isHcbsWaivered");
   field("Is individual receiving HCBS Waiver services?", isHcbsWaivered);
-  if (isHcbsWaivered === "Yes") {
+  if (isHcbsWaivered === "Yes" || isHcbsWaivered === "No") {
     line("HCBS Waiver Choice & Education:");
+    const isWaivered = document.getElementById("isHcbsWaivered") ? document.getElementById("isHcbsWaivered").value : "";
     if (hcbsServices.length === 0) {
       line("  No HCBS Services/Programs documented.");
     } else {
@@ -1357,70 +1371,73 @@ function updateUI() {
         
         field("      Program", Array.isArray(s.q5Funding) && s.q5Funding.length > 0 ? s.q5Funding.join(", ") : "");
         if (s.medicationDMH) {
-          field("      Medication within DMH", "Yes");
+          field("      Medication taken at Program(DMH Facility)", "Yes");
           if (s.medicationDMHDetails) {
             field("      Medication Details", s.medicationDMHDetails);
           }
         }
-        field("      Signee", s.whoSigned);
-        field("      Name of Signee", s.signeeNames);
-        field("      Provider and Services Choice Statement Effective Signed Date", s.signedDate);
-        field("      Updated edit to previously signed Statement", s.isUpdate ? "Yes" : "No");
-        if (s.isUpdate) {
-          field("      Previous Signed Date", s.prevSignedDate);
-        }
-        line("");
         
-        if (s.sig2Date || s.sig2Who || s.sig2Names) {
-          line("      Additional Signature:");
-          field("        Signee", s.sig2Who);
-          field("        Name of Signee", s.sig2Names);
-          field("        Effective Signed Date", s.sig2Date);
+        if (isWaivered === 'Yes') {
+          field("      Signee", s.whoSigned);
+          field("      Name of Signee", s.signeeNames);
+          field("      Provider and Services Choice Statement Effective Signed Date", s.signedDate);
+          field("      Updated edit to previously signed Statement", s.isUpdate ? "Yes" : "No");
+          if (s.isUpdate) {
+            field("      Previous Signed Date", s.prevSignedDate);
+          }
           line("");
-        }
-        if (s.sig3Date || s.sig3Who || s.sig3Names) {
-          line("      3rd Signature:");
-          field("        Signee", s.sig3Who);
-          field("        Name of Signee", s.sig3Names);
-          field("        Effective Signed Date", s.sig3Date);
-          line("");
-        }
-        field("      1. Informed of options", s.q1);
-        if (!s.q2UnableToSupport && !s.q2Educated && s.q2) {
-          field("      2. Informed of range", s.q2);
-        } else {
-          line("      2. Informed of range:");
-          if (s.q2UnableToSupport) {
-            line("         [x] Provider is unable to support the individual in achieving his/her personal identified goals.");
-            if (s.q2UnableToSupportReason) {
-              line(`             Problem: ${s.q2UnableToSupportReason}`);
+          
+          if (s.sig2Date || s.sig2Who || s.sig2Names) {
+            line("      Additional Signature:");
+            field("        Signee", s.sig2Who);
+            field("        Name of Signee", s.sig2Names);
+            field("        Effective Signed Date", s.sig2Date);
+            line("");
+          }
+          if (s.sig3Date || s.sig3Who || s.sig3Names) {
+            line("      3rd Signature:");
+            field("        Signee", s.sig3Who);
+            field("        Name of Signee", s.sig3Names);
+            field("        Effective Signed Date", s.sig3Date);
+            line("");
+          }
+          field("      1. Informed of options", s.q1);
+          if (!s.q2UnableToSupport && !s.q2Educated && s.q2) {
+            field("      2. Informed of range", s.q2);
+          } else {
+            line("      2. Informed of range:");
+            if (s.q2UnableToSupport) {
+              line("         [x] Provider is unable to support the individual in achieving his/her personal identified goals.");
+              if (s.q2UnableToSupportReason) {
+                line(`             Problem: ${s.q2UnableToSupportReason}`);
+              }
+            }
+            if (s.q2Educated) {
+              line("         [x] Educated and Informed of the Full Range of HCBS");
+              line(`             Provider: ${s.q2EducatedProvider || "______"}, agreed to support Individual: ${s.q2EducatedIndividual || "________"} achievement of his/her personally identified goals.`);
+            }
+            if (!s.q2UnableToSupport && !s.q2Educated) {
+              line("         —");
             }
           }
-          if (s.q2Educated) {
-            line("         [x] Educated and Informed of the Full Range of HCBS");
-            line(`             Provider: ${s.q2EducatedProvider || "______"}, agreed to support Individual: ${s.q2EducatedIndividual || "________"} achievement of his/her personally identified goals.`);
-          }
-          if (!s.q2UnableToSupport && !s.q2Educated) {
-            line("         —");
-          }
-        }
-        field("      3. Alternatives considered", s.q4);
-        line("");
-        
-        if (s.hasBackupPlan) {
-          line("      -- Backup Plan --");
-          if (Array.isArray(s.backupPlanDetailsArray) && s.backupPlanDetailsArray.length > 0) {
-            s.backupPlanDetailsArray.forEach((bp, bpIdx) => {
-              if (bp.trim()) line(`      • ${bp.trim()}`);
-            });
-          } else if (s.backupPlanDetails) { // fallback for old data
-            line(`      • ${s.backupPlanDetails}`);
-          }
+          field("      3. Alternatives considered", s.q4);
           line("");
-        } else {
-          line("      -- Backup Plan --");
-          line("      The individual's needs were assessed, and based on that assessment, no additional individualized Backup Plans were identified as necessary at this time.");
-          line("");
+          
+          if (s.hasBackupPlan) {
+            line("      -- Backup Plan --");
+            if (Array.isArray(s.backupPlanDetailsArray) && s.backupPlanDetailsArray.length > 0) {
+              s.backupPlanDetailsArray.forEach((bp, bpIdx) => {
+                if (bp.trim()) line(`      • ${bp.trim()}`);
+              });
+            } else if (s.backupPlanDetails) {
+              line(`      • ${s.backupPlanDetails}`);
+            }
+            line("");
+          } else {
+            line("      -- Backup Plan --");
+            line("      The individual's needs were assessed, and based on that assessment, no additional individualized Backup Plans were identified as necessary at this time.");
+            line("");
+          }
         }
       });
       
@@ -1920,8 +1937,10 @@ function toggleHcbsFields() {
   const val = document.getElementById("isHcbsWaivered").value;
   const container = document.getElementById("hcbsFieldsContainer");
   if (container) {
-    container.style.display = (val === "Yes") ? "block" : "none";
+    container.style.display = (val === "Yes" || val === "No") ? "block" : "none";
   }
+  renderHcbsServices();
+  updateUI();
 }
 function toggleSelfAdmin8() {
   const val = document.getElementById("selfAdmin").value;
@@ -1939,6 +1958,20 @@ function toggleEthnicityOther(cb) {
   document.getElementById("ethnicityOtherGroup").style.display = cb.checked
     ? ""
     : "none";
+}
+function toggleDmhLocation() {
+  const officeType = document.getElementById("officeType").value;
+  const container = document.getElementById("dmhLocationContainer");
+  if (container) {
+    container.style.display = officeType ? "block" : "none";
+  }
+}
+function toggleTransferring() {
+  const isTransferring = document.getElementById("isTransferring").checked;
+  const tcmContainer = document.getElementById("transferringTcmContainer");
+  const dmhContainer = document.getElementById("transferringDmhContainer");
+  if (tcmContainer) tcmContainer.style.display = isTransferring ? "block" : "none";
+  if (dmhContainer) dmhContainer.style.display = isTransferring ? "block" : "none";
 }
 function toggleReligionOther() {
   document.getElementById("religionOtherGroup").style.display =
@@ -2374,6 +2407,7 @@ function renderHcbsServices() {
     container.innerHTML = "";
     return;
   }
+  const isWaivered = document.getElementById("isHcbsWaivered") ? document.getElementById("isHcbsWaivered").value : "";
   
   const serviceOptions = [
     "Applied Behavior Analysis",
@@ -2525,7 +2559,7 @@ function renderHcbsServices() {
         <div class="field-group full" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
           <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
             <input type="checkbox" ${s.medicationDMH ? 'checked' : ''} onchange="updateHcbsService(${i}, 'medicationDMH', this.checked); renderHcbsServices();">
-            Medication within DMH
+            Medication taken at Program(DMH Facility)
           </label>
           ${s.medicationDMH ? `
             <div style="margin-top: 10px; padding-left: 25px;">
@@ -2536,6 +2570,7 @@ function renderHcbsServices() {
         </div>
       </div>
 
+      ${isWaivered === 'Yes' ? `
       <div class="field-group full" style="border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-top: 15px;">
         <label style="font-size: 12px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Primary Signature</label>
         <div class="form-grid" style="align-items: end;">
@@ -2683,6 +2718,7 @@ function renderHcbsServices() {
           `}
         </div>
       </div>
+      ` : ''}
     </div>
   `).join("");
 }
@@ -2719,6 +2755,7 @@ function updateRepAuth(i, cb) {
   } else {
     legalReps[i].legalType = legalReps[i].legalType.filter(a => a !== cb.value);
   }
+  renderLegalReps();
   updateUI();
 }
 function renderLegalReps() {
@@ -2750,10 +2787,28 @@ function renderLegalReps() {
               </label>
             `).join("")}
           </div>
+          ${(Array.isArray(r.legalType) ? r.legalType.includes('Power of Attorney') : r.legalType === 'Power of Attorney') ? `
+            <div style="margin-top: 10px;">
+              <label style="font-size: 11px; color: var(--gold);">Type of Power of Attorney</label>
+              <input type="text" value="${esc(r.poaType || "")}" placeholder="..." oninput="updateRep(${i},'poaType',this.value)">
+            </div>
+          ` : ''}
+          ${(Array.isArray(r.legalType) ? r.legalType.includes('Limited Guardianship') : r.legalType === 'Limited Guardianship') ? `
+            <div style="margin-top: 10px;">
+              <label style="font-size: 11px; color: var(--gold);">Type of Limited Guardianship</label>
+              <input type="text" value="${esc(r.limitedGuardianshipType || "")}" placeholder="..." oninput="updateRep(${i},'limitedGuardianshipType',this.value)">
+            </div>
+          ` : ''}
+          ${(Array.isArray(r.legalType) ? r.legalType.includes('Limited Conservatorship') : r.legalType === 'Limited Conservatorship') ? `
+            <div style="margin-top: 10px;">
+              <label style="font-size: 11px; color: var(--gold);">Type of Limited Conservatorship</label>
+              <input type="text" value="${esc(r.limitedConservatorshipType || "")}" placeholder="..." oninput="updateRep(${i},'limitedConservatorshipType',this.value)">
+            </div>
+          ` : ''}
         </div>
         <div class="field-group">
           <label>Lives with Individual?</label>
-          <select onchange="updateRep(${i},'livesWith',this.value)">
+          <select onchange="updateRep(${i},'livesWith',this.value); renderLegalReps()">
             <option value="Yes" ${r.livesWith === 'Yes' ? 'selected' : ''}>Yes</option>
             <option value="No" ${r.livesWith === 'No' ? 'selected' : ''}>No</option>
           </select>
@@ -2763,9 +2818,15 @@ function renderLegalReps() {
           <input type="text" value="${esc(r.phone)}" placeholder="(573) 555-0100" oninput="updateRep(${i},'phone',this.value)">
         </div>
         <div class="field-group">
-          <label>Address / Contact Note</label>
-          <input type="text" value="${esc(r.address)}" placeholder="Address if different" oninput="updateRep(${i},'address',this.value)">
+          <label>E-mail</label>
+          <input type="text" value="${esc(r.email || "")}" placeholder="name@example.com" oninput="updateRep(${i},'email',this.value)">
         </div>
+        ${r.livesWith !== 'Yes' ? `
+        <div class="field-group full">
+          <label>Address / Contact Note</label>
+          <input type="text" value="${esc(r.address || "")}" placeholder="Address if different" oninput="updateRep(${i},'address',this.value)">
+        </div>
+        ` : ''}
       </div>
     </div>
   `).join("");
@@ -2773,8 +2834,19 @@ function renderLegalReps() {
 function getLegalRepsNarrative() {
   if (!legalReps.length) return "  None on file.";
   return legalReps.map((rep, i) => {
-    const authType = Array.isArray(rep.legalType) ? rep.legalType.join(", ") : (rep.legalType || "N/A");
-    return `  Rep #${i + 1}: ${rep.name || "[Name not provided]"} | ${authType} | Relationship: ${rep.relationship || "N/A"} | Lives with individual: ${rep.livesWith} | Phone: ${rep.phone || "N/A"}${rep.address && rep.livesWith !== "Yes" ? " | Address: " + rep.address : ""}`;
+    let authType = Array.isArray(rep.legalType) ? rep.legalType.join(", ") : (rep.legalType || "N/A");
+    
+    if (rep.poaType && (Array.isArray(rep.legalType) ? rep.legalType.includes('Power of Attorney') : rep.legalType === 'Power of Attorney')) {
+      authType = authType.replace('Power of Attorney', `Power of Attorney (${rep.poaType})`);
+    }
+    if (rep.limitedGuardianshipType && (Array.isArray(rep.legalType) ? rep.legalType.includes('Limited Guardianship') : rep.legalType === 'Limited Guardianship')) {
+      authType = authType.replace('Limited Guardianship', `Limited Guardianship (${rep.limitedGuardianshipType})`);
+    }
+    if (rep.limitedConservatorshipType && (Array.isArray(rep.legalType) ? rep.legalType.includes('Limited Conservatorship') : rep.legalType === 'Limited Conservatorship')) {
+      authType = authType.replace('Limited Conservatorship', `Limited Conservatorship (${rep.limitedConservatorshipType})`);
+    }
+    
+    return `  Rep #${i + 1}: ${rep.name || "[Name not provided]"} | ${authType} | Relationship: ${rep.relationship || "N/A"} | Lives with individual: ${rep.livesWith} | Phone: ${rep.phone || "N/A"}${rep.email ? " | E-mail: " + rep.email : ""}${rep.address && rep.livesWith !== "Yes" ? " | Address: " + rep.address : ""}`;
   }).join("\n");
 }
 function captureLegalReps() {
@@ -2909,6 +2981,8 @@ function restoreFormData(fd) {
   toggleSDS7();
   toggleSDSPaidFamily7();
   toggleSelfAdmin8();
+  toggleDmhLocation();
+  toggleTransferring();
 }
 
 function saveToHistory() {

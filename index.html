@@ -824,13 +824,38 @@
             </div>
             <div class="field-group">
               <label>DMH Office Type</label>
-              <select id="officeType" onchange="updateUI()">
+              <select id="officeType" onchange="toggleDmhLocation(); updateUI()">
                 <option value="">-- Select --</option>
                 <option value="Regional Office">Regional Office</option>
                 <option value="Satellite Office">Satellite Office</option>
                 <option value="Habilitation Center">Habilitation Center</option>
               </select>
             </div>
+            <div class="field-group" id="dmhLocationContainer" style="display: none;">
+              <label>Location of Facility</label>
+              <input type="text" id="dmhLocation" placeholder="Facility Location..." oninput="updateUI()" />
+            </div>
+            
+            <div class="field-group full" style="margin-top: 5px; margin-bottom: 5px;">
+              <label class="eth-check" style="color: var(--text-base);">
+                <input type="checkbox" id="isTransferring" onchange="toggleTransferring(); updateUI()" />
+                Transferring
+              </label>
+            </div>
+            <div class="field-group" id="transferringTcmContainer" style="display: none;">
+              <label>Transferred TCM Agency</label>
+              <input type="text" id="transferredTcm" placeholder="e.g. New Agency..." oninput="updateUI()" />
+            </div>
+            <div class="field-group" id="transferringDmhContainer" style="display: none;">
+              <label>Transferred DMH Office Type</label>
+              <select id="transferredOfficeType" onchange="updateUI()">
+                <option value="">-- Select --</option>
+                <option value="Regional Office">Regional Office</option>
+                <option value="Satellite Office">Satellite Office</option>
+                <option value="Habilitation Center">Habilitation Center</option>
+              </select>
+            </div>
+
             <div class="field-group">
               <label>Religion</label>
               <select id="religion" onchange="toggleReligionOther()">
