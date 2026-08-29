@@ -192,7 +192,20 @@ const HCBS_SUBCATEGORIES = {
     "Family Adaptive Behavior Treatment Guidance: 97156 HO",
     "Family Adaptive Behavior Treatment Guidance: 97156 HN",
     "Group Adaptive Behavior Treatment w/ Protocol Modification: 97158 HO",
-    "Group Adaptive Behavior Treatment w/ Protocol Modification: 97158 HN"
+    "Group Adaptive Behavior Treatment w/ Protocol Modification: 97158 HN",
+    "Health Assessment and Coordination: 99499",
+    "Job Development: H0038",
+    "Occupational Therapy: 97535-OT",
+    "Occupational Therapy, Consultation: 97535-OT",
+    "Prevocational Services: H2025",
+    "Prevocational Services, Group: H2025 HQ",
+    "Remote Supports: A9999 GT",
+    "Remote Supports - Equipment: A9999 GTSE",
+    "Speech Therapy: 92507-PT",
+    "Speech Therapy, Consultation: 92507-PT",
+    "Support Broker: T2041",
+    "Supported Employment: H2023",
+    "Supported Employment, Group: H2023 HQ"
   ]
 };
 
@@ -366,8 +379,6 @@ const FORM_FIELDS = [
   "hcbsGlobalUpdatesExt2",
   "hcbsGlobalUpdatesCoord2",
   "hcbsGlobalUpdatesEmail",
-  "hcbsEmpQ1",
-  "hcbsEmpQ2",
   "hcbsEduQ1",
   "hcbsEduQ2",
   "hcbsEduQ3",
@@ -1333,9 +1344,24 @@ function updateUI() {
       hcbsServices.forEach((s, idx) => {
         line(`  [${idx + 1}] Service / Program: ${s.serviceName || "—"}`);
         if (s.subcategories && s.subcategories.length > 0) {
-          field("      Subcategories", s.subcategories.map(sub => sub.pos21 ? `${sub.name} [-POS21 Inpatient]` : sub.name).join(" | "));
+          field("      Subcategories", s.subcategories.map(sub => {
+            let parts = [sub.name];
+            if (sub.pos21) parts.push("[-POS21 Inpatient]");
+            if (sub.pos02) parts.push("[-POS02 Other than patient's home]");
+            if (sub.pos10) parts.push("[-10 In patient's home]");
+            return parts.join(" ");
+          }).join(" | "));
         }
+        if (s.serviceDetails) field("      Service/Program Details", s.serviceDetails);
+        if (s.serviceHours) field("      Provided hours", s.serviceHours);
+        
         field("      Program", Array.isArray(s.q5Funding) && s.q5Funding.length > 0 ? s.q5Funding.join(", ") : "");
+        if (s.medicationDMH) {
+          field("      Medication within DMH", "Yes");
+          if (s.medicationDMHDetails) {
+            field("      Medication Details", s.medicationDMHDetails);
+          }
+        }
         field("      Signee", s.whoSigned);
         field("      Name of Signee", s.signeeNames);
         field("      Provider and Services Choice Statement Effective Signed Date", s.signedDate);
@@ -1360,7 +1386,24 @@ function updateUI() {
           line("");
         }
         field("      1. Informed of options", s.q1);
-        field("      2. Informed of range", s.q2);
+        if (!s.q2UnableToSupport && !s.q2Educated && s.q2) {
+          field("      2. Informed of range", s.q2);
+        } else {
+          line("      2. Informed of range:");
+          if (s.q2UnableToSupport) {
+            line("         [x] Provider is unable to support the individual in achieving his/her personal identified goals.");
+            if (s.q2UnableToSupportReason) {
+              line(`             Problem: ${s.q2UnableToSupportReason}`);
+            }
+          }
+          if (s.q2Educated) {
+            line("         [x] Educated and Informed of the Full Range of HCBS");
+            line(`             Provider: ${s.q2EducatedProvider || "______"}, agreed to support Individual: ${s.q2EducatedIndividual || "________"} achievement of his/her personally identified goals.`);
+          }
+          if (!s.q2UnableToSupport && !s.q2Educated) {
+            line("         —");
+          }
+        }
         field("      3. Alternatives considered", s.q4);
         line("");
         
@@ -1391,10 +1434,6 @@ function updateUI() {
       line(`  If updates are needed to the plan, contact the SC team at (573) 248-1077, ext. ${ext1} Coordinator: ${coord1} or ext. ${ext2} Coordinator: ${coord2} or by E-Mail: ${email}`);
       line("");
       
-      line("  -- Employment --");
-      field("      1. Hours of the program", getVal("hcbsEmpQ1"));
-      field("      2. Medications at Program DMH facility", getVal("hcbsEmpQ2"));
-      line("");
       
       line("  -- Education --");
       field("      1. IEP and supports for school", getVal("hcbsEduQ1"));
@@ -2232,6 +2271,8 @@ function addHcbsService() {
   hcbsServices.push({ 
     serviceName: "",
     subcategories: [],
+    serviceDetails: "",
+    serviceHours: "",
     signedDate: "",
     isUpdate: false,
     prevSignedDate: "",
@@ -2240,6 +2281,9 @@ function addHcbsService() {
     sig2Date: "", sig2Who: "", sig2Names: "",
     sig3Date: "", sig3Who: "", sig3Names: "",
     q1: "", q2: "", q4: "", q5Funding: [],
+    medicationDMH: false, medicationDMHDetails: "",
+    q2UnableToSupport: false, q2UnableToSupportReason: "",
+    q2Educated: false, q2EducatedProvider: "", q2EducatedIndividual: "",
     hasBackupPlan: false, backupPlanDetailsArray: [""]
   });
   renderHcbsServices();
@@ -2289,7 +2333,7 @@ function updateHcbsBackupDetail(i, dIdx, val) {
 }
 
 function setHcbsSubcategory(i, subName) {
-  hcbsServices[i].subcategories = [{ name: subName, pos21: false }];
+  hcbsServices[i].subcategories = [{ name: subName, pos21: false, pos02: false, pos10: false }];
   updateUI();
 }
 
@@ -2297,7 +2341,7 @@ function toggleHcbsSubcategory(i, subName, isChecked) {
   if (!Array.isArray(hcbsServices[i].subcategories)) hcbsServices[i].subcategories = [];
   if (isChecked) {
     if (!hcbsServices[i].subcategories.some(x => x.name === subName)) {
-      hcbsServices[i].subcategories.push({ name: subName, pos21: false });
+      hcbsServices[i].subcategories.push({ name: subName, pos21: false, pos02: false, pos10: false });
     }
   } else {
     hcbsServices[i].subcategories = hcbsServices[i].subcategories.filter(x => x.name !== subName);
@@ -2306,10 +2350,10 @@ function toggleHcbsSubcategory(i, subName, isChecked) {
   updateUI();
 }
 
-function toggleHcbsSubcategoryPos(i, subName, isChecked) {
+function toggleHcbsSubcategoryModifier(i, subName, modifierKey, isChecked) {
   if (Array.isArray(hcbsServices[i].subcategories)) {
     let subObj = hcbsServices[i].subcategories.find(x => x.name === subName);
-    if (subObj) subObj.pos21 = isChecked;
+    if (subObj) subObj[modifierKey] = isChecked;
   }
   updateUI();
 }
@@ -2402,7 +2446,7 @@ function renderHcbsServices() {
                     </label>
                     ${isChecked ? `
                       <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
-                        <input type="checkbox" ${subObj && subObj.pos21 ? 'checked' : ''} onchange="toggleHcbsSubcategoryPos(${i}, '${esc(sub)}', this.checked)">
+                        <input type="checkbox" ${subObj && subObj.pos21 ? 'checked' : ''} onchange="toggleHcbsSubcategoryModifier(${i}, '${esc(sub)}', 'pos21', this.checked)">
                         -POS21 (Inpatient)
                       </label>
                     ` : ''}
@@ -2423,8 +2467,18 @@ function renderHcbsServices() {
                     </label>
                     ${(isChecked && s.serviceName === 'Out of Home Respite') ? `
                       <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
-                        <input type="checkbox" ${subObj && subObj.pos21 ? 'checked' : ''} onchange="toggleHcbsSubcategoryPos(${i}, '${esc(sub)}', this.checked)">
+                        <input type="checkbox" ${subObj && subObj.pos21 ? 'checked' : ''} onchange="toggleHcbsSubcategoryModifier(${i}, '${esc(sub)}', 'pos21', this.checked)">
                         -POS21 (Inpatient)
+                      </label>
+                    ` : ''}
+                    ${(isChecked && s.serviceName === 'Virtual Delivery of Services') ? `
+                      <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
+                        <input type="checkbox" ${subObj && subObj.pos02 ? 'checked' : ''} onchange="toggleHcbsSubcategoryModifier(${i}, '${esc(sub)}', 'pos02', this.checked)">
+                        -POS02 (Other than patient's home)
+                      </label>
+                      <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
+                        <input type="checkbox" ${subObj && subObj.pos10 ? 'checked' : ''} onchange="toggleHcbsSubcategoryModifier(${i}, '${esc(sub)}', 'pos10', this.checked)">
+                        -10 (In patient's home)
                       </label>
                     ` : ''}
                   </div>
@@ -2434,7 +2488,19 @@ function renderHcbsServices() {
             `}
           </div>
         ` : ''}
-        <div class="field-group full" style="margin-top: 5px;">
+        ${s.serviceName ? `
+          <div style="display: flex; gap: 15px; margin-top: 15px; padding: 0 5px;">
+            <div class="field-group" style="flex: 2;">
+              <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Service/Program Details</label>
+              <textarea oninput="updateHcbsService(${i}, 'serviceDetails', this.value)" style="min-height: 45px;">${esc(s.serviceDetails || "")}</textarea>
+            </div>
+            <div class="field-group" style="flex: 1;">
+              <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Provided hours</label>
+              <textarea oninput="updateHcbsService(${i}, 'serviceHours', this.value)" style="min-height: 45px;">${esc(s.serviceHours || "")}</textarea>
+            </div>
+          </div>
+        ` : ''}
+        <div class="field-group full" style="margin-top: 15px;">
           <label style="font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Program:</label>
           <div style="display: flex; gap: 15px; flex-wrap: wrap;">
             <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
@@ -2454,6 +2520,19 @@ function renderHcbsServices() {
               Partnership for Hope Waiver(PFH)
             </label>
           </div>
+        </div>
+
+        <div class="field-group full" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
+          <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+            <input type="checkbox" ${s.medicationDMH ? 'checked' : ''} onchange="updateHcbsService(${i}, 'medicationDMH', this.checked); renderHcbsServices();">
+            Medication within DMH
+          </label>
+          ${s.medicationDMH ? `
+            <div style="margin-top: 10px; padding-left: 25px;">
+              <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Details</label>
+              <textarea oninput="updateHcbsService(${i}, 'medicationDMHDetails', this.value)" style="min-height: 45px;">${esc(s.medicationDMHDetails || "")}</textarea>
+            </div>
+          ` : ''}
         </div>
       </div>
 
@@ -2545,8 +2624,35 @@ function renderHcbsServices() {
           <textarea oninput="updateHcbsService(${i}, 'q1', this.value)">${esc(s.q1 || "")}</textarea>
         </div>
         <div class="field-group full">
-          <label>2. How was the individual educated and informed of the full range of HCBS available to support achievement of personally identified goals?</label>
-          <textarea oninput="updateHcbsService(${i}, 'q2', this.value)">${esc(s.q2 || "")}</textarea>
+          <label style="margin-bottom: 5px; display: block;">2. How was the individual educated and informed of the full range of HCBS available to support achievement of personally identified goals?</label>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 6px; border: 1px solid var(--border);">
+            
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" ${s.q2UnableToSupport ? 'checked' : ''} onchange="updateHcbsService(${i}, 'q2UnableToSupport', this.checked); renderHcbsServices();">
+              Provider is unable to support the individual in achieving his/her personal identified goals.
+            </label>
+            ${s.q2UnableToSupport ? `
+              <div style="margin-top: 5px; margin-bottom: 15px; padding-left: 25px;">
+                <label style="font-size: 12px; color: var(--gold);">State what the problem is:</label>
+                <textarea oninput="updateHcbsService(${i}, 'q2UnableToSupportReason', this.value)">${esc(s.q2UnableToSupportReason || "")}</textarea>
+              </div>
+            ` : ''}
+
+            <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+              <input type="checkbox" ${s.q2Educated ? 'checked' : ''} onchange="updateHcbsService(${i}, 'q2Educated', this.checked); renderHcbsServices();">
+              Educated and Informed of the Full Range of HCBS
+            </label>
+            ${s.q2Educated ? `
+              <div style="margin-top: 5px; padding-left: 25px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span style="font-size: 13px; color: var(--text-base);">Provider:</span>
+                <input type="text" style="width: 200px;" value="${esc(s.q2EducatedProvider || "")}" placeholder="..." oninput="updateHcbsService(${i}, 'q2EducatedProvider', this.value)">
+                <span style="font-size: 13px; color: var(--text-base);">agreed to support Individual:</span>
+                <input type="text" style="width: 200px;" value="${esc(s.q2EducatedIndividual || "")}" placeholder="..." oninput="updateHcbsService(${i}, 'q2EducatedIndividual', this.value)">
+                <span style="font-size: 13px; color: var(--text-base);">achievement of his/her personally identified goals.</span>
+              </div>
+            ` : ''}
+
+          </div>
         </div>
 
         <div class="field-group full">
