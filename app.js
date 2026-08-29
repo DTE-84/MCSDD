@@ -545,7 +545,6 @@ const FORM_FIELDS = [
   // Misc
   "ethnicityOther",
   "legalSpecify",
-  "limitedGuardianshipDetails",
   "legalLicensesProbation",
 ];
 
@@ -1207,7 +1206,6 @@ function updateUI() {
   }
 
   field("Legal Specifics", getVal("legalSpecify"));
-  field("Limited Details", getVal("limitedGuardianshipDetails"));
   field("Legal Licenses", getVal("legalLicensesProbation"));
   line("");
 
@@ -1224,7 +1222,7 @@ function updateUI() {
   field("Other Dislikes", getVal("dislikesOther"));
   line("");
 
-  head("4. IMPORTANT PEOPLE");
+  head("4. IMPORTANT PEOPLE AND/OR PETS");
   line(
     importantPeople.map((p) => `  - ${p.name || "[Name]"} (${p.relationship || "Relationship"})${p.activities ? "\n    Activities/Frequency: " + p.activities : ""}`).join("\n") ||
       "  None Listed",
@@ -2209,6 +2207,11 @@ function removeImportantPerson(i) {
 }
 function updatePerson(i, f, v) {
   importantPeople[i][f] = v;
+  const container = document.getElementById("importantPeopleContainer");
+  if (container) {
+    const titles = container.querySelectorAll(".rep-title");
+    if (titles[i]) titles[i].textContent = `Person/Pet #${i + 1}${importantPeople[i].name ? " — " + importantPeople[i].name : ""}`;
+  }
   updateUI();
 }
 function renderImportantPeople() {
@@ -2218,7 +2221,7 @@ function renderImportantPeople() {
     .map(
       (p, i) => `<div class="legal-rep-card" style="margin-bottom:15px;">
         <div class="rep-header">
-          <span class="rep-title">Person #${i + 1}${p.name ? " — " + esc(p.name) : ""}</span>
+          <span class="rep-title">Person/Pet #${i + 1}${p.name ? " — " + esc(p.name) : ""}</span>
           <button class="remove-rep-btn" onclick="removeImportantPerson(${i})">×</button>
         </div>
         <div class="form-grid">
