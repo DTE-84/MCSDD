@@ -11,6 +11,77 @@ const DRAFT_LIMIT = 20;
 const DRAFT_EXPIRY_DAYS = 30;
 const SESSION_TIMEOUT_MINS = 30;
 
+const HCBS_SUBCATEGORIES = {
+  "Applied Behavior Analysis": [
+    "Adaptive Behavior Treatment with Protocol Modification: 97155 HO",
+    "Adaptive Behavior Treatment with Protocol Modification: 97155 HN",
+    "Behavior Identification Assessment: 97151 HO",
+    "Behavior Identification Assessment-Observational: 97152 HO",
+    "Behavior Identification Assessment-Observational: 97152 HM",
+    "Behavior Identification Assessment-Observational: 97152 HN",
+    "Behavior Identification Supporting Assessment-Exposure: 0362T HO",
+    "Exposure Adaptive Behavior Treatment with Protocol Modification: 0373T HO",
+    "Adaptive Behavior Treatment by Protocol by Technician: 97153 HO",
+    "Adaptive Behavior Treatment by Protocol by Technician: 97153 HM",
+    "Adaptive Behavior Treatment by Protocol by Technician: 97153 HN",
+    "Family Adaptive Behavior Treatment Guidance: 97156 HO",
+    "Family Adaptive Behavior Treatment Guidance: 97156 HN",
+    "Group Adaptive Behavior Treatment with Protocol Modification: 97158 HO",
+    "Group Adaptive Behavior Treatment with Protocol Modification: 97158 HN"
+  ],
+  "Assistive Technology": [
+    "Assistive Technology / AT Consultation: A9999 UA",
+    "Assistive Technology / AT Equipment: A9999 UB",
+    "Assistive Technology / AT Service Delivery: A9999 UC",
+    "Assistive Technology / AT Support: A9999 U9"
+  ],
+  "Benefits Planning": [
+    "Benefits Planning: H0038 SE"
+  ],
+  "Career Planning": [
+    "Career Planning, Individual: T2019"
+  ],
+  "Community Networking": [
+    "Community Networking, Individual: T2021 SE",
+    "Community Networking, Group: T2021 HQ SE"
+  ],
+  "Community Specialist": [
+    "Community Specialist: T1016",
+    "Community Specialist, Self-Directed: T1016 U2"
+  ],
+  "Community Transition": [
+    "Community Transition: T2038"
+  ],
+  "Crisis Intervention": [
+    "Crisis Intervention, Professional: S9484",
+    "Crisis Intervention, Technician: S9484 HM"
+  ],
+  "Day Habilitation": [
+    "Day Habilitation: T2021 HQ",
+    "Day Habilitation: Medical Exception: T2021 SC",
+    "Day Habilitation: Behavioral Exception: T2021 TG"
+  ],
+  "Dental": [
+    "Dental: T2025"
+  ],
+  "Environmental Accessibility Adaptations": [
+    "EAA: S5165",
+    "EAA, Consultation: S5165 TC"
+  ],
+  "Family Peer Support Service": [
+    "Family Peer Support: S5110 INDIVIDUAL",
+    "Family Peer Support: S5110 HQ GROUP"
+  ],
+  "Group Home": [
+    "Group Home: T2016 HQ",
+    "Group Home-Intensive: T2016 HQ",
+    "Group Home-Transition: T2016 HQ",
+    "Residential Monthly Registered Nurse Oversight: T1002 HQ",
+    "Residential License Practical Nurse(with Registered Nurse Oversight): T1003 HQ",
+    "Residential Hospital Support: S5125"
+  ]
+};
+
 // ── DATA STRUCTURES ──
 let employmentEntries = []; 
 let legalReps = [];
@@ -1147,6 +1218,9 @@ function updateUI() {
     } else {
       hcbsServices.forEach((s, idx) => {
         line(`  [${idx + 1}] Service / Program: ${s.serviceName || "—"}`);
+        if (s.subcategories && s.subcategories.length > 0) {
+          field("      Subcategories", s.subcategories.map(sub => sub.pos21 ? `${sub.name} [-POS21 Inpatient]` : sub.name).join(" | "));
+        }
         field("      Program", Array.isArray(s.q5Funding) && s.q5Funding.length > 0 ? s.q5Funding.join(", ") : "");
         field("      Signee", s.whoSigned);
         field("      Name of Signee", s.signeeNames);
@@ -2043,6 +2117,7 @@ function renderEmploymentEntries() {
 function addHcbsService() {
   hcbsServices.push({ 
     serviceName: "",
+    subcategories: [],
     signedDate: "",
     isUpdate: false,
     prevSignedDate: "",
@@ -2099,8 +2174,38 @@ function updateHcbsBackupDetail(i, dIdx, val) {
   updateUI();
 }
 
+function setHcbsSubcategory(i, subName) {
+  hcbsServices[i].subcategories = [{ name: subName, pos21: false }];
+  updateUI();
+}
+
+function toggleHcbsSubcategory(i, subName, isChecked) {
+  if (!Array.isArray(hcbsServices[i].subcategories)) hcbsServices[i].subcategories = [];
+  if (isChecked) {
+    if (!hcbsServices[i].subcategories.some(x => x.name === subName)) {
+      hcbsServices[i].subcategories.push({ name: subName, pos21: false });
+    }
+  } else {
+    hcbsServices[i].subcategories = hcbsServices[i].subcategories.filter(x => x.name !== subName);
+  }
+  renderHcbsServices();
+  updateUI();
+}
+
+function toggleHcbsSubcategoryPos(i, subName, isChecked) {
+  if (Array.isArray(hcbsServices[i].subcategories)) {
+    let subObj = hcbsServices[i].subcategories.find(x => x.name === subName);
+    if (subObj) subObj.pos21 = isChecked;
+  }
+  updateUI();
+}
+
 function updateHcbsService(i, field, value) {
   hcbsServices[i][field] = value;
+  if (field === 'serviceName') {
+    hcbsServices[i].subcategories = [];
+    renderHcbsServices();
+  }
   updateUI();
 }
 
@@ -2163,6 +2268,42 @@ function renderHcbsServices() {
             ${serviceOptions.map(opt => `<option value="${opt}" ${s.serviceName === opt ? 'selected' : ''}>${opt}</option>`).join("")}
           </select>
         </div>
+        ${s.serviceName && HCBS_SUBCATEGORIES[s.serviceName] ? `
+          <div class="field-group full" style="margin-top: 10px; background: rgba(0,0,0,0.02); padding: 10px; border-radius: 6px; border: 1px solid var(--border);">
+            <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 8px; display: block; text-transform: uppercase;">${s.serviceName === 'Applied Behavior Analysis' ? 'Select Subcategories (Multiple allowed)' : 'Select Subcategory'}</label>
+            ${s.serviceName === 'Applied Behavior Analysis' ? `
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${HCBS_SUBCATEGORIES[s.serviceName].map(sub => {
+                  const isChecked = s.subcategories && s.subcategories.some(x => x.name === sub);
+                  const subObj = isChecked ? s.subcategories.find(x => x.name === sub) : null;
+                  return `
+                  <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <label class="eth-check" style="font-size: 13px; color: var(--text-base); flex: 1; min-width: 250px;">
+                      <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleHcbsSubcategory(${i}, '${esc(sub)}', this.checked)">
+                      ${esc(sub)}
+                    </label>
+                    ${isChecked ? `
+                      <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
+                        <input type="checkbox" ${subObj && subObj.pos21 ? 'checked' : ''} onchange="toggleHcbsSubcategoryPos(${i}, '${esc(sub)}', this.checked)">
+                        -POS21 (Inpatient)
+                      </label>
+                    ` : ''}
+                  </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${HCBS_SUBCATEGORIES[s.serviceName].map(sub => `
+                  <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+                    <input type="radio" name="hcbs_sub_${i}" value="${esc(sub)}" ${s.subcategories && s.subcategories.length > 0 && s.subcategories[0].name === sub ? 'checked' : ''} onchange="setHcbsSubcategory(${i}, '${esc(sub)}')">
+                    ${esc(sub)}
+                  </label>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        ` : ''}
         <div class="field-group full" style="margin-top: 5px;">
           <label style="font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Program:</label>
           <div style="display: flex; gap: 15px; flex-wrap: wrap;">
@@ -2466,6 +2607,7 @@ function restoreFormData(fd) {
   }
   
   hcbsServices.forEach(s => {
+    if (!s.subcategories) s.subcategories = [];
     if (s.backupPlanDetails && (!s.backupPlanDetailsArray || s.backupPlanDetailsArray.length === 0)) {
       s.backupPlanDetailsArray = [s.backupPlanDetails];
     } else if (!s.backupPlanDetailsArray) {
