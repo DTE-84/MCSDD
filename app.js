@@ -215,7 +215,10 @@ let legalReps = [];
 let commChartRows = [];
 let importantPeople = [];
 let programServices = []; // Section 7: Program Services
-let medicalItems = []; // Section 8: Medical Items
+let medicalProfessionals = []; 
+let preventions = [];
+let immunizations = [];
+let medications = [];
 let hcbsServices = []; // Section 7: HCBS Services
 let currentSupports = []; // Section 9: Current Services
 let linkingSupports = []; // Section 9: Linking Services
@@ -1473,26 +1476,50 @@ function updateUI() {
   field("Adaptive / Specialized Medical Equipment", getVal("adaptiveEquipment"));
   field("Past Physical/Mental Illnesses, Traumatic Experiences, Stressors", getVal("medHistory"));
   
-  const medicalGroups = {};
-  medicalItems.forEach(item => {
-    if (!medicalGroups[item.category]) medicalGroups[item.category] = [];
-    medicalGroups[item.category].push(item);
-  });
+  if (medicalProfessionals.length > 0) {
+    line("Providers & Specialists:");
+    medicalProfessionals.forEach((m, idx) => {
+      let cat = m.category === "Other" && m.categoryOther ? m.categoryOther : m.category;
+      line(`  [${idx + 1}] ${cat}`);
+      field("      Name", m.name);
+      if (m.contact) field("      Contact", m.contact);
+      if (m.frequency) field("      Frequency", m.frequency);
+      if (m.date) field("      Date", m.date);
+      if (m.results) field("      Results/Details", m.results);
+    });
+  }
 
-  if (Object.keys(medicalGroups).length > 0) {
-    line("Providers, Prevention & Medications:");
-    for (const [cat, items] of Object.entries(medicalGroups)) {
-      line(`  -- ${cat} --`);
-      items.forEach((m, idx) => {
-        field(`    ${idx + 1}. Name/Item`, m.name);
-        if (m.contact) field("       Contact/Prescriber", m.contact);
-        if (m.frequency) field("       Frequency/Dosage", m.frequency);
-        if (m.date) field("       Date", m.date);
-        if (m.results) field("       Results/Details", m.results);
-      });
-    }
-  } else {
-    line("Providers, Prevention & Medications: None documented.");
+  if (preventions.length > 0) {
+    line("Prevention:");
+    preventions.forEach((m, idx) => {
+      line(`  [${idx + 1}] ${m.name}`);
+      if (m.contact) field("      Contact", m.contact);
+      if (m.frequency) field("      Frequency", m.frequency);
+      if (m.date) field("      Date", m.date);
+      if (m.results) field("      Results/Details", m.results);
+    });
+  }
+
+  if (immunizations.length > 0) {
+    line("Residential Immunizations & Cancer Screenings:");
+    immunizations.forEach((m, idx) => {
+      line(`  [${idx + 1}] ${m.name}`);
+      if (m.contact) field("      Contact/Facility", m.contact);
+      if (m.frequency) field("      Frequency", m.frequency);
+      if (m.date) field("      Date", m.date);
+      if (m.results) field("      Results/Details", m.results);
+    });
+  }
+
+  if (medications.length > 0) {
+    line("Current Medications:");
+    medications.forEach((m, idx) => {
+      line(`  [${idx + 1}] ${m.name}`);
+      if (m.contact) field("      Prescriber", m.contact);
+      if (m.frequency) field("      Dosage/Frequency", m.frequency);
+      if (m.date) field("      Date Prescribed", m.date);
+      if (m.results) field("      Results/Notes", m.results);
+    });
   }
 
   field("Psychotropic Medications (Purpose, Dosage, Risk Factors)", getVal("psychotropicDetails"));
@@ -2193,65 +2220,77 @@ function restoreFundingVisuals() {
 
 // (Duplicate Comm Chart removed - using the one below)
 
-function addMedicalItem() {
-  medicalItems.push({ category: "Care Physician", name: "", contact: "", frequency: "", date: "", results: "" });
-  renderMedicalItems();
+// 1. Medical Professionals
+function addMedicalProfessional() {
+  medicalProfessionals.push({ category: "Primary Care Physician", categoryOther: "", name: "", contact: "", frequency: "", date: "", results: "" });
+  renderMedicalProfessionals();
   updateUI();
 }
-function removeMedicalItem(i) {
-  medicalItems.splice(i, 1);
-  renderMedicalItems();
+function removeMedicalProfessional(i) {
+  medicalProfessionals.splice(i, 1);
+  renderMedicalProfessionals();
   updateUI();
 }
-function updateMedicalItem(i, f, v) {
-  medicalItems[i][f] = v;
-  const container = document.getElementById("medicalItemsContainer");
+function updateMedicalProfessional(i, f, v) {
+  medicalProfessionals[i][f] = v;
+  const container = document.getElementById("medicalProfessionalsContainer");
   if (container) {
     const titles = container.querySelectorAll(".rep-title");
-    if (titles[i]) titles[i].textContent = `Medical Item #${i + 1}${medicalItems[i].name ? " — " + medicalItems[i].name : ""}`;
+    if (titles[i]) titles[i].textContent = `Provider/Specialist #${i + 1}${medicalProfessionals[i].name ? " — " + medicalProfessionals[i].name : ""}`;
   }
   updateUI();
 }
-function renderMedicalItems() {
-  const c = document.getElementById("medicalItemsContainer");
+function renderMedicalProfessionals() {
+  const c = document.getElementById("medicalProfessionalsContainer");
   if (!c) return;
-  c.innerHTML = medicalItems
+  
+  const options = [
+    "Primary Care Physician", "Dentist", "Orthodontist", "Dietician", "Audiologist", 
+    "OBGYN", "Orthopedic", "Pediatrist", "Optometrist / Ophthalmologist", 
+    "Dermatologist", "Cardiologist", "Gastroenterologist", "Otolaryngologist (ENT)", 
+    "Neurologist", "Psychiatrist", "Endocrinologist", "Urologist", "Podiatrist", 
+    "Allergist / Immunologist", "Oncologist", "Pediatrician", "Other"
+  ];
+  
+  c.innerHTML = medicalProfessionals
     .map(
       (m, i) => `<div class="legal-rep-card" style="margin-bottom:15px; border-left: 4px solid var(--gold);">
         <div class="rep-header">
-          <span class="rep-title">Medical Item #${i + 1}${m.name ? " — " + esc(m.name) : ""}</span>
-          <button class="remove-rep-btn" onclick="removeMedicalItem(${i})">×</button>
+          <span class="rep-title">Provider/Specialist #${i + 1}${m.name ? " — " + esc(m.name) : ""}</span>
+          <button class="remove-rep-btn" onclick="removeMedicalProfessional(${i})">×</button>
         </div>
         <div class="form-grid">
           <div class="field-group full">
-            <label>Category</label>
-            <select onchange="updateMedicalItem(${i},'category',this.value); renderMedicalItems();">
-              <option value="Care Physician" ${m.category === 'Care Physician' ? 'selected' : ''}>Care Physician</option>
-              <option value="Other Medical Specialist" ${m.category === 'Other Medical Specialist' ? 'selected' : ''}>Other Medical Specialist</option>
-              <option value="Prevention (Diet, Exercise, Counseling, Therapy)" ${m.category === 'Prevention (Diet, Exercise, Counseling, Therapy)' ? 'selected' : ''}>Prevention (Diet, Exercise, Counseling, Therapy)</option>
-              <option value="Residential Immunizations & Cancer Screenings" ${m.category === 'Residential Immunizations & Cancer Screenings' ? 'selected' : ''}>Residential Immunizations & Cancer Screenings</option>
-              <option value="Current Medications" ${m.category === 'Current Medications' ? 'selected' : ''}>Current Medications</option>
+            <label>Doctor / Physician / Medical Professional</label>
+            <select onchange="updateMedicalProfessional(${i},'category',this.value); renderMedicalProfessionals();">
+              ${options.map(opt => `<option value="${opt}" ${m.category === opt ? 'selected' : ''}>${opt}</option>`).join('')}
             </select>
           </div>
+          ${m.category === 'Other' ? `
+          <div class="field-group full">
+            <label>Specify Other Professional</label>
+            <input type="text" placeholder="Please specify..." value="${esc(m.categoryOther || '')}" oninput="updateMedicalProfessional(${i},'categoryOther',this.value)">
+          </div>
+          ` : ''}
           <div class="field-group">
-            <label>Name / Item</label>
-            <input type="text" placeholder="Name or description" value="${esc(m.name)}" oninput="updateMedicalItem(${i},'name',this.value)">
+            <label>Name</label>
+            <input type="text" placeholder="Name" value="${esc(m.name)}" oninput="updateMedicalProfessional(${i},'name',this.value)">
           </div>
           <div class="field-group">
-            <label>Contact / Prescriber</label>
-            <input type="text" placeholder="Contact info" value="${esc(m.contact)}" oninput="updateMedicalItem(${i},'contact',this.value)">
+            <label>Contact</label>
+            <input type="text" placeholder="Contact info" value="${esc(m.contact)}" oninput="updateMedicalProfessional(${i},'contact',this.value)">
           </div>
           <div class="field-group">
-            <label>Frequency of Visits / Dosage</label>
-            <input type="text" placeholder="e.g. Annually, 50mg daily" value="${esc(m.frequency)}" oninput="updateMedicalItem(${i},'frequency',this.value)">
+            <label>Frequency of Visits</label>
+            <input type="text" placeholder="e.g. Annually, Every 6 months" value="${esc(m.frequency)}" oninput="updateMedicalProfessional(${i},'frequency',this.value)">
           </div>
           <div class="field-group">
-            <label>Date of Last Visit / Action</label>
-            <input type="date" value="${esc(m.date)}" oninput="updateMedicalItem(${i},'date',this.value)">
+            <label>Date of Last Visit</label>
+            <input type="date" value="${esc(m.date)}" oninput="updateMedicalProfessional(${i},'date',this.value)">
           </div>
           <div class="field-group full">
             <label>Results / Details</label>
-            <textarea placeholder="Outcomes, side effects, etc." oninput="updateMedicalItem(${i},'results',this.value)">${esc(m.results)}</textarea>
+            <textarea placeholder="Outcomes, notes, etc." oninput="updateMedicalProfessional(${i},'results',this.value)">${esc(m.results)}</textarea>
           </div>
         </div>
       </div>`
@@ -2259,6 +2298,176 @@ function renderMedicalItems() {
     .join("");
 }
 
+// 2. Preventions
+function addPrevention() {
+  preventions.push({ name: "", contact: "", frequency: "", date: "", results: "" });
+  renderPreventions();
+  updateUI();
+}
+function removePrevention(i) {
+  preventions.splice(i, 1);
+  renderPreventions();
+  updateUI();
+}
+function updatePrevention(i, f, v) {
+  preventions[i][f] = v;
+  const container = document.getElementById("preventionsContainer");
+  if (container) {
+    const titles = container.querySelectorAll(".rep-title");
+    if (titles[i]) titles[i].textContent = `Prevention #${i + 1}${preventions[i].name ? " — " + preventions[i].name : ""}`;
+  }
+  updateUI();
+}
+function renderPreventions() {
+  const c = document.getElementById("preventionsContainer");
+  if (!c) return;
+  c.innerHTML = preventions
+    .map(
+      (m, i) => `<div class="legal-rep-card" style="margin-bottom:15px; border-left: 4px solid var(--gold);">
+        <div class="rep-header">
+          <span class="rep-title">Prevention #${i + 1}${m.name ? " — " + esc(m.name) : ""}</span>
+          <button class="remove-rep-btn" onclick="removePrevention(${i})">×</button>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Name / Type</label>
+            <input type="text" placeholder="e.g. Diet plan, Therapy" value="${esc(m.name)}" oninput="updatePrevention(${i},'name',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Contact / Provider</label>
+            <input type="text" placeholder="Contact info" value="${esc(m.contact)}" oninput="updatePrevention(${i},'contact',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Frequency</label>
+            <input type="text" placeholder="e.g. Daily, Weekly" value="${esc(m.frequency)}" oninput="updatePrevention(${i},'frequency',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Date of Last Visit / Update</label>
+            <input type="date" value="${esc(m.date)}" oninput="updatePrevention(${i},'date',this.value)">
+          </div>
+          <div class="field-group full">
+            <label>Results / Details</label>
+            <textarea placeholder="Outcomes, notes, etc." oninput="updatePrevention(${i},'results',this.value)">${esc(m.results)}</textarea>
+          </div>
+        </div>
+      </div>`
+    )
+    .join("");
+}
+
+// 3. Immunizations
+function addImmunization() {
+  immunizations.push({ name: "", contact: "", frequency: "", date: "", results: "" });
+  renderImmunizations();
+  updateUI();
+}
+function removeImmunization(i) {
+  immunizations.splice(i, 1);
+  renderImmunizations();
+  updateUI();
+}
+function updateImmunization(i, f, v) {
+  immunizations[i][f] = v;
+  const container = document.getElementById("immunizationsContainer");
+  if (container) {
+    const titles = container.querySelectorAll(".rep-title");
+    if (titles[i]) titles[i].textContent = `Immunization/Screening #${i + 1}${immunizations[i].name ? " — " + immunizations[i].name : ""}`;
+  }
+  updateUI();
+}
+function renderImmunizations() {
+  const c = document.getElementById("immunizationsContainer");
+  if (!c) return;
+  c.innerHTML = immunizations
+    .map(
+      (m, i) => `<div class="legal-rep-card" style="margin-bottom:15px; border-left: 4px solid var(--gold);">
+        <div class="rep-header">
+          <span class="rep-title">Immunization/Screening #${i + 1}${m.name ? " — " + esc(m.name) : ""}</span>
+          <button class="remove-rep-btn" onclick="removeImmunization(${i})">×</button>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Name</label>
+            <input type="text" placeholder="e.g. Flu Shot, Mammogram" value="${esc(m.name)}" oninput="updateImmunization(${i},'name',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Contact / Facility</label>
+            <input type="text" placeholder="Contact info" value="${esc(m.contact)}" oninput="updateImmunization(${i},'contact',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Frequency</label>
+            <input type="text" placeholder="e.g. Annually" value="${esc(m.frequency)}" oninput="updateImmunization(${i},'frequency',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Date</label>
+            <input type="date" value="${esc(m.date)}" oninput="updateImmunization(${i},'date',this.value)">
+          </div>
+          <div class="field-group full">
+            <label>Results / Details</label>
+            <textarea placeholder="Outcomes, notes, etc." oninput="updateImmunization(${i},'results',this.value)">${esc(m.results)}</textarea>
+          </div>
+        </div>
+      </div>`
+    )
+    .join("");
+}
+
+// 4. Medications
+function addMedication() {
+  medications.push({ name: "", contact: "", frequency: "", date: "", results: "" });
+  renderMedications();
+  updateUI();
+}
+function removeMedication(i) {
+  medications.splice(i, 1);
+  renderMedications();
+  updateUI();
+}
+function updateMedication(i, f, v) {
+  medications[i][f] = v;
+  const container = document.getElementById("medicationsContainer");
+  if (container) {
+    const titles = container.querySelectorAll(".rep-title");
+    if (titles[i]) titles[i].textContent = `Medication #${i + 1}${medications[i].name ? " — " + medications[i].name : ""}`;
+  }
+  updateUI();
+}
+function renderMedications() {
+  const c = document.getElementById("medicationsContainer");
+  if (!c) return;
+  c.innerHTML = medications
+    .map(
+      (m, i) => `<div class="legal-rep-card" style="margin-bottom:15px; border-left: 4px solid var(--gold);">
+        <div class="rep-header">
+          <span class="rep-title">Medication #${i + 1}${m.name ? " — " + esc(m.name) : ""}</span>
+          <button class="remove-rep-btn" onclick="removeMedication(${i})">×</button>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Name / Purpose</label>
+            <input type="text" placeholder="Medication name and purpose" value="${esc(m.name)}" oninput="updateMedication(${i},'name',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Prescriber / Contact</label>
+            <input type="text" placeholder="Prescriber info" value="${esc(m.contact)}" oninput="updateMedication(${i},'contact',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Dosage / Frequency</label>
+            <input type="text" placeholder="e.g. 50mg daily" value="${esc(m.frequency)}" oninput="updateMedication(${i},'frequency',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Date Prescribed</label>
+            <input type="date" value="${esc(m.date)}" oninput="updateMedication(${i},'date',this.value)">
+          </div>
+          <div class="field-group full">
+            <label>Results / Details</label>
+            <textarea placeholder="Side effects, efficacy, notes" oninput="updateMedication(${i},'results',this.value)">${esc(m.results)}</textarea>
+          </div>
+        </div>
+      </div>`
+    )
+    .join("");
+}
 
 function addImportantPerson() {
   importantPeople.push({ name: "", relationship: "", activities: "" });
@@ -3001,7 +3210,10 @@ function captureFormData() {
     _currentSupports: currentSupports,
     _linkingSupports: linkingSupports,
     _legalReps: legalReps,
-    _medicalItems: medicalItems,
+    _medicalProfessionals: medicalProfessionals,
+    _preventions: preventions,
+    _immunizations: immunizations,
+    _medications: medications,
     _commChartRows: commChartRows,
     _importantPeople: importantPeople,
     _employmentEntries: employmentEntries,
@@ -3063,7 +3275,20 @@ function restoreFormData(fd) {
   currentSupports = fd._currentSupports || [];
   linkingSupports = fd._linkingSupports || [];
   legalReps = fd._legalReps || [];
-  medicalItems = fd._medicalItems || [];
+  medicalProfessionals = fd._medicalProfessionals || [];
+  preventions = fd._preventions || [];
+  immunizations = fd._immunizations || [];
+  medications = fd._medications || [];
+
+  // Migration from temporary medicalItems array
+  if (fd._medicalItems && fd._medicalItems.length > 0) {
+    fd._medicalItems.forEach(m => {
+      if (m.category === "Current Medications") medications.push(m);
+      else if (m.category === "Residential Immunizations & Cancer Screenings") immunizations.push(m);
+      else if (m.category === "Prevention (Diet, Exercise, Counseling, Therapy)") preventions.push(m);
+      else medicalProfessionals.push(m);
+    });
+  }
   employmentEntries = fd._employmentEntries || [];
   commChartRows = fd._commChartRows || [];
   importantPeople = fd._importantPeople || [];
@@ -3083,7 +3308,10 @@ function restoreFormData(fd) {
   renderSupports('current');
   renderSupports('linking');
   renderLegalReps();
-  renderMedicalItems();
+  renderMedicalProfessionals();
+  renderPreventions();
+  renderImmunizations();
+  renderMedications();
   renderEmploymentEntries();
   renderCommChart();
   renderImportantPeople();

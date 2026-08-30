@@ -1764,19 +1764,51 @@
             </div>
           </div>
 
-          <!-- 8B: Providers, Prevention & Medications -->
-          <div class="subsection-label">Providers, Prevention &amp; Medications</div>
-          <div id="medicalItemsContainer">
+          <!-- 8B: Providers & Specialists -->
+          <div class="subsection-label">Providers & Specialists</div>
+          <div id="medicalProfessionalsContainer">
             <p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px;">
-              No medical items added yet. Click below to add a physician, specialist, prevention activity, immunization, or medication.
+              No medical professionals added yet. Click below to add a physician or specialist.
             </p>
           </div>
-          <button class="btn btn-outline" type="button" onclick="addMedicalItem()" style="margin-bottom: 24px;">
-            + Add Medical Item
+          <button class="btn btn-outline" type="button" onclick="addMedicalProfessional()" style="margin-bottom: 24px;">
+            + Add Provider/Specialist
           </button>
 
-          <!-- 8C: Other Health Protocols -->
-          <div class="subsection-label">Other Health Protocols</div>
+          <!-- 8C: Prevention -->
+          <div class="subsection-label">Prevention (Diet, Exercise, Counseling, Therapy)</div>
+          <div id="preventionsContainer">
+            <p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px;">
+              No prevention routines added yet.
+            </p>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="addPrevention()" style="margin-bottom: 24px;">
+            + Add Prevention Item
+          </button>
+
+          <!-- 8D: Immunizations & Screenings -->
+          <div class="subsection-label">Residential Immunizations & Cancer Screenings</div>
+          <div id="immunizationsContainer">
+            <p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px;">
+              No immunizations or screenings added yet.
+            </p>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="addImmunization()" style="margin-bottom: 24px;">
+            + Add Immunization / Screening
+          </button>
+
+          <!-- 8E: Medications & Protocols -->
+          <div class="subsection-label">Medications & Health Protocols</div>
+          <h5 style="color: var(--gold); margin-bottom: 10px; font-size: 13px; text-transform: uppercase;">Current Medications</h5>
+          <div id="medicationsContainer">
+            <p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px;">
+              No medications added yet.
+            </p>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="addMedication()" style="margin-bottom: 24px;">
+            + Add Medication
+          </button>
+
           <div class="form-grid">
             
             <div class="field-group full">
