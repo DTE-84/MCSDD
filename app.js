@@ -227,7 +227,6 @@ let clinicalGoalsTasks = []; // Section 2: Goals/Tasks
 let dueProcessItems = []; // Section 15: Due Process
 let meetingAttendees = []; // Section 18: Meeting Attendees
 let dnrAltInstructions = [];
-let dnrAltSettings = [];
 let _coverPhotoData = null;
 
 // ── SECURITY STATE ──
@@ -1632,7 +1631,7 @@ function updateUI() {
     line(`     - Staff MUST TAKE: In a cardiac or respiratory emergency, staff will not perform chest compressions or standard CPR. Staff will immediately administer ${getVal("dnrAltMustTake") || "__________"} and call 911.`);
     line(`     - MUST AVOID: ${getVal("dnrAltMustAvoid") || "__________"}`);
     line("  2. Emergency Services (911) Protocol");
-    line("     Explicitly state how emergency medical services (EMS) should be engaged and managed. [Staff will call 911 immediately during an emergency. Staff must present the original, signed ALTERNATIVE to CPR Order Form directly to the first responders upon their arrival.]");
+    line("     Staff will call 911 immediately during an emergency. Staff must present the original, signed ALTERNATIVE to CPR Order Form directly to the first responders upon their arrival.");
     line("  3. Staff Training Requirements");
     line(`     All staff supporting ${getVal("dnrAltIndividualName") || "__________"} must be trained by a qualified medical professional on the specific protocols outlined in the Alternative to CPR Order prior to working independently.`);
     line("  4. Location of the Physical Form");
@@ -1644,9 +1643,9 @@ function updateUI() {
       line("  Specific Modified Instructions:");
       dnrAltInstructions.forEach((item) => line(`     - ${item.text}`));
     }
-    if (dnrAltSettings && dnrAltSettings.length > 0) {
+    if (hcbsServices && hcbsServices.length > 0) {
       line("  Residential or Service Setting:");
-      dnrAltSettings.forEach((item) => line(`     - ${item.text}`));
+      hcbsServices.forEach((s) => line(`     - ${s.serviceName || "Unnamed Service"}`));
     }
     line("");
   }
@@ -3344,8 +3343,6 @@ function restoreLegalReps(d)  { legalReps = Array.isArray(d) ? d : []; renderLeg
 function addDnrAltListItem(type) {
   if (type === 'instruction') {
     dnrAltInstructions.push({ id: Date.now(), text: "" });
-  } else if (type === 'setting') {
-    dnrAltSettings.push({ id: Date.now(), text: "" });
   }
   renderDnrAltLists();
   updateUI();
@@ -3353,8 +3350,6 @@ function addDnrAltListItem(type) {
 function removeDnrAltListItem(type, id) {
   if (type === 'instruction') {
     dnrAltInstructions = dnrAltInstructions.filter(i => i.id !== id);
-  } else if (type === 'setting') {
-    dnrAltSettings = dnrAltSettings.filter(i => i.id !== id);
   }
   renderDnrAltLists();
   updateUI();
@@ -3362,9 +3357,6 @@ function removeDnrAltListItem(type, id) {
 function updateDnrAltListItem(type, id, val) {
   if (type === 'instruction') {
     const item = dnrAltInstructions.find(i => i.id === id);
-    if (item) item.text = val;
-  } else if (type === 'setting') {
-    const item = dnrAltSettings.find(i => i.id === id);
     if (item) item.text = val;
   }
   updateUI();
@@ -3382,12 +3374,13 @@ function renderDnrAltLists() {
   
   const settingsContainer = document.getElementById("dnrAltSettingsContainer");
   if (settingsContainer) {
-    settingsContainer.innerHTML = dnrAltSettings.map((item, idx) => `
-      <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-        <input type="text" value="${esc(item.text)}" placeholder="Setting (e.g. ISL, Group Home)" oninput="updateDnrAltListItem('setting', ${item.id}, this.value)" style="flex: 1;">
-        <button class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);" onclick="removeDnrAltListItem('setting', ${item.id})">X</button>
-      </div>
-    `).join("");
+    if (hcbsServices.length === 0) {
+      settingsContainer.innerHTML = `<em style="color: var(--text-label);">No HCBS Services added in Section 7.</em>`;
+    } else {
+      settingsContainer.innerHTML = hcbsServices.map((s, idx) => `
+        <div style="padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">${esc(s.serviceName || "Unnamed Service")}</div>
+      `).join("");
+    }
   }
 }
 
@@ -3406,7 +3399,6 @@ function captureFormData() {
     _immunizations: immunizations,
     _medications: medications,
     _dnrAltInstructions: dnrAltInstructions,
-    _dnrAltSettings: dnrAltSettings,
     _commChartRows: commChartRows,
     _importantPeople: importantPeople,
     _employmentEntries: employmentEntries,
@@ -3473,7 +3465,6 @@ function restoreFormData(fd) {
   immunizations = fd._immunizations || [];
   medications = fd._medications || [];
   dnrAltInstructions = fd._dnrAltInstructions || [];
-  dnrAltSettings = fd._dnrAltSettings || [];
 
   // Migration from temporary medicalItems array
   if (fd._medicalItems && fd._medicalItems.length > 0) {
