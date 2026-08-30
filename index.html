@@ -1659,6 +1659,10 @@
                 <option value="No">No</option>
               </select>
             </div>
+            <div class="field-group full" id="hcbsAdditionalFundingContainer" style="display: none; grid-column: 1 / -1; margin-top: 15px;">
+              <label>4. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
+              <textarea id="hcbsEduQ4" oninput="updateUI()"></textarea>
+            </div>
           </div>
           
           <div id="hcbsFieldsContainer" style="display: none; margin-bottom: 20px;">
@@ -1705,106 +1709,12 @@
                   <label>3. Dates requested IEP if IEP not received:</label>
                   <textarea id="hcbsEduQ3" placeholder="_____,______,___" oninput="updateUI()"></textarea>
                 </div>
-                <div class="field-group full">
-                  <label>4. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
-                  <textarea id="hcbsEduQ4" oninput="updateUI()"></textarea>
-                </div>
               </div>
             </div>
           </div>
 
 
 
-          <div class="subsection-label" style="margin-top: 24px;">Self-Directed Services (SDS)</div>
-          <div class="form-grid">
-            <div class="field-group full" style="grid-column: 1 / -1;">
-              <label>Are Self-Directed Services (SDS) being utilized?</label>
-              <select id="sdsUtilized7" onchange="toggleSDS7(); updateUI()">
-                <option value="">Select...</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-          </div>
-          
-          <div id="sdsGroup7" style="display: none; margin-top: 15px;">
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Designated Representative</label>
-                <input type="text" id="sdsDesignatedRep7" oninput="updateUI()" placeholder="Name, or state 'None Appointed'">
-              </div>
-              <div class="field-group">
-                <label>Discuss Hours of Program</label>
-                <input type="text" id="sdsHoursOfProgram7" oninput="updateUI()" placeholder="Hours details...">
-              </div>
-              
-              <div class="field-group full" style="grid-column: 1 / -1;">
-                <label>List services being self-directed and what they entail</label>
-                <textarea id="sdsServicesList7" oninput="updateUI()"></textarea>
-              </div>
-              
-              <div class="field-group full" style="grid-column: 1 / -1;">
-                <label>Justify any training exemptions for personal assistance (see training checklist)</label>
-                <textarea id="sdsTrainingExemptions7" oninput="updateUI()"></textarea>
-              </div>
-              
-              <div class="field-group full" style="grid-column: 1 / -1;">
-                <label>SDS Back-up Plan (Provisions for scheduled employees not providing supports)</label>
-                <textarea id="sdsBackupPlan7" oninput="updateUI()" placeholder="May refer to separate documents attached to the plan..."></textarea>
-              </div>
-              
-              <div class="field-group full" style="grid-column: 1 / -1;">
-                <label class="eth-check">
-                  <input type="checkbox" id="sdsBudgetAllocationMatch7" onchange="updateUI()">
-                  SDS Budget Allocation tool is complete and matches the money amount on the Authorization form (for new individuals to SDS program)
-                </label>
-              </div>
-              
-              <div class="field-group full" style="grid-column: 1 / -1;">
-                <label class="eth-check">
-                  <input type="checkbox" id="sdsDhssAuthChecked7" onchange="updateUI()">
-                  If receiving Medicaid State Plan personal care services through DHSS - authorization for services system has been checked to ensure these services are not being self-directed or waivered.
-                </label>
-              </div>
-              
-              <div class="field-group full" style="grid-column: 1 / -1; margin-top: 15px;">
-                <label>Is a Paid Family Member providing supports?</label>
-                <select id="sdsPaidFamilyMember7" onchange="toggleSDSPaidFamily7(); updateUI()">
-                  <option value="">Select...</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-            </div>
-            
-            <div id="sdsPaidFamilyGroup7" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.02); border: 1px solid var(--border);">
-              <div class="form-grid">
-                <div class="field-group full" style="grid-column: 1 / -1;">
-                  <label>Is the individual opposed to the family member providing the support?</label>
-                  <select id="sdsFamilyOpposed7" onchange="updateUI()">
-                    <option value="">Select...</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                  </select>
-                </div>
-                
-                <div class="field-group full" style="grid-column: 1 / -1;">
-                  <label class="eth-check">
-                    <input type="checkbox" id="sdsFamilyHouseholdTasks7" onchange="updateUI()">
-                    The supports to be provided are solely for the individual and not household tasks expected to be shared with people who live in the family unit.
-                  </label>
-                </div>
-                
-                <div class="field-group full" style="grid-column: 1 / -1;">
-                  <label class="eth-check">
-                    <input type="checkbox" id="sdsFamilyBestMeetNeeds7" onchange="updateUI()">
-                    The PCSP team agrees that the family member providing the individual assistance will best meet the individual's needs.
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
         <!--Section 8: Medical Profile -->
         <div class="form-section" id="sec-health">
           <div class="section-title">
@@ -1854,34 +1764,20 @@
             </div>
           </div>
 
-          <!-- 8B: Prevention & Providers -->
-          <div class="subsection-label">Prevention &amp; Providers</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Primary Care Physician (PCP) (Residential or General)</label>
-              <textarea id="pcpName" placeholder="Name, contact, service/specialty, and minimum frequency of visits" oninput="updateUI()"></textarea>
-            </div>
-            <div class="field-group">
-              <label>Other Medical Specialists (Dental, Vision, Hearing, Podiatrist, Psych, etc.)</label>
-              <textarea id="specialists" placeholder="Name, contact, service/specialty, and minimum frequency of visits" oninput="updateUI()"></textarea>
-            </div>
-            <div class="field-group">
-              <label>Prevention (Diet, Exercise, Counseling)</label>
-              <textarea id="preventionDiet" placeholder="Dietary needs, exercise / weight management, counseling, etc." oninput="updateUI()"></textarea>
-            </div>
-            <div class="field-group">
-              <label>Residential Immunizations &amp; Cancer Screenings</label>
-              <textarea id="residentialScreenings" placeholder="PAP/Mammogram, Colon/PSA, immunizations..." oninput="updateUI()"></textarea>
-            </div>
+          <!-- 8B: Providers, Prevention & Medications -->
+          <div class="subsection-label">Providers, Prevention &amp; Medications</div>
+          <div id="medicalItemsContainer">
+            <p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px;">
+              No medical items added yet. Click below to add a physician, specialist, prevention activity, immunization, or medication.
+            </p>
           </div>
+          <button class="btn btn-outline" type="button" onclick="addMedicalItem()" style="margin-bottom: 24px;">
+            + Add Medical Item
+          </button>
 
-          <!-- 8C: Medications & Protocols -->
-          <div class="subsection-label">Medications &amp; Health Protocols</div>
+          <!-- 8C: Other Health Protocols -->
+          <div class="subsection-label">Other Health Protocols</div>
           <div class="form-grid">
-            <div class="field-group full">
-              <label>Current Medications</label>
-              <textarea id="medicationDetails" placeholder="List all meds. Include purpose of medications for medical issues (e.g. hypertension, diabetes, etc.)" oninput="updateUI()"></textarea>
-            </div>
             
             <div class="field-group full">
               <label>Psychotropic Medications (Purpose, Dosage, Risk Factors)</label>

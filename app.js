@@ -69,8 +69,8 @@ const HCBS_SUBCATEGORIES = {
     "EAA, Consultation: S5165 TC"
   ],
   "Family Peer Support Service": [
-    "Family Peer Support: S5110 INDIVIDUAL",
-    "Family Peer Support: S5110 HQ GROUP"
+    "Family Peer Support: S5110 Individual",
+    "Family Peer Support: S5110 HQ Group"
   ],
   "Group Home": [
     "Group Home: T2016 HQ",
@@ -90,8 +90,8 @@ const HCBS_SUBCATEGORIES = {
     "Individual Directed Goods and Services: T2028"
   ],
   "Individualized Skill Development": [
-    "Individualized Skill Development (ISDI), INDIVIDUAL: S5108",
-    "Individualized Skill Development (ISDG), GROUP: S5108 HQ"
+    "Individualized Skill Development (ISDI), Individual: S5108",
+    "Individualized Skill Development (ISDG), Group: S5108 HQ"
   ],
   "Individual Supported Living": [
     "Individualized Supported Living: T2016",
@@ -110,7 +110,7 @@ const HCBS_SUBCATEGORIES = {
     "Respite Care, In-Home, Group: S5150 HQ"
   ],
   "Job Development": [
-    "Job development, INDIVIDUAL: H0038"
+    "Job development, Individual: H0038"
   ],
   "Occupational Therapy": [
     "Occupational Therapy: 97535",
@@ -215,6 +215,7 @@ let legalReps = [];
 let commChartRows = [];
 let importantPeople = [];
 let programServices = []; // Section 7: Program Services
+let medicalItems = []; // Section 8: Medical Items
 let hcbsServices = []; // Section 7: HCBS Services
 let currentSupports = []; // Section 9: Current Services
 let linkingSupports = []; // Section 9: Linking Services
@@ -366,18 +367,7 @@ const FORM_FIELDS = [
   "targetedJobSkillDevelopment7",
   "methodologyEvaluatingNeed7",
   "isHcbsWaivered",
-  "sdsUtilized7",
-  "sdsDesignatedRep7",
-  "sdsHoursOfProgram7",
-  "sdsServicesList7",
-  "sdsTrainingExemptions7",
-  "sdsBackupPlan7",
-  "sdsBudgetAllocationMatch7",
-  "sdsDhssAuthChecked7",
-  "sdsPaidFamilyMember7",
-  "sdsFamilyOpposed7",
-  "sdsFamilyHouseholdTasks7",
-  "sdsFamilyBestMeetNeeds7",
+
   "hcbsGlobalUpdatesExt1",
   "hcbsGlobalUpdatesCoord1",
   "hcbsGlobalUpdatesExt2",
@@ -428,9 +418,7 @@ const FORM_FIELDS = [
   "contributors",
   // Section 8 - Medical
   "diagnosis",
-  "medicationDetails",
   "medHistory",
-  "pcpName",
   // Section 9 - Community Support
   "nonDivisionalWaiverStatus",
   // Section 10 - Ways to Support
@@ -527,9 +515,6 @@ const FORM_FIELDS = [
   "telehealth",
   "familyMedicalHistory",
   "adaptiveEquipment",
-  "specialists",
-  "preventionDiet",
-  "residentialScreenings",
   "psychotropicDetails",
   "psychotropicProtocol",
   "selfAdmin",
@@ -1364,14 +1349,29 @@ function updateUI() {
             return parts.join(" ");
           }).join(" | "));
         }
-        if (s.serviceDetails) field("      Service/Program Details", s.serviceDetails);
-        if (s.serviceHours) field("      Provided hours", s.serviceHours);
+        if (s.serviceDetails && !s.sdsUtilized) field("      Service/Program Details", s.serviceDetails);
+        if (s.serviceHours && !s.sdsUtilized) field("      Provided hours", s.serviceHours);
         
         field("      Program", Array.isArray(s.q5Funding) && s.q5Funding.length > 0 ? s.q5Funding.join(", ") : "");
         if (s.medicationDMH) {
           field("      Medication taken at Program(DMH Facility)", "Yes");
           if (s.medicationDMHDetails) {
             field("      Medication Details", s.medicationDMHDetails);
+          }
+        }
+        
+        if (s.sdsUtilized) {
+          line("      -- Self-Directed Services (SDS) --");
+          field("      Designated Representative", s.sdsDesignatedRep);
+          field("      Training Exemptions Justification", s.sdsTrainingExemptions);
+          field("      SDS Back-up Plan", s.sdsBackupPlan);
+          field("      Budget Allocation Complete & Matches", s.sdsBudgetAllocationMatch ? "Yes" : "No");
+          field("      DHSS State Plan Auth Checked", s.sdsDhssAuthChecked ? "Yes" : "No");
+          field("      Paid Family Member Providing Supports?", s.sdsPaidFamilyMember);
+          if (s.sdsPaidFamilyMember === "Yes") {
+            field("        Individual opposed to family member?", s.sdsFamilyOpposed);
+            field("        Supports solely for individual", s.sdsFamilyHouseholdTasks ? "Yes" : "No");
+            field("        Team agrees family best meets needs", s.sdsFamilyBestMeetNeeds ? "Yes" : "No");
           }
         }
         
@@ -1439,6 +1439,11 @@ function updateUI() {
         }
       });
       
+      if (isHcbsWaivered === "No") {
+        field("  4. Additional Funding/Supports", getVal("hcbsEduQ4"));
+        line("");
+      }
+      
       const ext1 = getVal("hcbsGlobalUpdatesExt1") || "____";
       const coord1 = getVal("hcbsGlobalUpdatesCoord1") || "_______";
       const ext2 = getVal("hcbsGlobalUpdatesExt2") || "____";
@@ -1454,40 +1459,10 @@ function updateUI() {
       field("      1. IEP and supports for school", getVal("hcbsEduQ1"));
       field("      2. Current release signed for school date", getVal("hcbsEduQ2"));
       field("      3. Dates requested IEP if not received", getVal("hcbsEduQ3"));
-      field("      4. Additional Funding/Supports", getVal("hcbsEduQ4"));
       line("");
     }
   }
 
-
-  const sdsUtil = getVal("sdsUtilized7");
-  if (sdsUtil === "Yes") {
-    line("Self-Directed Services (SDS) Checklist:");
-    field("Designated Representative", getVal("sdsDesignatedRep7"));
-    field("Discuss Hours of Program", getVal("sdsHoursOfProgram7"));
-    field("Services being Self-Directed", getVal("sdsServicesList7"));
-    field("Training Exemptions Justification", getVal("sdsTrainingExemptions7"));
-    field("SDS Back-up Plan", getVal("sdsBackupPlan7"));
-    
-    const budgetMatch = document.getElementById("sdsBudgetAllocationMatch7")?.checked;
-    field("SDS Budget Allocation Complete & Matches", budgetMatch ? "Yes" : "No");
-    
-    const dhssChecked = document.getElementById("sdsDhssAuthChecked7")?.checked;
-    field("DHSS State Plan Authorization Checked", dhssChecked ? "Yes" : "No");
-    
-    const paidFam = getVal("sdsPaidFamilyMember7");
-    field("Paid Family Member Providing Supports?", paidFam);
-    if (paidFam === "Yes") {
-      field("Is individual opposed to family member providing support?", getVal("sdsFamilyOpposed7"));
-      
-      const solelyIndiv = document.getElementById("sdsFamilyHouseholdTasks7")?.checked;
-      field("Supports solely for individual (not household tasks)", solelyIndiv ? "Yes" : "No");
-      
-      const bestMeet = document.getElementById("sdsFamilyBestMeetNeeds7")?.checked;
-      field("PCSP Team agrees family member best meets needs", bestMeet ? "Yes" : "No");
-    }
-    line("");
-  }
 
   head("8. HEALTH, SAFETY & RISK PLANNING (MEDICAL PROFILE)");
   field("Diagnosis", getVal("diagnosis"));
@@ -1497,11 +1472,29 @@ function updateUI() {
   field("Family Medical History", getVal("familyMedicalHistory"));
   field("Adaptive / Specialized Medical Equipment", getVal("adaptiveEquipment"));
   field("Past Physical/Mental Illnesses, Traumatic Experiences, Stressors", getVal("medHistory"));
-  field("Primary Care Physician (PCP)", getVal("pcpName"));
-  field("Other Medical Specialists", getVal("specialists"));
-  field("Prevention (Diet, Exercise, Counseling)", getVal("preventionDiet"));
-  field("Residential Immunizations & Cancer Screenings", getVal("residentialScreenings"));
-  field("Current Medications (Name, Dosage, Purpose)", getVal("medicationDetails"));
+  
+  const medicalGroups = {};
+  medicalItems.forEach(item => {
+    if (!medicalGroups[item.category]) medicalGroups[item.category] = [];
+    medicalGroups[item.category].push(item);
+  });
+
+  if (Object.keys(medicalGroups).length > 0) {
+    line("Providers, Prevention & Medications:");
+    for (const [cat, items] of Object.entries(medicalGroups)) {
+      line(`  -- ${cat} --`);
+      items.forEach((m, idx) => {
+        field(`    ${idx + 1}. Name/Item`, m.name);
+        if (m.contact) field("       Contact/Prescriber", m.contact);
+        if (m.frequency) field("       Frequency/Dosage", m.frequency);
+        if (m.date) field("       Date", m.date);
+        if (m.results) field("       Results/Details", m.results);
+      });
+    }
+  } else {
+    line("Providers, Prevention & Medications: None documented.");
+  }
+
   field("Psychotropic Medications (Purpose, Dosage, Risk Factors)", getVal("psychotropicDetails"));
   field("PRN Psychotropic Protocol", getVal("psychotropicProtocol"));
   
@@ -1934,8 +1927,13 @@ function toggleNAField(f, c) {
 function toggleHcbsFields() {
   const val = document.getElementById("isHcbsWaivered").value;
   const container = document.getElementById("hcbsFieldsContainer");
+  const fundingContainer = document.getElementById("hcbsAdditionalFundingContainer");
+  
   if (container) {
     container.style.display = (val === "Yes" || val === "No") ? "block" : "none";
+  }
+  if (fundingContainer) {
+    fundingContainer.style.display = (val === "No") ? "block" : "none";
   }
   renderHcbsServices();
   updateUI();
@@ -2194,6 +2192,73 @@ function restoreFundingVisuals() {
 }
 
 // (Duplicate Comm Chart removed - using the one below)
+
+function addMedicalItem() {
+  medicalItems.push({ category: "Care Physician", name: "", contact: "", frequency: "", date: "", results: "" });
+  renderMedicalItems();
+  updateUI();
+}
+function removeMedicalItem(i) {
+  medicalItems.splice(i, 1);
+  renderMedicalItems();
+  updateUI();
+}
+function updateMedicalItem(i, f, v) {
+  medicalItems[i][f] = v;
+  const container = document.getElementById("medicalItemsContainer");
+  if (container) {
+    const titles = container.querySelectorAll(".rep-title");
+    if (titles[i]) titles[i].textContent = `Medical Item #${i + 1}${medicalItems[i].name ? " — " + medicalItems[i].name : ""}`;
+  }
+  updateUI();
+}
+function renderMedicalItems() {
+  const c = document.getElementById("medicalItemsContainer");
+  if (!c) return;
+  c.innerHTML = medicalItems
+    .map(
+      (m, i) => `<div class="legal-rep-card" style="margin-bottom:15px; border-left: 4px solid var(--gold);">
+        <div class="rep-header">
+          <span class="rep-title">Medical Item #${i + 1}${m.name ? " — " + esc(m.name) : ""}</span>
+          <button class="remove-rep-btn" onclick="removeMedicalItem(${i})">×</button>
+        </div>
+        <div class="form-grid">
+          <div class="field-group full">
+            <label>Category</label>
+            <select onchange="updateMedicalItem(${i},'category',this.value); renderMedicalItems();">
+              <option value="Care Physician" ${m.category === 'Care Physician' ? 'selected' : ''}>Care Physician</option>
+              <option value="Other Medical Specialist" ${m.category === 'Other Medical Specialist' ? 'selected' : ''}>Other Medical Specialist</option>
+              <option value="Prevention (Diet, Exercise, Counseling, Therapy)" ${m.category === 'Prevention (Diet, Exercise, Counseling, Therapy)' ? 'selected' : ''}>Prevention (Diet, Exercise, Counseling, Therapy)</option>
+              <option value="Residential Immunizations & Cancer Screenings" ${m.category === 'Residential Immunizations & Cancer Screenings' ? 'selected' : ''}>Residential Immunizations & Cancer Screenings</option>
+              <option value="Current Medications" ${m.category === 'Current Medications' ? 'selected' : ''}>Current Medications</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Name / Item</label>
+            <input type="text" placeholder="Name or description" value="${esc(m.name)}" oninput="updateMedicalItem(${i},'name',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Contact / Prescriber</label>
+            <input type="text" placeholder="Contact info" value="${esc(m.contact)}" oninput="updateMedicalItem(${i},'contact',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Frequency of Visits / Dosage</label>
+            <input type="text" placeholder="e.g. Annually, 50mg daily" value="${esc(m.frequency)}" oninput="updateMedicalItem(${i},'frequency',this.value)">
+          </div>
+          <div class="field-group">
+            <label>Date of Last Visit / Action</label>
+            <input type="date" value="${esc(m.date)}" oninput="updateMedicalItem(${i},'date',this.value)">
+          </div>
+          <div class="field-group full">
+            <label>Results / Details</label>
+            <textarea placeholder="Outcomes, side effects, etc." oninput="updateMedicalItem(${i},'results',this.value)">${esc(m.results)}</textarea>
+          </div>
+        </div>
+      </div>`
+    )
+    .join("");
+}
+
 
 function addImportantPerson() {
   importantPeople.push({ name: "", relationship: "", activities: "" });
@@ -2525,15 +2590,15 @@ function renderHcbsServices() {
             `}
           </div>
         ` : ''}
-        ${s.serviceName ? `
+        ${s.serviceName && !s.sdsUtilized ? `
           <div style="display: flex; gap: 15px; margin-top: 15px; padding: 0 5px;">
             <div class="field-group" style="flex: 2;">
               <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Service/Program Details</label>
-              <textarea oninput="updateHcbsService(${i}, 'serviceDetails', this.value)" style="min-height: 45px;">${esc(s.serviceDetails || "")}</textarea>
+              <textarea oninput="updateHcbsService(${i}, 'serviceDetails', this.value)" style="min-height: 80px;">${esc(s.serviceDetails || "")}</textarea>
             </div>
             <div class="field-group" style="flex: 1;">
               <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Provided hours</label>
-              <textarea oninput="updateHcbsService(${i}, 'serviceHours', this.value)" style="min-height: 45px;">${esc(s.serviceHours || "")}</textarea>
+              <textarea oninput="updateHcbsService(${i}, 'serviceHours', this.value)" style="min-height: 80px;">${esc(s.serviceHours || "")}</textarea>
             </div>
           </div>
         ` : ''}
@@ -2568,6 +2633,75 @@ function renderHcbsServices() {
             <div style="margin-top: 10px; padding-left: 25px;">
               <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Details</label>
               <textarea oninput="updateHcbsService(${i}, 'medicationDMHDetails', this.value)" style="min-height: 45px;">${esc(s.medicationDMHDetails || "")}</textarea>
+            </div>
+          ` : ''}
+        </div>
+        
+        <div class="field-group full" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
+          <label style="font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 10px; display: block; text-transform: uppercase;">Self-Directed Services (SDS)</label>
+          <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+            <input type="checkbox" ${s.sdsUtilized ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsUtilized', this.checked); renderHcbsServices();">
+            Are Self-Directed Services (SDS) being utilized?
+          </label>
+          
+          ${s.sdsUtilized ? `
+            <div style="margin-top: 15px; padding-left: 15px; border-left: 2px solid var(--border);">
+              <div class="field-group full">
+                <label>Designated Representative</label>
+                <input type="text" value="${esc(s.sdsDesignatedRep || "")}" oninput="updateHcbsService(${i}, 'sdsDesignatedRep', this.value)" placeholder="Name, or state 'None Appointed'">
+              </div>
+              <div class="field-group full">
+                <label>Justify any training exemptions for personal assistance (see training checklist)</label>
+                <textarea oninput="updateHcbsService(${i}, 'sdsTrainingExemptions', this.value)">${esc(s.sdsTrainingExemptions || "")}</textarea>
+              </div>
+              <div class="field-group full">
+                <label>SDS Back-up Plan (Provisions for scheduled employees not providing supports)</label>
+                <textarea oninput="updateHcbsService(${i}, 'sdsBackupPlan', this.value)" placeholder="May refer to separate documents attached to the plan...">${esc(s.sdsBackupPlan || "")}</textarea>
+              </div>
+              <div class="field-group full">
+                <label class="eth-check">
+                  <input type="checkbox" ${s.sdsBudgetAllocationMatch ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsBudgetAllocationMatch', this.checked)">
+                  SDS Budget Allocation tool is complete and matches the money amount on the Authorization form (for new individuals to SDS program)
+                </label>
+              </div>
+              <div class="field-group full">
+                <label class="eth-check">
+                  <input type="checkbox" ${s.sdsDhssAuthChecked ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsDhssAuthChecked', this.checked)">
+                  If receiving Medicaid State Plan personal care services through DHSS - authorization for services system has been checked to ensure these services are not being self-directed or waivered.
+                </label>
+              </div>
+              <div class="field-group full" style="margin-top: 15px;">
+                <label>Is a Paid Family Member providing supports?</label>
+                <select onchange="updateHcbsService(${i}, 'sdsPaidFamilyMember', this.value); renderHcbsServices();">
+                  <option value="">Select...</option>
+                  <option value="Yes" ${s.sdsPaidFamilyMember === 'Yes' ? 'selected' : ''}>Yes</option>
+                  <option value="No" ${s.sdsPaidFamilyMember === 'No' ? 'selected' : ''}>No</option>
+                </select>
+              </div>
+              ${s.sdsPaidFamilyMember === 'Yes' ? `
+                <div style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.02); border: 1px solid var(--border);">
+                  <div class="field-group full">
+                    <label>Is the individual opposed to the family member providing the support?</label>
+                    <select onchange="updateHcbsService(${i}, 'sdsFamilyOpposed', this.value)">
+                      <option value="">Select...</option>
+                      <option value="Yes" ${s.sdsFamilyOpposed === 'Yes' ? 'selected' : ''}>Yes</option>
+                      <option value="No" ${s.sdsFamilyOpposed === 'No' ? 'selected' : ''}>No</option>
+                    </select>
+                  </div>
+                  <div class="field-group full">
+                    <label class="eth-check">
+                      <input type="checkbox" ${s.sdsFamilyHouseholdTasks ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsFamilyHouseholdTasks', this.checked)">
+                      The supports to be provided are solely for the individual and not household tasks expected to be shared with people who live in the family unit.
+                    </label>
+                  </div>
+                  <div class="field-group full">
+                    <label class="eth-check">
+                      <input type="checkbox" ${s.sdsFamilyBestMeetNeeds ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsFamilyBestMeetNeeds', this.checked)">
+                      The PCSP team agrees that the family member providing the individual assistance will best meet the individual's needs.
+                    </label>
+                  </div>
+                </div>
+              ` : ''}
             </div>
           ` : ''}
         </div>
@@ -2867,6 +3001,7 @@ function captureFormData() {
     _currentSupports: currentSupports,
     _linkingSupports: linkingSupports,
     _legalReps: legalReps,
+    _medicalItems: medicalItems,
     _commChartRows: commChartRows,
     _importantPeople: importantPeople,
     _employmentEntries: employmentEntries,
@@ -2928,6 +3063,7 @@ function restoreFormData(fd) {
   currentSupports = fd._currentSupports || [];
   linkingSupports = fd._linkingSupports || [];
   legalReps = fd._legalReps || [];
+  medicalItems = fd._medicalItems || [];
   employmentEntries = fd._employmentEntries || [];
   commChartRows = fd._commChartRows || [];
   importantPeople = fd._importantPeople || [];
@@ -2947,6 +3083,7 @@ function restoreFormData(fd) {
   renderSupports('current');
   renderSupports('linking');
   renderLegalReps();
+  renderMedicalItems();
   renderEmploymentEntries();
   renderCommChart();
   renderImportantPeople();
