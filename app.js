@@ -423,7 +423,7 @@ const FORM_FIELDS = [
   "diagnosis",
   "medHistory",
   // Section 9 - Community Support
-  "nonDivisionalWaiverStatus",
+  "hasNonDivisionalWaiver",
   // Section 10 - Ways to Support
   "waysToSupport",
   // Section 12 - Independence/Strengths
@@ -523,6 +523,8 @@ const FORM_FIELDS = [
   "hrstCompletedBy",
   "hrstHasAdditionalInfo",
   "hrstAdditionalInfo",
+  "hrstOptOutDate",
+  "hrstOptOutExpiration",
   "telehealth",
   "familyMedicalHistory",
   "needsWheelchair",
@@ -749,10 +751,12 @@ function renderSupports(type) {
         <div class="field-group"><label>Define Support</label><input type="text" value="${esc(s.description)}" oninput="updateSupportField(${s.id}, '${type}', 'description', this.value)"></div>
         <div class="field-group"><label>Purpose</label><input type="text" value="${esc(s.purpose)}" oninput="updateSupportField(${s.id}, '${type}', 'purpose', this.value)"></div>
         <div class="field-group"><label>Frequency</label><input type="text" value="${esc(s.frequency)}" oninput="updateSupportField(${s.id}, '${type}', 'frequency', this.value)"></div>
+        ${type === 'linking' ? `
         <div class="field-group full">
           <label>Enrollment Info / "Not Currently Utilizing"</label>
           <input type="text" value="${esc(s.enrollmentInfo)}" placeholder="How to enroll or status note" oninput="updateSupportField(${s.id}, '${type}', 'enrollmentInfo', this.value)">
         </div>
+        ` : ""}
       </div>
     </div>
   `).join("");
@@ -1499,6 +1503,9 @@ function updateUI() {
     if (document.getElementById("hrstHasAdditionalInfo")?.checked) {
       field("  - Additional Info", getVal("hrstAdditionalInfo"));
     }
+  } else if (hrstStatus === "Opt-Out (Form in Packet)") {
+    field("  - Opt-Out Date", getVal("hrstOptOutDate"));
+    field("  - Expiration Date", getVal("hrstOptOutExpiration"));
   }
   field("Telehealth Used?", getVal("telehealth"));
   field("Family Medical History", getVal("familyMedicalHistory"));
@@ -1605,7 +1612,9 @@ function updateUI() {
   line("");
 
   head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
-  field("Non-Divisional Waiver Status", getVal("nonDivisionalWaiverStatus"));
+  if (document.getElementById("hasNonDivisionalWaiver")?.checked) {
+    line("Non-Divisional Waiver: Yes");
+  }
   line("");
   
   if (currentSupports.length > 0) {
@@ -1614,7 +1623,6 @@ function updateUI() {
       line(`  [${idx + 1}] Support: ${s.description || "—"} (${s.type})`);
       line(`      Purpose: ${s.purpose || "—"}`);
       line(`      Freq: ${s.frequency || "—"}`);
-      if (s.enrollmentInfo) line(`      Enrollment/Note: ${s.enrollmentInfo}`);
     });
     line("");
   }
@@ -1900,8 +1908,13 @@ function toggleMultiSelect(id) {
 function toggleHrstFields() {
   const status = document.getElementById("hrstStatus")?.value;
   const container = document.getElementById("hrstDetailsContainer");
+  const optOutContainer = document.getElementById("hrstOptOutContainer");
+  
   if (container) {
     container.style.display = (status === "Complete") ? "block" : "none";
+  }
+  if (optOutContainer) {
+    optOutContainer.style.display = (status === "Opt-Out (Form in Packet)") ? "block" : "none";
   }
 }
 function toggleHrstAdditional() {

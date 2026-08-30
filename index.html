@@ -1785,6 +1785,21 @@
                 </div>
               </div>
             </div>
+            
+            <!-- Dynamic HRST Opt-Out Fields -->
+            <div class="field-group full" id="hrstOptOutContainer" style="display: none; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; border: 1px dashed var(--border); margin-top: 10px; margin-bottom: 10px;">
+              <div class="form-grid">
+                <div class="field-group">
+                  <label>Opt-Out Date</label>
+                  <input type="date" id="hrstOptOutDate" oninput="updateUI()">
+                </div>
+                <div class="field-group">
+                  <label>Expiration Date</label>
+                  <input type="date" id="hrstOptOutExpiration" oninput="updateUI()">
+                </div>
+              </div>
+            </div>
+            
             <div class="field-group full">
               <label>Family Medical History (If Available)</label>
               <textarea id="familyMedicalHistory" placeholder="List relevant family medical history..." oninput="updateUI()"></textarea>
@@ -1989,16 +2004,18 @@
           <!-- 8E: Mental Health -->
           <div class="subsection-label">Mental Health Supports</div>
           <div class="form-grid">
-            <div class="field-group full" style="display: flex; gap: 20px; align-items: center; margin-bottom: -5px;">
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main);">
-                <input type="checkbox" id="mh_residential" onchange="updateUI()"> Residential Services
-              </label>
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main);">
-                <input type="checkbox" id="mh_nonResidential" onchange="updateUI()"> Non-Residential Services
-              </label>
-            </div>
             <div class="field-group full">
-              <label>Mental Health Supports - if applicable</label>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="margin-bottom: 0;">Mental Health Supports - if applicable</label>
+                <div style="display: flex; gap: 20px; align-items: center;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main); margin-bottom: 0;">
+                    <input type="checkbox" id="mh_residential" onchange="updateUI()"> Residential Services
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main); margin-bottom: 0;">
+                    <input type="checkbox" id="mh_nonResidential" onchange="updateUI()"> Non-Residential Services
+                  </label>
+                </div>
+              </div>
               <textarea id="mentalHealthSupports" placeholder="Counseling, therapy, medications, etc." oninput="updateUI()"></textarea>
             </div>
           </div>
@@ -2019,6 +2036,13 @@
           
           <div class="subsection-label">Current Services</div>
           <div id="currentSupportsContainer"></div>
+          
+          <div class="field-group full" style="margin-bottom: 15px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main);">
+              <input type="checkbox" id="hasNonDivisionalWaiver" onchange="updateUI()"> Non-Divisional Waiver
+            </label>
+          </div>
+          
           <button class="btn btn-outline" type="button" onclick="addSupport('current')" style="margin-bottom: 20px;">
             + Add Current Support
           </button>
@@ -2028,13 +2052,6 @@
           <button class="btn btn-outline" type="button" onclick="addSupport('linking')" style="margin-bottom: 20px;">
             + Add Linking Support
           </button>
-
-          <div class="form-grid" style="margin-top: 10px;">
-            <div class="field-group full">
-              <label>Non-Divisional Waiver Status</label>
-              <input type="text" id="nonDivisionalWaiverStatus" placeholder="State if Person is in a Non-Divisional Waiver" oninput="updateUI()">
-            </div>
-          </div>
         </div>
 
 <!-- ── Section 10: Ways to Support the Individual ── -->
@@ -2043,7 +2060,7 @@
           <div class="form-grid">
             <div class="field-group full">
               <label>Specific Support Strategies</label>
-              <textarea id="aspirations" placeholder="What does the individual want their life to look like in 1-3 years? What would they like to try?" oninput="updateUI()"></textarea>
+              <textarea id="aspirations" placeholder="Discuss limitation from assessment tool, and how the individual can be supported. Include supports that are effective and need to continue" oninput="updateUI()"></textarea>
             </div>
             <div class="field-group full">
               <label>Former Goals &amp; Progress</label>
