@@ -226,6 +226,8 @@ let goalsData = []; // Section 9: Action Plan
 let clinicalGoalsTasks = []; // Section 2: Goals/Tasks
 let dueProcessItems = []; // Section 15: Due Process
 let meetingAttendees = []; // Section 18: Meeting Attendees
+let dnrAltInstructions = [];
+let dnrAltSettings = [];
 let _coverPhotoData = null;
 
 // ── SECURITY STATE ──
@@ -544,6 +546,11 @@ const FORM_FIELDS = [
   "healthRisks",
   "evacPlan",
   "dnrStatus",
+  "dnrAltMustTake",
+  "dnrAltMustAvoid",
+  "dnrAltIndividualName",
+  "dnrAltFormLocation",
+  "dnrAltReviewDate",
   "seizureProtocols",
   "bowelProtocols",
   "mh_residential",
@@ -729,37 +736,55 @@ function renderSupports(type) {
     return;
   }
 
-  container.innerHTML = list.map((s, idx) => `
-    <div class="legal-rep-card" style="border-left: 3px solid var(--marion-blue); margin-bottom:15px;">
-      <div class="rep-header">
-        <span class="rep-title">${type === 'current' ? 'Current' : 'Linking'} Support #${idx + 1}</span>
-        <button class="remove-rep-btn" onclick="removeSupport(${s.id}, '${type}')">×</button>
-      </div>
-      <div class="form-grid">
-        <div class="field-group">
-          <label>Support Type</label>
-          <select onchange="updateSupportField(${s.id}, '${type}', 'type', this.value)">
-            <option value="Community" ${s.type === 'Community' ? 'selected' : ''}>Community (pantries, churches, clubs, gym)</option>
-            <option value="State plan services" ${s.type === 'State plan services' ? 'selected' : ''}>State plan services</option>
-            <option value="Relationship based" ${s.type === 'Relationship based' ? 'selected' : ''}>Relationship based</option>
-            <option value="Insurances" ${s.type === 'Insurances' ? 'selected' : ''}>Insurances</option>
-            <option value="DMH Services" ${s.type === 'DMH Services' ? 'selected' : ''}>DMH Services</option>
-            <option value="Technology" ${s.type === 'Technology' ? 'selected' : ''}>Technology</option>
-            <option value="Other" ${s.type === 'Other' ? 'selected' : ''}>Other</option>
-          </select>
+  container.innerHTML = list.map((s, idx) => {
+    if (type === 'current') {
+      return `
+      <div class="legal-rep-card" style="border-left: 3px solid var(--marion-blue); margin-bottom:15px;">
+        <div class="rep-header">
+          <span class="rep-title">Current Support #${idx + 1}</span>
+          <button class="remove-rep-btn" onclick="removeSupport(${s.id}, '${type}')">×</button>
         </div>
-        <div class="field-group"><label>Define Support</label><input type="text" value="${esc(s.description)}" oninput="updateSupportField(${s.id}, '${type}', 'description', this.value)"></div>
-        <div class="field-group"><label>Purpose</label><input type="text" value="${esc(s.purpose)}" oninput="updateSupportField(${s.id}, '${type}', 'purpose', this.value)"></div>
-        <div class="field-group"><label>Frequency</label><input type="text" value="${esc(s.frequency)}" oninput="updateSupportField(${s.id}, '${type}', 'frequency', this.value)"></div>
-        ${type === 'linking' ? `
-        <div class="field-group full">
-          <label>Enrollment Info / "Not Currently Utilizing"</label>
-          <input type="text" value="${esc(s.enrollmentInfo)}" placeholder="How to enroll or status note" oninput="updateSupportField(${s.id}, '${type}', 'enrollmentInfo', this.value)">
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Support Type</label>
+            <select onchange="updateSupportField(${s.id}, '${type}', 'type', this.value)">
+              <option value="Community" ${s.type === 'Community' ? 'selected' : ''}>Community (pantries, churches, clubs, gym)</option>
+              <option value="State plan services" ${s.type === 'State plan services' ? 'selected' : ''}>State plan services</option>
+              <option value="Relationship based" ${s.type === 'Relationship based' ? 'selected' : ''}>Relationship based</option>
+              <option value="Insurances" ${s.type === 'Insurances' ? 'selected' : ''}>Insurances</option>
+              <option value="DMH Services" ${s.type === 'DMH Services' ? 'selected' : ''}>DMH Services</option>
+              <option value="Technology" ${s.type === 'Technology' ? 'selected' : ''}>Technology</option>
+              <option value="Other" ${s.type === 'Other' ? 'selected' : ''}>Other</option>
+            </select>
+          </div>
+          <div class="field-group"><label>Define Support</label><input type="text" value="${esc(s.description)}" oninput="updateSupportField(${s.id}, '${type}', 'description', this.value)"></div>
+          <div class="field-group"><label>Purpose</label><input type="text" value="${esc(s.purpose)}" oninput="updateSupportField(${s.id}, '${type}', 'purpose', this.value)"></div>
+          <div class="field-group"><label>Frequency</label><input type="text" value="${esc(s.frequency)}" oninput="updateSupportField(${s.id}, '${type}', 'frequency', this.value)"></div>
         </div>
-        ` : ""}
-      </div>
-    </div>
-  `).join("");
+      </div>`;
+    } else {
+      return `
+      <div class="legal-rep-card" style="border-left: 3px solid var(--marion-blue); margin-bottom:15px;">
+        <div class="rep-header">
+          <span class="rep-title">Linking Support #${idx + 1}</span>
+          <button class="remove-rep-btn" onclick="removeSupport(${s.id}, '${type}')">×</button>
+        </div>
+        <div class="form-grid">
+          <div class="field-group"><label>Service</label><input type="text" value="${esc(s.description)}" oninput="updateSupportField(${s.id}, '${type}', 'description', this.value)"></div>
+          <div class="field-group"><label>Purpose</label><input type="text" value="${esc(s.purpose)}" oninput="updateSupportField(${s.id}, '${type}', 'purpose', this.value)"></div>
+          <div class="field-group full">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <label style="margin-bottom: 0;">Enrollment Info</label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main); margin-bottom: 0; font-size: 11px;">
+                <input type="checkbox" ${s.notUtilizing ? "checked" : ""} onchange="updateSupportField(${s.id}, '${type}', 'notUtilizing', this.checked)"> Not Currently Utilizing
+              </label>
+            </div>
+            <input type="text" value="${esc(s.enrollmentInfo)}" placeholder="Location address, contact phone / e-mail" oninput="updateSupportField(${s.id}, '${type}', 'enrollmentInfo', this.value)">
+          </div>
+        </div>
+      </div>`;
+    }
+  }).join("");
 }
 function updateProgramServiceField(id, field, val) {
   const p = programServices.find((x) => x.id === id);
@@ -1200,6 +1225,13 @@ function updateUI() {
     field("Transferred TCM Agency", getVal("transferredTcm"));
     field("Transferred DMH Office Type", getVal("transferredOfficeType"));
   }
+  const rel = getVal("religion");
+  if (rel === "Other") {
+    field("Religion", getVal("religionOther"));
+  } else {
+    field("Religion", rel);
+  }
+  
   field("Residency", getVal("residencyType"));
   field("Education", getVal("educationStatus"));
   field("School", getVal("schoolName"));
@@ -1591,7 +1623,33 @@ function updateUI() {
     });
   }
   field("Other Parameters / Protocols", getVal("healthParamsOther"));
-  field("DNR / CPR Status", getVal("dnrStatus"));
+  const dnrStatus = getVal("dnrStatus");
+  field("DNR / CPR Status", dnrStatus);
+  if (dnrStatus === "Alternative to CPR (Waivered)") {
+    line("");
+    line("ALTERNATIVE TO CPR DETAILS:");
+    line("  1. Specified Modified Interventions");
+    line(`     - Staff MUST TAKE: In a cardiac or respiratory emergency, staff will not perform chest compressions or standard CPR. Staff will immediately administer ${getVal("dnrAltMustTake") || "__________"} and call 911.`);
+    line(`     - MUST AVOID: ${getVal("dnrAltMustAvoid") || "__________"}`);
+    line("  2. Emergency Services (911) Protocol");
+    line("     Explicitly state how emergency medical services (EMS) should be engaged and managed. [Staff will call 911 immediately during an emergency. Staff must present the original, signed ALTERNATIVE to CPR Order Form directly to the first responders upon their arrival.]");
+    line("  3. Staff Training Requirements");
+    line(`     All staff supporting ${getVal("dnrAltIndividualName") || "__________"} must be trained by a qualified medical professional on the specific protocols outlined in the Alternative to CPR Order prior to working independently.`);
+    line("  4. Location of the Physical Form");
+    line(`     The original, signed Appendix D Alternative to CPR Form is located ${getVal("dnrAltFormLocation") || "__________"}.`);
+    line("  5. Review and Oversight Schedule");
+    line(`     Plan Re-evaluation: ${getVal("dnrAltReviewDate") || "__________"}`);
+    line("     The Alternative to CPR protocol will be reviewed continuously by the planning team and the attending physician at minimum during the annual PCSP meeting, or sooner if a change in health status occurs.");
+    if (dnrAltInstructions && dnrAltInstructions.length > 0) {
+      line("  Specific Modified Instructions:");
+      dnrAltInstructions.forEach((item) => line(`     - ${item.text}`));
+    }
+    if (dnrAltSettings && dnrAltSettings.length > 0) {
+      line("  Residential or Service Setting:");
+      dnrAltSettings.forEach((item) => line(`     - ${item.text}`));
+    }
+    line("");
+  }
   field("Known Suspected Health Risks", getVal("healthRisks"));
   field("Risk Level", getVal("riskLevel"));
   field("Supervision Level", getVal("supervisionLevel"));
@@ -1630,10 +1688,12 @@ function updateUI() {
   if (linkingSupports.length > 0) {
     line("Linking Services:");
     linkingSupports.forEach((s, idx) => {
-      line(`  [${idx + 1}] Support: ${s.description || "—"} (${s.type})`);
+      line(`  [${idx + 1}] Service: ${s.description || "—"}`);
       line(`      Purpose: ${s.purpose || "—"}`);
-      line(`      Freq: ${s.frequency || "—"}`);
-      if (s.enrollmentInfo) line(`      Enrollment/Note: ${s.enrollmentInfo}`);
+      const utilizingStr = s.notUtilizing ? " [Not Currently Utilizing]" : "";
+      if (s.enrollmentInfo || s.notUtilizing) {
+        line(`      Enrollment Info: ${s.enrollmentInfo || "—"}${utilizingStr}`);
+      }
     });
     line("");
   }
@@ -1904,6 +1964,13 @@ function updateUI() {
 // ── UTILS ──
 function toggleMultiSelect(id) {
   document.getElementById(id).classList.toggle("active");
+}
+function toggleDnrAlt() {
+  const status = document.getElementById("dnrStatus")?.value;
+  const container = document.getElementById("dnrAltContainer");
+  if (container) {
+    container.style.display = (status === "Alternative to CPR (Waivered)") ? "block" : "none";
+  }
 }
 function toggleHrstFields() {
   const status = document.getElementById("hrstStatus")?.value;
@@ -3274,6 +3341,56 @@ function captureLegalReps() {
 }
 function restoreLegalReps(d)  { legalReps = Array.isArray(d) ? d : []; renderLegalReps(); }
 
+function addDnrAltListItem(type) {
+  if (type === 'instruction') {
+    dnrAltInstructions.push({ id: Date.now(), text: "" });
+  } else if (type === 'setting') {
+    dnrAltSettings.push({ id: Date.now(), text: "" });
+  }
+  renderDnrAltLists();
+  updateUI();
+}
+function removeDnrAltListItem(type, id) {
+  if (type === 'instruction') {
+    dnrAltInstructions = dnrAltInstructions.filter(i => i.id !== id);
+  } else if (type === 'setting') {
+    dnrAltSettings = dnrAltSettings.filter(i => i.id !== id);
+  }
+  renderDnrAltLists();
+  updateUI();
+}
+function updateDnrAltListItem(type, id, val) {
+  if (type === 'instruction') {
+    const item = dnrAltInstructions.find(i => i.id === id);
+    if (item) item.text = val;
+  } else if (type === 'setting') {
+    const item = dnrAltSettings.find(i => i.id === id);
+    if (item) item.text = val;
+  }
+  updateUI();
+}
+function renderDnrAltLists() {
+  const instrContainer = document.getElementById("dnrAltInstructionsContainer");
+  if (instrContainer) {
+    instrContainer.innerHTML = dnrAltInstructions.map((item, idx) => `
+      <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" value="${esc(item.text)}" placeholder="Instruction..." oninput="updateDnrAltListItem('instruction', ${item.id}, this.value)" style="flex: 1;">
+        <button class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);" onclick="removeDnrAltListItem('instruction', ${item.id})">X</button>
+      </div>
+    `).join("");
+  }
+  
+  const settingsContainer = document.getElementById("dnrAltSettingsContainer");
+  if (settingsContainer) {
+    settingsContainer.innerHTML = dnrAltSettings.map((item, idx) => `
+      <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" value="${esc(item.text)}" placeholder="Setting (e.g. ISL, Group Home)" oninput="updateDnrAltListItem('setting', ${item.id}, this.value)" style="flex: 1;">
+        <button class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);" onclick="removeDnrAltListItem('setting', ${item.id})">X</button>
+      </div>
+    `).join("");
+  }
+}
+
 // ── PERSISTENCE ──
 function captureFormData() {
   const fd = {
@@ -3288,6 +3405,8 @@ function captureFormData() {
     _preventions: preventions,
     _immunizations: immunizations,
     _medications: medications,
+    _dnrAltInstructions: dnrAltInstructions,
+    _dnrAltSettings: dnrAltSettings,
     _commChartRows: commChartRows,
     _importantPeople: importantPeople,
     _employmentEntries: employmentEntries,
@@ -3353,6 +3472,8 @@ function restoreFormData(fd) {
   preventions = fd._preventions || [];
   immunizations = fd._immunizations || [];
   medications = fd._medications || [];
+  dnrAltInstructions = fd._dnrAltInstructions || [];
+  dnrAltSettings = fd._dnrAltSettings || [];
 
   // Migration from temporary medicalItems array
   if (fd._medicalItems && fd._medicalItems.length > 0) {
@@ -3414,6 +3535,7 @@ function restoreFormData(fd) {
     });
   }
 
+  renderDnrAltLists();
   updateUI();
   toggleTransitionFields(); // Ensure section 13 visibility is correct
   toggleEmploymentStatus7(); // Ensure employment status visibility is correct
@@ -3422,6 +3544,7 @@ function restoreFormData(fd) {
   toggleHcbsSignatures();
   toggleSDS7();
   toggleHrstFields();
+  toggleDnrAlt();
   toggleHrstAdditional();
   toggleSDSPaidFamily7();
   toggleSelfAdmin8();

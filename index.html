@@ -856,34 +856,7 @@
               </select>
             </div>
 
-            <div class="field-group">
-              <label>Religion</label>
-              <select id="religion" onchange="toggleReligionOther()">
-                <option value="N/A — Not Reported">Unaffiliated</option>
-                <option value="Christianity">Christianity</option>
-                <option value="Islam">Islam</option>
-                <option value="Hinduism">Hinduism</option>
-                <option value="Buddhism">Buddhism</option>
-                <option value="Judaism">Judaism</option>
-                <option value="Sikhism">Sikhism</option>
-                <option value="Bahá'í Faith">Bahá'í Faith</option>
-                <option value="Taoism">Taoism</option>
-                <option value="Other">Other (specify below)</option>
-              </select>
-            </div>
-            <div
-              class="field-group"
-              id="religionOtherGroup"
-              style="display: none"
-            >
-              <label>Religion — Other (specify)</label>
-              <input
-                type="text"
-                id="religionOther"
-                placeholder="Please specify"
-                oninput="updateUI()"
-              />
-            </div>
+
           </div>
 
          
@@ -972,6 +945,29 @@
                 <option value="Did Not Complete">Did Not Complete</option>
                 <option value="Not Applicable">Not Applicable</option>
               </select>
+            </div>
+          </div>
+
+          <div class="subsection-label">Religion</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Religion</label>
+              <select id="religion" onchange="toggleReligionOther(); updateUI()">
+                <option value="N/A — Not Reported">Unaffiliated</option>
+                <option value="Christianity">Christianity</option>
+                <option value="Islam">Islam</option>
+                <option value="Hinduism">Hinduism</option>
+                <option value="Buddhism">Buddhism</option>
+                <option value="Judaism">Judaism</option>
+                <option value="Sikhism">Sikhism</option>
+                <option value="Bahá'í Faith">Bahá'í Faith</option>
+                <option value="Taoism">Taoism</option>
+                <option value="Other">Other (specify below)</option>
+              </select>
+            </div>
+            <div class="field-group full" id="religionOtherGroup" style="display: none">
+              <label>Religion — Other (specify)</label>
+              <input type="text" id="religionOther" placeholder="Please specify" oninput="updateUI()" />
             </div>
           </div>
         
@@ -1535,11 +1531,11 @@
           <div class="subsection-label" style="display: flex; justify-content: space-between; align-items: center;">
             Communication Chart
             <div style="display: flex; gap: 15px;">
-              <label style="font-size: 11px; font-weight: 700; color: var(--marion-blue); cursor: pointer; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <label class="comm-check-label">
                 <input type="checkbox" id="commSeeAttached" onchange="updateUI()">
                 See Attached
               </label>
-              <label style="font-size: 11px; font-weight: 700; color: var(--marion-blue); cursor: pointer; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <label class="comm-check-label">
                 <input type="checkbox" id="commChartNA" onchange="toggleCommChartNA(this)">
                 Not Applicable
               </label>
@@ -1735,6 +1731,7 @@
             <div class="field-group">
               <label>HRST Status (If Waivered)</label>
               <select id="hrstStatus" onchange="toggleHrstFields(); updateUI()">
+                <option value="">Select...</option>
                 <option value="Complete">Complete</option>
                 <option value="Opt-Out (Form in Packet)">Opt-Out (Include Form)</option>
                 <option value="N/A">Not Applicable</option>
@@ -1959,11 +1956,80 @@
           <div class="form-grid">
             <div class="field-group">
               <label>DNR / CPR Status</label>
-              <select id="dnrStatus" onchange="updateUI()">
+              <select id="dnrStatus" onchange="toggleDnrAlt(); updateUI()">
                 <option value="Full Code (CPR)">Full Code (CPR)</option>
                 <option value="Non-Hospital DMH-DNR">Non-Hospital DMH-DNR</option>
                 <option value="Alternative to CPR (Waivered)">Alternative to CPR (Waivered)</option>
               </select>
+            </div>
+            <div class="field-group full" id="dnrAltContainer" style="display: none; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; border: 1px dashed var(--border); margin-top: 10px; margin-bottom: 10px;">
+              
+              <div class="subsection-label" style="margin-top: 0;">1. Specified Modified Interventions</div>
+              <div class="field-group full" style="margin-bottom: 10px;">
+                <label>Staff MUST TAKE:</label>
+                <div style="font-size: 13px; color: var(--text-base); margin-bottom: 5px;">
+                  In a cardiac or respiratory emergency, staff will not perform chest compressions or standard CPR. Staff will immediately administer:
+                </div>
+                <input type="text" id="dnrAltMustTake" placeholder="[insert specific physician order, e.g., rescue breathing only, positioning, or high-flow oxygen]" oninput="updateUI()">
+                <div style="font-size: 13px; color: var(--text-base); margin-top: 5px;">
+                  and call 911.
+                </div>
+              </div>
+              <div class="field-group full" style="margin-bottom: 20px;">
+                <label>MUST AVOID:</label>
+                <input type="text" id="dnrAltMustAvoid" placeholder="[what was directed to avoid]" oninput="updateUI()">
+              </div>
+            
+              <div class="subsection-label">2. Emergency Services (911) Protocol</div>
+              <div style="font-size: 13px; color: var(--text-base); margin-bottom: 20px;">
+                Explicitly state how emergency medical services (EMS) should be engaged and managed. <em>[Staff will call 911 immediately during an emergency. Staff must present the original, signed ALTERNATIVE to CPR Order Form directly to the first responders upon their arrival.]</em>
+              </div>
+            
+              <div class="subsection-label">3. Staff Training Requirements</div>
+              <div style="font-weight: 700; color: var(--danger); margin-bottom: 5px; font-size: 14px;">
+                Staff CANNOT support the individual without specific medical verification
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-base); flex-wrap: wrap; margin-bottom: 20px;">
+                All staff supporting 
+                <input type="text" id="dnrAltIndividualName" placeholder="[individual's name]" style="width: 200px; padding: 6px 10px;" oninput="updateUI()"> 
+                must be trained by a qualified medical professional on the specific protocols outlined in the Alternative to CPR Order prior to working independently.
+              </div>
+            
+              <div class="subsection-label">4. Location of the Physical Form</div>
+              <div style="font-weight: 700; color: var(--danger); margin-bottom: 5px; font-size: 14px;">
+                Staff must know where to find the document instantly in a crisis
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-base); flex-wrap: wrap; margin-bottom: 20px;">
+                The original, signed Appendix D Alternative to CPR Form is located 
+                <input type="text" id="dnrAltFormLocation" placeholder="[state where it is located and where a copy is]" style="flex: 1; min-width: 250px; padding: 6px 10px;" oninput="updateUI()">.
+              </div>
+            
+              <div class="subsection-label">5. Review and Oversight Schedule</div>
+              <div class="field-group full" style="margin-bottom: 10px;">
+                <label>Plan Re-evaluation</label>
+                <input type="text" id="dnrAltReviewDate" placeholder="[Plan will be re-evaluated / date]" oninput="updateUI()">
+              </div>
+              <div style="font-size: 13px; color: var(--text-base); margin-bottom: 20px;">
+                The Alternative to CPR protocol will be reviewed continuously by the planning team and the attending physician at minimum during the annual PCSP meeting, or sooner if a change in health status occurs.
+              </div>
+            
+              <div class="form-grid">
+                <div class="field-group full">
+                  <label>Specific Modified Instructions</label>
+                  <div id="dnrAltInstructionsContainer"></div>
+                  <button class="btn btn-outline" type="button" onclick="addDnrAltListItem('instruction')" style="margin-bottom: 10px;">
+                    + Add Specific Modified Instruction
+                  </button>
+                </div>
+            
+                <div class="field-group full">
+                  <label>Residential or Service Setting</label>
+                  <div id="dnrAltSettingsContainer"></div>
+                  <button class="btn btn-outline" type="button" onclick="addDnrAltListItem('setting')" style="margin-bottom: 10px;">
+                    + Add Residential or Service Setting
+                  </button>
+                </div>
+              </div>
             </div>
             
             <div class="field-group full">
@@ -2369,19 +2435,7 @@
           >
             Rights Limitations &amp; Due Process
             <div style="display: flex; align-items: center; gap: 16px;">
-              <label
-                style="
-                  font-size: 11px;
-                  font-weight: 700;
-                  color: var(--marion-blue);
-                  cursor: pointer;
-                  display: flex;
-                  align-items: center;
-                  gap: 6px;
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
-                "
-              >
+              <label class="comm-check-label">
                 <input
                   type="checkbox"
                   id="dueProcessAttached"
@@ -2389,24 +2443,8 @@
                 />
                 See Attached
               </label>
-              <label
-                style="
-                  font-size: 11px;
-                  font-weight: 700;
-                  color: var(--marion-blue);
-                  cursor: pointer;
-                  display: flex;
-                  align-items: center;
-                  gap: 6px;
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
-                "
-              >
-                <input
-                  type="checkbox"
-                  id="dueProcessNA"
-                  onchange="toggleDueProcess(this)"
-                />
+              <label class="comm-check-label">
+                <input type="checkbox" id="dueProcessNA" onchange="toggleDueProcess(this)" />
                 No active limitations
               </label>
             </div>

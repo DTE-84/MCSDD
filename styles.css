@@ -1656,3 +1656,18 @@ textarea:focus-visible {
 	cursor: pointer;
 	accent-color: var(--gold);
 }
+
+.comm-check-label {
+	font-size: 11px;
+	font-weight: 700;
+	color: var(--marion-blue);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+[data-theme="dark"] .comm-check-label {
+	color: var(--success);
+}
