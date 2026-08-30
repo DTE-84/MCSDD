@@ -1200,7 +1200,7 @@ function updateUI() {
   };
   const field = (l, v) => line(`${l}: ${v || "N/A"}`);
 
-  line("PERSON CENTERED SERVICE PLAN (PCSP) — COVER SHEET");
+  head("1. PCSP COVER LETTER / FACE SHEET");
   line("Marion County Services for the Developmentally Disabled");
   line("═".repeat(67));
   line("");
@@ -1209,7 +1209,7 @@ function updateUI() {
   field("FUNDING", getVal("coverFundingType").toUpperCase());
   line("\nMISSOURI PCSP OFFICIAL DOCUMENT\n" + "═".repeat(67) + "\n");
 
-  head("1. DEMOGRAPHICS & LEGAL AUTHORITY");
+  head("2. DEMOGRAPHICS & LEGAL AUTHORITY");
   line("Legal Representatives:");
   line(getLegalRepsNarrative());
   line("");
@@ -1249,20 +1249,20 @@ function updateUI() {
   field("Legal Licenses", getVal("legalLicensesProbation"));
   line("");
 
-  head("2. PREFERENCES, LIKES AND SPECIAL INTERESTS");
+  head("3. PREFERENCES, LIKES AND SPECIAL INTERESTS");
   field("Likes Activities", getVal("likesActivities"));
   field("Likes Foods", getVal("likesFoods"));
   field("Likes Places", getVal("likesPlaces"));
   field("Other Likes", getVal("likesOther"));
   line("");
 
-  head("3. DISLIKES");
+  head("4. DISLIKES");
   field("Dislikes Activities", getVal("dislikesActivities"));
   field("Dislikes Foods", getVal("dislikesFoods"));
   field("Other Dislikes", getVal("dislikesOther"));
   line("");
 
-  head("4. IMPORTANT PEOPLE AND/OR PETS");
+  head("5. IMPORTANT PEOPLE AND/OR PETS");
   line(
     importantPeople.map((p) => `  - ${p.name || "[Name]"} (${p.relationship || "Relationship"})${p.activities ? "\n    Activities/Frequency: " + p.activities : ""}`).join("\n") ||
       "  None Listed",
@@ -1270,14 +1270,14 @@ function updateUI() {
   field("Exploratory Relationships", getVal("relationshipsExplore"));
   line("");
 
-  head("5. HOPES, DREAMS, ASPIRATIONS AND CONCERNS");
+  head("6. HOPES, DREAMS, ASPIRATIONS AND CONCERNS");
   field("Aspirations", getVal("aspirations"));
   field("Concerns", getVal("concerns"));
   line("");
 
   /* Removed duplicate section 6 output (moved to Section 8) */
 
-  head("6.1 COMMUNICATION");
+  head("7. COMMUNICATION");
   field("Primary Language", getVal("commPrimaryLanguage"));
   field("Evaluation Status", getVal("commEvalStatus"));
   field("Evaluation Type", getVal("commEvalType"));
@@ -1313,7 +1313,7 @@ function updateUI() {
   }
   line("");
 
-  head("7. PROGRAM OR OTHER SERVICES");
+  head("8. PROGRAM OR OTHER SERVICES");
   
   line("Employment Status:");
   const empStatus7 = getVal("employmentStatus7");
@@ -1519,7 +1519,7 @@ function updateUI() {
   }
 
 
-  head("8. HEALTH, SAFETY & RISK PLANNING (MEDICAL PROFILE)");
+  head("9. HEALTH, SAFETY & RISK PLANNING (MEDICAL PROFILE)");
   field("Diagnosis", getVal("diagnosis"));
   field("Personal Outcomes", getVal("personalOutcomes"));
   const hrstStatus = getVal("hrstStatus");
@@ -1668,7 +1668,7 @@ function updateUI() {
   field("Allergies / Sensitivities / Reactions", getVal("allergies"));
   line("");
 
-  head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
+  head("10. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
   if (document.getElementById("hasNonDivisionalWaiver")?.checked) {
     line("Non-Divisional Waiver: Yes");
   }
@@ -1697,7 +1697,7 @@ function updateUI() {
     line("");
   }
   
-  head("10. WAYS TO SUPPORT THE INDIVIDUAL");
+  head("11. WAYS TO SUPPORT THE INDIVIDUAL");
   field("Aspirations (1-3 Years)", getVal("aspirations"));
   field("Former Goals & Progress", getVal("prevGoals"));
   field("Support Needed", getVal("supportNeeded"));
@@ -1720,11 +1720,11 @@ function updateUI() {
   line("11. [SECTION 11 NOT SPECIFIED]");
   line("");
 
-  head("12. INDEPENDENCE PERSONAL STRENGTHS AND ASSETS");
+  head("13. INDEPENDENCE PERSONAL STRENGTHS AND ASSETS");
   field("Strengths/Assets", getVal("independenceStrengths"));
   line("");
 
-  head("13. TRANSITION YOUTH / ADULTS / COMMUNITY");
+  head("14. TRANSITION YOUTH / ADULTS / COMMUNITY");
   const tCat = getVal("transitionCategory");
   if (tCat && tCat !== "Standard") line(`Life Stage: ${tCat}`);
   
@@ -1748,14 +1748,14 @@ function updateUI() {
   field("Transition Plan Summary", getVal("transitionPlan"));
   line("");
 
-  head("14. BEHAVIORAL");
+  head("15. BEHAVIORAL");
   field("Behavioral Status", getVal("behavioralStatus"));
   field("Staff Precautions", getVal("oshaPrecaution"));
   field("Psychotropic Protocol", getVal("psychotropicProtocol"));
   field("Behavioral Notes", getVal("behavioralNotes"));
   line("");
 
-  head("15. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
+  head("16. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
   if (document.getElementById("alteredSupervision")?.checked) {
     line("  * Altered Levels of Supervision applied *");
   }
@@ -1818,7 +1818,7 @@ function updateUI() {
   line(`* Contains information regarding right to appeal. "If ${fName} wishes to file a complaint, ${fName} will be referred to the Office of Constituent Services."`);
   line("");
 
-  head("16. PREVIOUS AND CURRENT GOALS AND TASKS");
+  head("17. PREVIOUS AND CURRENT GOALS AND TASKS");
   line(
     clinicalGoalsTasks
       .map((g, i) => {
@@ -1835,7 +1835,7 @@ function updateUI() {
   );
   line("");
 
-  head("17. ACTION PLAN");
+  head("18. ACTION PLAN");
   line(
     goalsData
       .map(
@@ -1846,7 +1846,7 @@ function updateUI() {
   );
   line("");
 
-  head("18. COMMENTS");
+  head("19. COMMENTS");
   field("Comments", getVal("planComments"));
   
   const locList = [];

@@ -1,0 +1,1 @@
+const fs = require('fs'); let html = fs.readFileSync('index.html', 'utf8'); const matches = [...html.matchAll(/<div class="section-title">\s*<span>(\d+)<\/span>\s*(.*?)<\/div>/g)]; matches.forEach(m => console.log(m[1] + ' : ' + m[2].trim()));

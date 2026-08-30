@@ -1,0 +1,1 @@
+const fs = require('fs'); let html = fs.readFileSync('index.html', 'utf8'); html = html.replace(/<div class="section-title">\s*<span>(\d+)<\/span>/g, (m, p1) => { const n = parseInt(p1); if(n === 1 || n === 9) return m; return m.replace(p1, n + 1); }); fs.writeFileSync('index.html', html);
