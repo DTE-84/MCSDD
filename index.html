@@ -1734,7 +1734,7 @@
             </div>
             <div class="field-group">
               <label>HRST Status (If Waivered)</label>
-              <select id="hrstStatus" onchange="updateUI()">
+              <select id="hrstStatus" onchange="toggleHrstFields(); updateUI()">
                 <option value="Complete">Complete</option>
                 <option value="Opt-Out (Form in Packet)">Opt-Out (Include Form)</option>
                 <option value="N/A">Not Applicable</option>
@@ -1748,13 +1748,55 @@
               </select>
             </div>
             
+            <!-- Dynamic HRST Fields -->
+            <div class="field-group full" id="hrstDetailsContainer" style="display: none; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; border: 1px dashed var(--border); margin-top: 10px; margin-bottom: 10px;">
+              <div class="form-grid">
+                <div class="field-group">
+                  <label>Completion Date</label>
+                  <input type="date" id="hrstDate" oninput="updateUI()">
+                </div>
+                <div class="field-group">
+                  <label>Total Score</label>
+                  <input type="text" id="hrstTotalScore" placeholder="e.g. 15" oninput="updateUI()">
+                </div>
+                <div class="field-group">
+                  <label>Total 4 Ratings</label>
+                  <input type="text" id="hrstTotal4" placeholder="e.g. 2" oninput="updateUI()">
+                </div>
+                <div class="field-group">
+                  <label>Q Scored</label>
+                  <input type="text" id="hrstQScored" placeholder="e.g. 3" oninput="updateUI()">
+                </div>
+                <div class="field-group">
+                  <label>Healthcare Level</label>
+                  <input type="text" id="hrstLevel" placeholder="e.g. 2" oninput="updateUI()">
+                </div>
+                <div class="field-group">
+                  <label>HRST Completed By</label>
+                  <input type="text" id="hrstCompletedBy" placeholder="Name / Role" oninput="updateUI()">
+                </div>
+                <div class="field-group full" style="margin-bottom: 8px;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main); margin-bottom: 0;">
+                    <input type="checkbox" id="hrstHasAdditionalInfo" onchange="toggleHrstAdditional(); updateUI()"> Additional HRST Information / Details
+                  </label>
+                </div>
+                <div class="field-group full" id="hrstAdditionalInfoContainer" style="display: none;">
+                  <textarea id="hrstAdditionalInfo" placeholder="Provide any additional HRST details here..." oninput="updateUI()"></textarea>
+                </div>
+              </div>
+            </div>
             <div class="field-group full">
               <label>Family Medical History (If Available)</label>
               <textarea id="familyMedicalHistory" placeholder="List relevant family medical history..." oninput="updateUI()"></textarea>
             </div>
             
             <div class="field-group full">
-              <label>Adaptive Equipment / Specialized Medical Equipment (SME)</label>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="margin-bottom: 0;">Adaptive Equipment / Specialized Medical Equipment (SME)</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main); margin-bottom: 0;">
+                  <input type="checkbox" id="needsWheelchair" onchange="updateUI()"> Needs Wheelchair Assistance
+                </label>
+              </div>
               <textarea id="adaptiveEquipment" placeholder="List any adaptive or specialized medical equipment used..." oninput="updateUI()"></textarea>
             </div>
 
@@ -1869,16 +1911,37 @@
                 <textarea id="healthParamsOther" placeholder="Describe any other parameters or protocols..." oninput="updateUI()" style="min-height: 42px;"></textarea>
               </div>
             </div>
+            <div id="healthParamsDetailsContainer" class="field-group full" style="margin-top: 15px; display: grid; gap: 10px;">
+              <div id="hpWrap_Weight" style="display: none;">
+                <label>Weight Details</label>
+                <input type="text" id="hp_Weight" placeholder="Details for Weight..." oninput="updateUI()">
+              </div>
+              <div id="hpWrap_Blood Pressure" style="display: none;">
+                <label>Blood Pressure Details</label>
+                <input type="text" id="hp_BloodPressure" placeholder="Details for Blood Pressure..." oninput="updateUI()">
+              </div>
+              <div id="hpWrap_Blood Sugar" style="display: none;">
+                <label>Blood Sugar Details</label>
+                <input type="text" id="hp_BloodSugar" placeholder="Details for Blood Sugar..." oninput="updateUI()">
+              </div>
+              <div id="hpWrap_Hypertension" style="display: none;">
+                <label>Hypertension Details</label>
+                <input type="text" id="hp_Hypertension" placeholder="Details for Hypertension..." oninput="updateUI()">
+              </div>
+              <div id="hpWrap_Seizure Logs" style="display: none;">
+                <label>Seizure Logs Details</label>
+                <input type="text" id="hp_SeizureLogs" placeholder="Details for Seizure Logs..." oninput="updateUI()">
+              </div>
+              <div id="hpWrap_Bowel Logs" style="display: none;">
+                <label>Bowel Logs Details</label>
+                <input type="text" id="hp_BowelLogs" placeholder="Details for Bowel Logs..." oninput="updateUI()">
+              </div>
+            </div>
           </div>
 
           <!-- 8D: Known Risks -->
-          <div class="subsection-label">Known Health Risks &amp; Emergency Planning</div>
+          <div class="subsection-label">Known Suspected Health Risks(If Applicable)</div>
           <div class="form-grid">
-            <div class="field-group full">
-              <label>Known Suspected Health Risks (If Applicable)</label>
-              <textarea id="healthRisks" placeholder="Choking / Aspiration risks, Fall Risk, Skin Breakdown, Dehydration, etc." oninput="updateUI()"></textarea>
-            </div>
-          
             <div class="field-group">
               <label>DNR / CPR Status</label>
               <select id="dnrStatus" onchange="updateUI()">
@@ -1886,6 +1949,11 @@
                 <option value="Non-Hospital DMH-DNR">Non-Hospital DMH-DNR</option>
                 <option value="Alternative to CPR (Waivered)">Alternative to CPR (Waivered)</option>
               </select>
+            </div>
+            
+            <div class="field-group full">
+              <label>Known Suspected Health Risks (If Applicable)</label>
+              <textarea id="healthRisks" placeholder="Choking / Aspiration risks, Fall Risk, Skin Breakdown, Dehydration, etc." oninput="updateUI()"></textarea>
             </div>
             <div class="field-group">
               <label>Provider Risk Level</label>
@@ -1903,37 +1971,11 @@
                 <option value="Altered (See Notes)">Altered Protocol</option>
               </select>
             </div>
-            <div class="field-group">
-              <label>Behavioral Support</label>
-              <select id="behavioralStatus" onchange="updateUI()">
-                <option value="None">None Needed</option>
-                <option value="FBA in Progress">FBA in Progress</option>
-                <option value="BSP Active">BSP Active</option>
-                <option value="ATSC Involved">ATSC Involved</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label>Staff Precautions</label>
-              <select id="oshaPrecaution" onchange="updateUI()">
-                <option value="Standard universal precautions apply.">Standard Precautions</option>
-                <option value="Two-staff escort required for community.">2-Staff Escort Protocol</option>
-                <option value="Staff to maintain clear path to exit.">Environmental Awareness</option>
-                <option value="Utilize de-escalation (Mandt/NCI).">De-escalation Protocol</option>
-              </select>
-            </div>
             <div class="field-group full">
               <label>Staff Support Needs (Choking, Aspiration, Mobility, Falls, etc.)</label>
               <textarea id="staffSupportNeeds" placeholder="Describe support needs for choking, aspiration, mobility, falls, etc." oninput="updateUI()"></textarea>
             </div>
-            <div class="field-group full">
-              <label>Allergies / Sensitivities / Reactions - if applicable</label>
-              <textarea id="allergies" placeholder="Food, drug, or environmental allergies and reactions." oninput="updateUI()"></textarea>
-            </div>
-          </div>
 
-          <!-- 8E: Specific Protocols & Mental Health -->
-          <div class="subsection-label">Specific Protocols &amp; Mental Health Supports</div>
-          <div class="form-grid">
             <div class="field-group full">
               <label>Seizure Protocols</label>
               <textarea id="seizureProtocols" placeholder="Seizure logs, protocols for contacting physician, etc." oninput="updateUI()"></textarea>
@@ -1942,9 +1984,31 @@
               <label>Bowel Problems / Protocols</label>
               <textarea id="bowelProtocols" placeholder="Bowel movement records, protocols for contacting physician, etc." oninput="updateUI()"></textarea>
             </div>
+          </div>
+
+          <!-- 8E: Mental Health -->
+          <div class="subsection-label">Mental Health Supports</div>
+          <div class="form-grid">
+            <div class="field-group full" style="display: flex; gap: 20px; align-items: center; margin-bottom: -5px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main);">
+                <input type="checkbox" id="mh_residential" onchange="updateUI()"> Residential Services
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main);">
+                <input type="checkbox" id="mh_nonResidential" onchange="updateUI()"> Non-Residential Services
+              </label>
+            </div>
             <div class="field-group full">
-              <label>(Residential services) Mental Health Supports - if applicable</label>
+              <label>Mental Health Supports - if applicable</label>
               <textarea id="mentalHealthSupports" placeholder="Counseling, therapy, medications, etc." oninput="updateUI()"></textarea>
+            </div>
+          </div>
+
+          <!-- 8F: Allergies -->
+          <div class="subsection-label">Allergies / Sensitivities / Reactions - if applicable</div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Allergies / Sensitivities / Reactions - if applicable</label>
+              <textarea id="allergies" placeholder="Food, drug, or environmental allergies and reactions." oninput="updateUI()"></textarea>
             </div>
           </div>
         </div>
@@ -2140,6 +2204,24 @@
         <div class="form-section" id="sec-behavioral">
           <div class="section-title"><span>14</span> Behavioral</div>
           <div class="form-grid">
+            <div class="field-group">
+              <label>Behavioral Support</label>
+              <select id="behavioralStatus" onchange="updateUI()">
+                <option value="None">None Needed</option>
+                <option value="FBA in Progress">FBA in Progress</option>
+                <option value="BSP Active">BSP Active</option>
+                <option value="ATSC Involved">ATSC Involved</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Staff Precautions</label>
+              <select id="oshaPrecaution" onchange="updateUI()">
+                <option value="Standard universal precautions apply.">Standard Precautions</option>
+                <option value="Two-staff escort required for community.">2-Staff Escort Protocol</option>
+                <option value="Staff to maintain clear path to exit.">Environmental Awareness</option>
+                <option value="Utilize de-escalation (Mandt/NCI).">De-escalation Protocol</option>
+              </select>
+            </div>
             <div class="field-group full">
               <label>Behavioral Summary / Notes</label>
               <textarea id="behavioralNotes" placeholder="Placeholder for Section 14 (Behavioral) details... (e.g. pending updates)" oninput="updateUI()"></textarea>

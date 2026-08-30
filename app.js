@@ -515,8 +515,17 @@ const FORM_FIELDS = [
   // Section 6 - Health/Safety
   "personalOutcomes",
   "hrstStatus",
+  "hrstDate",
+  "hrstTotalScore",
+  "hrstTotal4",
+  "hrstQScored",
+  "hrstLevel",
+  "hrstCompletedBy",
+  "hrstHasAdditionalInfo",
+  "hrstAdditionalInfo",
   "telehealth",
   "familyMedicalHistory",
+  "needsWheelchair",
   "adaptiveEquipment",
   "psychotropicDetails",
   "psychotropicProtocol",
@@ -524,11 +533,19 @@ const FORM_FIELDS = [
   "selfAdminGoalAdded",
   "selfAdminSupports",
   "healthParamsOther",
+  "hp_Weight",
+  "hp_BloodPressure",
+  "hp_BloodSugar",
+  "hp_Hypertension",
+  "hp_SeizureLogs",
+  "hp_BowelLogs",
   "healthRisks",
   "evacPlan",
   "dnrStatus",
   "seizureProtocols",
   "bowelProtocols",
+  "mh_residential",
+  "mh_nonResidential",
   "mentalHealthSupports",
   // Misc
   "ethnicityOther",
@@ -1470,10 +1487,29 @@ function updateUI() {
   head("8. HEALTH, SAFETY & RISK PLANNING (MEDICAL PROFILE)");
   field("Diagnosis", getVal("diagnosis"));
   field("Personal Outcomes", getVal("personalOutcomes"));
-  field("HRST Status", getVal("hrstStatus"));
+  const hrstStatus = getVal("hrstStatus");
+  field("HRST Status", hrstStatus);
+  if (hrstStatus === "Complete") {
+    field("  - Completion Date", getVal("hrstDate"));
+    field("  - Total Score", getVal("hrstTotalScore"));
+    field("  - Total 4 Ratings", getVal("hrstTotal4"));
+    field("  - Q Scored", getVal("hrstQScored"));
+    field("  - Healthcare Level", getVal("hrstLevel"));
+    field("  - Completed By", getVal("hrstCompletedBy"));
+    if (document.getElementById("hrstHasAdditionalInfo")?.checked) {
+      field("  - Additional Info", getVal("hrstAdditionalInfo"));
+    }
+  }
   field("Telehealth Used?", getVal("telehealth"));
   field("Family Medical History", getVal("familyMedicalHistory"));
-  field("Adaptive / Specialized Medical Equipment", getVal("adaptiveEquipment"));
+  
+  if (document.getElementById("needsWheelchair")?.checked) {
+    line("Adaptive / Specialized Medical Equipment:");
+    line("  - [X] Needs Wheelchair Assistance");
+    field("  - Details", getVal("adaptiveEquipment"));
+  } else {
+    field("Adaptive / Specialized Medical Equipment", getVal("adaptiveEquipment"));
+  }
   field("Past Physical/Mental Illnesses, Traumatic Experiences, Stressors", getVal("medHistory"));
   
   if (medicalProfessionals.length > 0) {
@@ -1493,10 +1529,7 @@ function updateUI() {
     line("Prevention:");
     preventions.forEach((m, idx) => {
       line(`  [${idx + 1}] ${m.name}`);
-      if (m.contact) field("      Contact", m.contact);
-      if (m.frequency) field("      Frequency", m.frequency);
-      if (m.date) field("      Date", m.date);
-      if (m.results) field("      Results/Details", m.results);
+      if (m.results) field("      Details", m.results);
     });
   }
 
@@ -1515,9 +1548,7 @@ function updateUI() {
     line("Current Medications:");
     medications.forEach((m, idx) => {
       line(`  [${idx + 1}] ${m.name}`);
-      if (m.contact) field("      Prescriber", m.contact);
       if (m.frequency) field("      Dosage/Frequency", m.frequency);
-      if (m.date) field("      Date Prescribed", m.date);
       if (m.results) field("      Results/Notes", m.results);
     });
   }
@@ -1536,17 +1567,41 @@ function updateUI() {
   }
   const healthP = [];
   document.querySelectorAll('#healthParamsContainer input[type="checkbox"]:checked').forEach(cb => healthP.push(cb.value));
-  field("Parameters or Protocols for Diagnosis", healthP.length ? healthP.join(", ") : "None Selected");
+  if (healthP.length === 0) {
+    field("Parameters or Protocols for Diagnosis", "None Selected");
+  } else {
+    line("Parameters or Protocols for Diagnosis:");
+    healthP.forEach(param => {
+      let val = "";
+      if (param === "Weight") val = getVal("hp_Weight");
+      else if (param === "Blood Pressure") val = getVal("hp_BloodPressure");
+      else if (param === "Blood Sugar") val = getVal("hp_BloodSugar");
+      else if (param === "Hypertension") val = getVal("hp_Hypertension");
+      else if (param === "Seizure Logs") val = getVal("hp_SeizureLogs");
+      else if (param === "Bowel Logs" || param === "Bowel Movement Logs") val = getVal("hp_BowelLogs");
+      
+      field(`  - ${param}`, val);
+    });
+  }
   field("Other Parameters / Protocols", getVal("healthParamsOther"));
+  field("DNR / CPR Status", getVal("dnrStatus"));
   field("Known Suspected Health Risks", getVal("healthRisks"));
-  field("Seizure Protocols", getVal("seizureProtocols"));
-  field("Bowel Problems / Protocols", getVal("bowelProtocols"));
-  field("Mental Health Supports (Residential)", getVal("mentalHealthSupports"));
   field("Risk Level", getVal("riskLevel"));
   field("Supervision Level", getVal("supervisionLevel"));
-  field("Behavioral Status", getVal("behavioralStatus"));
+  field("Seizure Protocols", getVal("seizureProtocols"));
+  field("Bowel Problems / Protocols", getVal("bowelProtocols"));
+  let mhTypes = [];
+  if (document.getElementById("mh_residential")?.checked) mhTypes.push("Residential Services");
+  if (document.getElementById("mh_nonResidential")?.checked) mhTypes.push("Non-Residential Services");
+  
+  if (mhTypes.length > 0) {
+    line("Mental Health Supports:");
+    field("  - Type", mhTypes.join(", "));
+    field("  - Details", getVal("mentalHealthSupports"));
+  } else {
+    field("Mental Health Supports", getVal("mentalHealthSupports"));
+  }
   field("Allergies / Sensitivities / Reactions", getVal("allergies"));
-  field("DNR / CPR Status", getVal("dnrStatus"));
   line("");
 
   head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
@@ -1628,6 +1683,7 @@ function updateUI() {
 
   head("14. BEHAVIORAL");
   field("Behavioral Status", getVal("behavioralStatus"));
+  field("Staff Precautions", getVal("oshaPrecaution"));
   field("Psychotropic Protocol", getVal("psychotropicProtocol"));
   field("Behavioral Notes", getVal("behavioralNotes"));
   line("");
@@ -1653,7 +1709,6 @@ function updateUI() {
     line(`  - ${d.label}: Supervision (${getVal(`sup_${d.id}`)}) | Risk (${getVal(`risk_${d.id}`)})`);
   });
   
-  field("Staff Precautions", getVal("oshaPrecaution"));
   field("Staff Support Needs", getVal("staffSupportNeeds"));
 
   if (document.getElementById("needsEmergencyAssistance")?.checked) {
@@ -1842,19 +1897,45 @@ function updateUI() {
 function toggleMultiSelect(id) {
   document.getElementById(id).classList.toggle("active");
 }
+function toggleHrstFields() {
+  const status = document.getElementById("hrstStatus")?.value;
+  const container = document.getElementById("hrstDetailsContainer");
+  if (container) {
+    container.style.display = (status === "Complete") ? "block" : "none";
+  }
+}
+function toggleHrstAdditional() {
+  const checked = document.getElementById("hrstHasAdditionalInfo")?.checked;
+  const container = document.getElementById("hrstAdditionalInfoContainer");
+  if (container) {
+    container.style.display = checked ? "block" : "none";
+  }
+}
+
 function updateHealthParams() {
   const container = document.getElementById("healthParamsContainer");
   const tags = document.getElementById("healthParamsTags");
   const checked = container.querySelectorAll('input[type="checkbox"]:checked');
   tags.innerHTML = "";
+  
+  // Hide all wrappers first
+  const allValues = ["Weight", "Blood Pressure", "Blood Sugar", "Hypertension", "Seizure Logs", "Bowel Logs"];
+  allValues.forEach(val => {
+    const wrap = document.getElementById("hpWrap_" + val);
+    if(wrap) wrap.style.display = "none";
+  });
+
   if (checked.length === 0) {
     tags.innerHTML = '<span class="placeholder">Select Parameters...</span>';
   } else {
     checked.forEach((cb) => {
       const tag = document.createElement("span");
-      tag.className = "tag";
+      tag.className = "selected-tag";
       tag.textContent = cb.value;
       tags.appendChild(tag);
+      
+      const wrap = document.getElementById("hpWrap_" + cb.value);
+      if(wrap) wrap.style.display = "block";
     });
   }
   updateUI();
@@ -1869,7 +1950,7 @@ function updateLearningStyles() {
   } else {
     checked.forEach((cb) => {
       const tag = document.createElement("span");
-      tag.className = "tag";
+      tag.className = "selected-tag";
       tag.textContent = cb.value;
       tags.appendChild(tag);
     });
@@ -2329,24 +2410,12 @@ function renderPreventions() {
           <button class="remove-rep-btn" onclick="removePrevention(${i})">×</button>
         </div>
         <div class="form-grid">
-          <div class="field-group">
+          <div class="field-group full">
             <label>Name / Type</label>
             <input type="text" placeholder="e.g. Diet plan, Therapy" value="${esc(m.name)}" oninput="updatePrevention(${i},'name',this.value)">
           </div>
-          <div class="field-group">
-            <label>Contact / Provider</label>
-            <input type="text" placeholder="Contact info" value="${esc(m.contact)}" oninput="updatePrevention(${i},'contact',this.value)">
-          </div>
-          <div class="field-group">
-            <label>Frequency</label>
-            <input type="text" placeholder="e.g. Daily, Weekly" value="${esc(m.frequency)}" oninput="updatePrevention(${i},'frequency',this.value)">
-          </div>
-          <div class="field-group">
-            <label>Date of Last Visit / Update</label>
-            <input type="date" value="${esc(m.date)}" oninput="updatePrevention(${i},'date',this.value)">
-          </div>
           <div class="field-group full">
-            <label>Results / Details</label>
+            <label>Details</label>
             <textarea placeholder="Outcomes, notes, etc." oninput="updatePrevention(${i},'results',this.value)">${esc(m.results)}</textarea>
           </div>
         </div>
@@ -2448,16 +2517,8 @@ function renderMedications() {
             <input type="text" placeholder="Medication name and purpose" value="${esc(m.name)}" oninput="updateMedication(${i},'name',this.value)">
           </div>
           <div class="field-group">
-            <label>Prescriber / Contact</label>
-            <input type="text" placeholder="Prescriber info" value="${esc(m.contact)}" oninput="updateMedication(${i},'contact',this.value)">
-          </div>
-          <div class="field-group">
             <label>Dosage / Frequency</label>
             <input type="text" placeholder="e.g. 50mg daily" value="${esc(m.frequency)}" oninput="updateMedication(${i},'frequency',this.value)">
-          </div>
-          <div class="field-group">
-            <label>Date Prescribed</label>
-            <input type="date" value="${esc(m.date)}" oninput="updateMedication(${i},'date',this.value)">
           </div>
           <div class="field-group full">
             <label>Results / Details</label>
@@ -3347,6 +3408,8 @@ function restoreFormData(fd) {
   toggleHcbsFields();
   toggleHcbsSignatures();
   toggleSDS7();
+  toggleHrstFields();
+  toggleHrstAdditional();
   toggleSDSPaidFamily7();
   toggleSelfAdmin8();
   toggleDmhLocation();
