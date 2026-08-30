@@ -776,7 +776,7 @@ function renderSupports(type) {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
               <label style="margin-bottom: 0;">Enrollment Info</label>
               <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main); margin-bottom: 0; font-size: 11px;">
-                <input type="checkbox" ${s.notUtilizing ? "checked" : ""} onchange="updateSupportField(${s.id}, '${type}', 'notUtilizing', this.checked)"> Not Currently Utilizing
+                <input type="checkbox" ${s.notUtilizing ? "checked" : ""} onchange="updateSupportField(${s.id}, '${type}', 'notUtilizing', this.checked)"> DMH Service-Not Currently Utilizing
               </label>
             </div>
             <input type="text" value="${esc(s.enrollmentInfo)}" placeholder="Location address, contact phone / e-mail" oninput="updateSupportField(${s.id}, '${type}', 'enrollmentInfo', this.value)">
@@ -1690,7 +1690,7 @@ function updateUI() {
     linkingSupports.forEach((s, idx) => {
       line(`  [${idx + 1}] Service: ${s.description || "—"}`);
       line(`      Purpose: ${s.purpose || "—"}`);
-      const utilizingStr = s.notUtilizing ? " [Not Currently Utilizing]" : "";
+      const utilizingStr = s.notUtilizing ? " [DMH Service-Not Currently Utilizing]" : "";
       if (s.enrollmentInfo || s.notUtilizing) {
         line(`      Enrollment Info: ${s.enrollmentInfo || "—"}${utilizingStr}`);
       }
