@@ -1720,11 +1720,11 @@ function updateUI() {
   line("11. [SECTION 11 NOT SPECIFIED]");
   line("");
 
-  head("13. INDEPENDENCE PERSONAL STRENGTHS AND ASSETS");
+  head("12. INDEPENDENCE PERSONAL STRENGTHS AND ASSETS");
   field("Strengths/Assets", getVal("independenceStrengths"));
   line("");
 
-  head("14. TRANSITION YOUTH / ADULTS / COMMUNITY");
+  head("13. TRANSITION YOUTH / ADULTS / COMMUNITY");
   const tCat = getVal("transitionCategory");
   if (tCat && tCat !== "Standard") line(`Life Stage: ${tCat}`);
   
@@ -1748,14 +1748,14 @@ function updateUI() {
   field("Transition Plan Summary", getVal("transitionPlan"));
   line("");
 
-  head("15. BEHAVIORAL");
+  head("14. BEHAVIORAL");
   field("Behavioral Status", getVal("behavioralStatus"));
   field("Staff Precautions", getVal("oshaPrecaution"));
   field("Psychotropic Protocol", getVal("psychotropicProtocol"));
   field("Behavioral Notes", getVal("behavioralNotes"));
   line("");
 
-  head("16. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
+  head("15. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
   if (document.getElementById("alteredSupervision")?.checked) {
     line("  * Altered Levels of Supervision applied *");
   }
@@ -1818,7 +1818,7 @@ function updateUI() {
   line(`* Contains information regarding right to appeal. "If ${fName} wishes to file a complaint, ${fName} will be referred to the Office of Constituent Services."`);
   line("");
 
-  head("17. PREVIOUS AND CURRENT GOALS AND TASKS");
+  head("16. PREVIOUS AND CURRENT GOALS AND TASKS");
   line(
     clinicalGoalsTasks
       .map((g, i) => {
@@ -1835,7 +1835,7 @@ function updateUI() {
   );
   line("");
 
-  head("18. ACTION PLAN");
+  head("17. ACTION PLAN");
   line(
     goalsData
       .map(
@@ -1846,7 +1846,7 @@ function updateUI() {
   );
   line("");
 
-  head("19. COMMENTS");
+  head("18. COMMENTS");
   field("Comments", getVal("planComments"));
   
   const locList = [];
