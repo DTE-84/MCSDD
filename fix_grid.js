@@ -1,0 +1,1 @@
+const fs = require('fs'); let html = fs.readFileSync('index.html', 'utf8'); const style = \.comm-method-grid {\\n  display: grid;\\n  grid-template-columns: repeat(3, 1fr);\\n  gap: 12px;\\n  align-items: center;\\n}\\n\; html = html.replace('</style>', style + '</style>'); fs.writeFileSync('index.html', html);

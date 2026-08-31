@@ -251,7 +251,14 @@
         background: #dfd6a8;
         box-shadow: 0 10px 30px#ffd700;
       }
-    </style>
+    
+      .comm-method-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        align-items: center;
+      }
+</style>
   </head>
   <!-- ═══════════════════════════════════════ LOCK SCREEN -->
   <div id="lockScreen">
@@ -1987,6 +1994,12 @@
                 <label>MUST AVOID:</label>
                 <input type="text" id="dnrAltMustAvoid" placeholder="[what was directed to avoid]" oninput="updateUI()">
               </div>
+                <div class="field-group full">
+                  <label>Residential or Service Setting</label>
+                  <div id="dnrAltSettingsContainer" style="font-size: 13px; color: var(--text-main); background: #fff; border: 1px solid var(--border); padding: 10px; border-radius: 4px; min-height: 40px;">
+                    <em style="color: var(--text-label);">Selected Section 7 HCBS services will populate here...</em>
+                  </div>
+                </div>
             
               <div class="subsection-label">2. Emergency Services (911) Protocol</div>
               <div style="font-size: 13px; color: var(--text-base); margin-bottom: 20px;">
@@ -2030,12 +2043,7 @@
                   </button>
                 </div>
             
-                <div class="field-group full">
-                  <label>Residential or Service Setting</label>
-                  <div id="dnrAltSettingsContainer" style="font-size: 13px; color: var(--text-main); background: #fff; border: 1px solid var(--border); padding: 10px; border-radius: 4px; min-height: 40px;">
-                    <em style="color: var(--text-label);">Selected Section 7 HCBS services will populate here...</em>
-                  </div>
-                </div>
+
               </div>
             </div>
             
@@ -2152,7 +2160,7 @@
               <textarea id="strengths" placeholder="Individual strengths, skills, and personal assets discovered during assessment." oninput="updateUI()"></textarea>
             </div>
             <div class="field-group">
-              <label>MAAS / Vineland / MOCABI Limitations</label>
+              <label>Assessment Limitations</label>
               <textarea id="maasTools" placeholder="If waivered, discuss limitations on assessment tools and how the individual is supported." oninput="updateUI()"></textarea>
             </div>
             <div class="field-group">
@@ -2199,6 +2207,134 @@
               <label>Cultural Differences</label>
               <textarea id="culturalDifferences" placeholder="Person does not believe in certain holidays, programs, celebrations, etc." oninput="updateUI()"></textarea>
             </div>
+            <div class="field-group full">
+              <div class="subsection-label" style="margin-top: 15px;">Personal Income</div>
+              
+              <label class="eth-check" style="margin-bottom: 10px;">
+                <input type="checkbox" id="unemployedCheck" onchange="updatePersonalIncomeUI(); updateUI();"> Unemployed
+              </label>
+
+              <div id="personalIncomeWrapper">
+                <div class="multi-select-container" id="personalIncomeContainer">
+                  <div class="multi-select-display" onclick="toggleMultiSelect('personalIncomeContainer')">
+                    <div class="selected-tags" id="personalIncomeTags">
+                      <span class="placeholder">Select options...</span>
+                    </div>
+                  </div>
+                  <div class="multi-select-dropdown">
+                    <label class="multi-option"><input type="checkbox" id="incomeEmployedCheck" value="Employed" onchange="updatePersonalIncomeUI(); updateUI();"><span>If employed, individual's earned income from employment and what supports needed to manage such income.</span></label>
+                    <label class="multi-option"><input type="checkbox" id="incomeMaintainCheck" value="Maintain Benefits" onchange="updatePersonalIncomeUI(); updateUI();"><span>Supports needed to maintain benefits(Waiver recipients only).</span></label>
+                    <label class="multi-option"><input type="checkbox" id="incomeOwnPayeeCheck" value="Own Payee" onchange="updatePersonalIncomeUI(); updateUI();"><span>Supports needed if person serves as their own payee, either natural or paid, in order to assist the individual to manage funds (Waiver recipients only).</span></label>
+                    <label class="multi-option"><input type="checkbox" id="incomeHasPayeeCheck" value="Has Payee" onchange="updatePersonalIncomeUI(); updateUI();"><span>If individual has payee, provide information on this.</span></label>
+                  </div>
+                </div>
+              </div>
+
+              <div id="incomeEmployedFields" style="display: none; margin-top: 10px; padding-left: 15px; border-left: 2px solid var(--border);">
+                <label>Earned Income & Supports Needed</label>
+                <textarea id="incomeEmployedText" placeholder="Amount of earned income and what supports are needed to manage such income" oninput="updateUI()"></textarea>
+              </div>
+
+              <div id="incomeMaintainFields" style="display: none; margin-top: 10px; padding-left: 15px; border-left: 2px solid var(--border);">
+                <label>Income Amount</label>
+                <input type="text" id="incomeMaintainAmount" placeholder="Income amount" oninput="updateUI()" style="margin-bottom: 8px;">
+                <label>Supports Needed</label>
+                <textarea id="incomeMaintainSupports" placeholder="supports needed to manage such income" oninput="updateUI()"></textarea>
+              </div>
+
+              <div id="incomeOwnPayeeFields" style="display: none; margin-top: 10px; padding-left: 15px; border-left: 2px solid var(--border);">
+                <label>Income Amount</label>
+                <input type="text" id="incomeOwnPayeeAmount" placeholder="Income amount" oninput="updateUI()" style="margin-bottom: 8px;">
+                <label>Supports Needed</label>
+                <textarea id="incomeOwnPayeeSupports" placeholder="supports needed to manage such income" oninput="updateUI()"></textarea>
+              </div>
+
+              <div id="incomeHasPayeeFields" style="display: none; margin-top: 10px; padding-left: 15px; border-left: 2px solid var(--border);">
+                <p style="font-size: 13px; color: var(--accent); margin: 0; font-weight: 600;">Refer to Demographics section under Payee</p>
+              </div>
+            </div>
+            
+            <div class="field-group full">
+              <div class="subsection-label" style="margin-top: 15px;">Residential</div>
+              <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                <label class="eth-check">
+                  <input type="checkbox" id="resTypeResidential" onchange="updateResidentialUI(this.id); updateUI();"> Residential
+                </label>
+                <label class="eth-check">
+                  <input type="checkbox" id="resTypeNaturalHome" onchange="updateResidentialUI(this.id); updateUI();"> Natural Home
+                </label>
+              </div>
+
+              <div id="residentialPromptFields" style="display: none; padding-left: 15px; border-left: 2px solid var(--border); margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
+                
+                <div class="field-group full">
+                  <label>Was the individual's resources considered when given options for their current residential room and board?</label>
+                  <div style="display: flex; gap: 15px;">
+                    <label class="eth-check"><input type="checkbox" id="resResourcesYes" onchange="updateResidentialUI(this.id); updateUI();"> Yes</label>
+                    <label class="eth-check"><input type="checkbox" id="resResourcesNo" onchange="updateResidentialUI(this.id); updateUI();"> No</label>
+                  </div>
+                  
+                  <div id="resResourcesYesFields" style="display: none; margin-top: 10px; padding-left: 15px; border-left: 2px solid var(--gold);">
+                    <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                      <label class="eth-check"><input type="checkbox" id="resMeansWithin" onchange="updateResidentialUI(this.id); updateUI();"> Within their means</label>
+                      <label class="eth-check"><input type="checkbox" id="resMeansNotWithin" onchange="updateResidentialUI(this.id); updateUI();"> Not within their means</label>
+                    </div>
+                    <div id="resMeansNotWithinFields" style="display: none;">
+                      <textarea id="resMeansNotWithinReason" placeholder="Reasons it was not within their means" oninput="updateUI()"></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="field-group full">
+                  <label>What housing resources were explored:</label>
+                  <textarea id="resHousingExplored" placeholder="vouchers, rental assistance options" oninput="updateUI()"></textarea>
+                </div>
+
+                <div class="field-group full">
+                  <label>Was the individual given an informed choice regarding their current housing options?</label>
+                  <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                    <label class="eth-check"><input type="checkbox" id="resInformedChoiceYes" onchange="updateResidentialUI(this.id); updateUI();"> Yes</label>
+                    <label class="eth-check"><input type="checkbox" id="resInformedChoiceNo" onchange="updateResidentialUI(this.id); updateUI();"> No</label>
+                  </div>
+                  <div id="resInformedChoiceNoFields" style="display: none;">
+                    <textarea id="resInformedChoiceNoReason" placeholder="Why they weren't given informed choice" oninput="updateUI()"></textarea>
+                  </div>
+                </div>
+
+                <div class="field-group full">
+                  <label>Monthly Personal Spending Allowance:</label>
+                  <input type="text" id="resSpendingAllowanceAmount" placeholder="Amount" oninput="updateUI()" style="margin-bottom: 8px;">
+                  <textarea id="resSpendingAllowanceSupport" placeholder="How supported to manage these funds" oninput="updateUI()"></textarea>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="field-group full">
+              <div class="subsection-label" style="margin-top: 15px;">Individuals turning 17 years of age within their PCSP year or already 17 years of age or older.</div>
+              
+              <div class="field-group full">
+                <label>What support is needed in preparation for SSI:</label>
+                <textarea id="age17SsiSupport" placeholder="Support needed for SSI preparation..." oninput="updateUI()"></textarea>
+              </div>
+
+              <div class="field-group full" style="margin-top: 10px;">
+                <label class="eth-check">
+                  <input type="checkbox" id="age17DifferingOpinionCheck" onchange="updateAge17UI(); updateUI();"> Individual has Differing Opinion
+                </label>
+                
+                <div id="age17DifferingOpinionFields" style="display: none; padding-left: 15px; border-left: 2px solid var(--border); margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
+                  <div class="field-group full">
+                    <label>Minor: If parent(s) of minor child have a differing opinion than the individual on what is important for the individual.</label>
+                    <textarea id="age17MinorDifferingOpinion" placeholder="Stating what the differing opinion is..." oninput="updateUI()"></textarea>
+                  </div>
+                  <div class="field-group full">
+                    <label>Adult: If Guardian (per their request) has differing opinions from the individual in regard to what is important.</label>
+                    <textarea id="age17AdultDifferingOpinion" placeholder="Stating what the differing opinion is..." oninput="updateUI()"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="field-group">
               <label>Regulate Water Temperature?</label>
               <select id="waterTemp" onchange="updateUI()">
@@ -2236,6 +2372,23 @@
             <span>13</span> Transition Youth / Adults / Community
           </div>
           <div class="form-grid">
+            
+            <div class="field-group full">
+              <div class="subsection-label" style="margin-top: 0;">Life Transitions</div>
+              <textarea id="lifeTransitions" placeholder="Moving, Changing Staff, Death of loved one, etc." oninput="updateUI()"></textarea>
+            </div>
+
+            <div class="field-group full">
+              <div class="subsection-label">Asset Development and Financial Literacy</div>
+              <div style="font-size: 13px; color: var(--text-base); line-height: 1.6; margin-bottom: 15px;">
+                To promote financial literacy, self-determination, and a successful transition into the workforce, 
+                <input type="text" id="wipaName1" placeholder="Individual's Name" style="width: 180px; padding: 4px; display: inline-block; font-size: 13px; text-align: center; border: 1px solid var(--border); border-radius: 4px;" oninput="updateUI()"> 
+                will utilize the Work Incentives Planning and Assistance (WIPA) program. A certified Community Work Incentives Coordinator (CWIC) will provide the individualized benefits counseling to evaluate how the employment wages will interact with Supplemental Security Income (SSI) Social Security Disability Insurance (SSDI), Medicaid/Medicare, and other public benefits. This collaborative planning will empower 
+                <input type="text" id="wipaName2" placeholder="Individual's Name" style="width: 180px; padding: 4px; display: inline-block; font-size: 13px; text-align: center; border: 1px solid var(--border); border-radius: 4px;" oninput="updateUI()"> 
+                to maximize active Social Security work incentives, mitigate the risk of overpayments, and build long-term economic independence.
+              </div>
+            </div>
+
             <!-- Age-Based Context -->
             <div class="field-group full">
               <label>Transition Category / Life Stage</label>
@@ -2249,10 +2402,38 @@
 
             <!-- Under 16 Logic (Progressive Stage 1) -->
             <div id="under16Container" style="display:none; grid-column: 1 / -1;">
-              <div class="subsection-label" style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Youth Transition (Under 16)</div>
-              <div class="field-group full">
+              <div class="subsection-label" style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">School Age (Under 16)</div>
+              
+              <div class="field-group full" style="margin-bottom: 20px;">
                 <label>Early Transition & Soft Skill Development (Team Discussion)</label>
-                <textarea id="under16Notes" placeholder="Discuss: Self-determination; soft skills; interest/aptitude exploration; adult roles; social capital; early work experiences; independent living skills." oninput="updateUI()"></textarea>
+                <div style="padding-left: 15px; border-left: 2px solid var(--border); display: flex; flex-direction: column; gap: 15px;">
+                  
+                  <div class="field-group full">
+                    <label>Self-Determination, Social and Soft Skills for Success</label>
+                    <textarea id="u16SoftSkills" placeholder="e.g. punctuality, communication, consistent" oninput="updateUI()"></textarea>
+                  </div>
+                  <div class="field-group full">
+                    <label>Interest/Aptitude Exploration and Understanding Adult Roles</label>
+                    <textarea id="u16Aptitude" placeholder="What does the person doing, Jobs are they curious" oninput="updateUI()"></textarea>
+                  </div>
+                  <div class="field-group full">
+                    <label>Assist the Individual to learn about Available Work and Career Opportunities</label>
+                    <textarea id="u16Opportunities" placeholder="Job Fair, Career Website, Apprenticeship" oninput="updateUI()"></textarea>
+                  </div>
+                  <div class="field-group full">
+                    <label>Expand and Build Social Capital</label>
+                    <textarea id="u16SocialCapital" placeholder="Business Leaders" oninput="updateUI()"></textarea>
+                  </div>
+                  <div class="field-group full">
+                    <label>Participate and Monitor Early Work Experience</label>
+                    <textarea id="u16WorkExperience" placeholder="job shadowing, community service, volunteering" oninput="updateUI()"></textarea>
+                  </div>
+                  <div class="field-group full">
+                    <label>Develop, Improve and Practice Independent Living Skills</label>
+                    <textarea id="u16IndependentLiving" placeholder="Personal Care, Money Management, etc" oninput="updateUI()"></textarea>
+                  </div>
+
+                </div>
               </div>
             </div>
 
@@ -2260,9 +2441,20 @@
             <div id="adultTransitionContainer" style="display:none; grid-column: 1 / -1;">
               <div class="subsection-label" style="margin-top: 20px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Adult Transition & Employment (16+)</div>
               <div class="form-grid">
+                
                 <div class="field-group full">
-                  <label>Discovery Tools / Financial Literacy (DB101, My Next Move, etc.)</label>
-                  <textarea id="discoveryTools" placeholder="Document use of DB101, My Next Move, or Youth Transition services. Note benefit counseling and financial literacy planning." oninput="updateUI()"></textarea>
+                  <label>Match Career Interest Skills and Academic Skill with Real work within the Community:</label>
+                  <textarea id="adultMatchCareer" placeholder="e.g. connect what the individual is interested in with jobs within the community" oninput="updateUI()"></textarea>
+                </div>
+                
+                <div class="field-group full">
+                  <label>Determine How He/She will Improve Job Interview Skills, Resume Development, and Expertise in completing Job Applications</label>
+                  <textarea id="adultImproveSkills" placeholder="e.g. Identify accommodations that may be needed" oninput="updateUI()"></textarea>
+                </div>
+                
+                <div class="field-group full">
+                  <label>Describe how the Individual will Learn about Benefits and/or Services they are receiving and how to manage them.</label>
+                  <textarea id="adultLearnBenefits" placeholder="e.g. Social Security, Medicaid, Personal Assistance Service, etc." oninput="updateUI()"></textarea>
                 </div>
 
                 <div class="field-group full">
@@ -2272,6 +2464,7 @@
                     <label class="eth-check"><input type="checkbox" class="referral-cb" value="Centers for Independent Living" onchange="updateUI()"> CILs</label>
                     <label class="eth-check"><input type="checkbox" class="referral-cb" value="County Boards" onchange="updateUI()"> County Boards</label>
                     <label class="eth-check"><input type="checkbox" class="referral-cb" value="Missouri Job Centers" onchange="updateUI()"> MO Job Centers</label>
+                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="Options" onchange="updateUI()"> Options</label>
                   </div>
                   <textarea id="referralNotes" placeholder="Ensure appropriate referrals have been made and noted here." style="margin-top:10px;" oninput="updateUI()"></textarea>
                 </div>
@@ -2287,14 +2480,49 @@
               </div>
             </div>
 
-            <div class="field-group full" style="margin-top: 20px;">
-              <label>Transition Planning Summary</label>
-              <textarea
-                id="transitionPlan"
-                placeholder="Consolidated transition summary..."
-                oninput="updateUI()"
-              ></textarea>
+            <!-- Subtitle 'Community' -->
+            <div class="field-group full">
+              <div class="subsection-label" style="margin-top: 20px;">Community</div>
+              <label>Individuals Transitioning from:</label>
+              <div style="display: flex; gap: 15px; margin-bottom: 10px; flex-wrap: wrap;">
+                <label class="eth-check"><input type="checkbox" id="transHabCenter" onchange="updateCommunityTransitionUI(); updateUI();"> Habilitation Center</label>
+                <label class="eth-check"><input type="checkbox" id="transNursingHome" onchange="updateCommunityTransitionUI(); updateUI();"> Nursing Home</label>
+                <label class="eth-check"><input type="checkbox" id="transNewSupported" onchange="updateCommunityTransitionUI(); updateUI();"> New Supported Living Setting from a Natural Home</label>
+              </div>
+              
+              <div id="communityTransitionFields" style="display: none; padding-left: 15px; border-left: 2px solid var(--border); margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
+                <div id="congregateSettingMsg" style="display: none; font-size: 13px; font-weight: bold; color: var(--danger); margin-bottom: 10px; background: rgba(220,53,69,0.05); padding: 10px; border-left: 3px solid var(--danger);">
+                  These Services are Necessary for the Individual to move from this Congregate Setting.
+                </div>
+
+                <div class="field-group full">
+                  <label>Supports found during assessment process</label>
+                  <textarea id="commAssessSupports" placeholder="e.g. Individual Profile Tool, Checklist for Residential Community Living Moves" oninput="updateUI()"></textarea>
+                </div>
+                <div class="field-group full">
+                  <label>Discuss Adequate Supports for Health and Safety</label>
+                  <textarea id="commHealthSafetySupports" oninput="updateUI()"></textarea>
+                </div>
+                <div class="field-group full">
+                  <label>Identify Supports Needed to help Individual adjust to changes in Living Arrangements or Supports</label>
+                  <textarea id="commAdjustSupports" oninput="updateUI()"></textarea>
+                </div>
+                <div class="field-group full">
+                  <label>Back-up Plan</label>
+                  <textarea id="commBackupPlan" oninput="updateUI()"></textarea>
+                </div>
+              </div>
             </div>
+
+            <!-- Subtitle 'Transition Start-Up Cost' -->
+            <div class="field-group full">
+              <div class="subsection-label" style="margin-top: 20px;">Transition Start-Up Cost</div>
+              <div id="transitionStartUpCostContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
+              <button class="btn btn-outline" type="button" onclick="addTransitionCost()" style="margin-top: 10px; align-self: flex-start;">
+                + Add Start-Up Cost
+              </button>
+            </div>
+
           </div>
         </div>
 
