@@ -258,6 +258,14 @@ body {
 	color: var(--marion-blue);
 	padding-left: 16px;
 }
+.nav-item.active-nav {
+	background: var(--marion-blue) !important;
+	color: white !important;
+	padding-left: 16px;
+}
+.nav-item.active-nav span {
+	color: var(--gold-light, #ffd700) !important;
+}
 
 /* ── Section Highlight ── */
 .form-section.section-highlight {

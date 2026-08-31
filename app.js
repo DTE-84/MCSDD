@@ -333,12 +333,13 @@ const Security = {
 
 // ── All form field IDs (used for save/restore) ──
 const FORM_FIELDS = [
+  "referralOtherText",
   "lifeTransitions", "wipaName1", "wipaName2", "u16SoftSkills", "u16Aptitude", "u16Opportunities", "u16SocialCapital", "u16WorkExperience", "u16IndependentLiving", "adultMatchCareer", "adultImproveSkills", "adultLearnBenefits", "transHabCenter", "transNursingHome", "transNewSupported", "commAssessSupports", "commHealthSafetySupports", "commAdjustSupports", "commBackupPlan", 
   "resTypeResidential", "resTypeNaturalHome", "resResourcesYes", "resResourcesNo",
-  "resMeansWithin", "resMeansNotWithin", "resMeansNotWithinReason", "resHousingExplored",
+  "resMeansWithin", "resMeansNotWithin", "resMeansNotWithinReason", "resResourcesNoReason", "resHousingExplored",
   "resInformedChoiceYes", "resInformedChoiceNo", "resInformedChoiceNoReason",
   "resSpendingAllowanceAmount", "resSpendingAllowanceSupport",
-  "age17SsiSupport", "age17DifferingOpinionCheck", "age17MinorDifferingOpinion", "age17AdultDifferingOpinion",
+  "age17Yes", "age17NA", "age17SsiSupport", "age17DifferingOpinionCheck", "age17MinorDifferingOpinion", "age17AdultDifferingOpinion",
   "unemployedCheck", "incomeEmployedCheck", "incomeMaintainCheck", "incomeOwnPayeeCheck",
   "incomeHasPayeeCheck", "incomeEmployedText", "incomeMaintainAmount", "incomeMaintainSupports",
   "incomeOwnPayeeAmount", "incomeOwnPayeeSupports",
@@ -442,7 +443,7 @@ const FORM_FIELDS = [
   // Section 13 - Transition
   "transitionCategory",
   "retirementNotes",
-  "referralNotes",
+  "referralNotes", "referralOtherText",
   // Section 14 - Behavioral
   "behavioralStatus",
   "psychotropicProtocol",
@@ -509,9 +510,7 @@ const FORM_FIELDS = [
   "clientDidNotAttend",
   "clientDidNotAttendReason",
   "meetingFormat",
-  "prevGoals",
   "supportNeeded",
-  "strengths",
   "maasTools",
   "ritualsRoutines",
   "religiousSupports",
@@ -559,8 +558,6 @@ const FORM_FIELDS = [
   "dnrAltReviewDate",
   "seizureProtocols",
   "bowelProtocols",
-  "mh_residential",
-  "mh_nonResidential",
   "mentalHealthSupports",
   // Misc
   "ethnicityOther",
@@ -1142,7 +1139,7 @@ function renderTransitionCosts() {
   }
   
   container.innerHTML = transitionStartUpCosts.map((item, i) => `
-    <div style="display: flex; gap: 10px; align-items: end; background: #f9f9f9; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+    <div style="display: flex; gap: 10px; align-items: end; background: var(--header-bg); padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
       <div class="field-group" style="flex: 2; margin-bottom: 0;">
         <label style="font-size: 11px;">Item</label>
         <input type="text" value="${esc(item.itemName || "")}" placeholder="Item description" oninput="updateTransitionCost(${i}, 'itemName', this.value)">
@@ -1191,7 +1188,33 @@ function toggleTransitionFields() {
 }
 
 // ── UI UPDATE & NARRATIVE ──
+
+function updateReferralUI() {
+  const isOther = document.getElementById('referralOtherCheck')?.checked;
+  const div = document.getElementById('referralOtherDiv');
+  if (div) div.style.display = isOther ? "block" : "none";
+}
+
+
+function updateTransitionCostTotal() {
+  const totalDiv = document.getElementById('transitionStartUpTotal');
+  if (!totalDiv) return;
+  if (transitionStartUpCosts.length === 0) {
+    totalDiv.style.display = 'none';
+    return;
+  }
+  let total = 0;
+  transitionStartUpCosts.forEach(item => {
+    let c = (item.itemCost || "").replace(/[^0-9.]/g, '');
+    let val = parseFloat(c);
+    if (!isNaN(val)) total += val;
+  });
+  totalDiv.innerText = `Total: ${total.toFixed(2)}`;
+  totalDiv.style.display = 'block';
+}
+
 function updateUI() {
+  updateTransitionCostTotal();
   const isPrivacyOn = document.getElementById("privacyToggle").checked;
   const getVal = (id) => {
     const el = document.getElementById(id);
@@ -1495,7 +1518,7 @@ function updateUI() {
         if (isWaivered === 'Yes') {
           field("      Signee", s.whoSigned);
           field("      Name of Signee", s.signeeNames);
-          field("      Provider and Services Choice Statement Effective Signed Date", s.signedDate);
+          field("      Provider & Services Choice Statement Effective Signed Date", s.signedDate);
           field("      Updated edit to previously signed Statement", s.isUpdate ? "Yes" : "No");
           if (s.isUpdate) {
             field("      Previous Signed Date", s.prevSignedDate);
@@ -1730,17 +1753,7 @@ function updateUI() {
   field("Supervision Level", getVal("supervisionLevel"));
   field("Seizure Protocols", getVal("seizureProtocols"));
   field("Bowel Problems / Protocols", getVal("bowelProtocols"));
-  let mhTypes = [];
-  if (document.getElementById("mh_residential")?.checked) mhTypes.push("Residential Services");
-  if (document.getElementById("mh_nonResidential")?.checked) mhTypes.push("Non-Residential Services");
-  
-  if (mhTypes.length > 0) {
-    line("Mental Health Supports:");
-    field("  - Type", mhTypes.join(", "));
-    field("  - Details", getVal("mentalHealthSupports"));
-  } else {
-    field("Mental Health Supports", getVal("mentalHealthSupports"));
-  }
+  field("Mental Health Supports", getVal("mentalHealthSupports"));
   field("Allergies / Sensitivities / Reactions", getVal("allergies"));
   line("");
 
@@ -1774,11 +1787,8 @@ function updateUI() {
   }
   
   head("11. WAYS TO SUPPORT THE INDIVIDUAL");
-  field("Aspirations (1-3 Years)", getVal("aspirations"));
-  field("Former Goals & Progress", getVal("prevGoals"));
-  field("Support Needed", getVal("supportNeeded"));
-  field("Strengths & Assets", getVal("strengths"));
   field("Assessment Limitations", getVal("maasTools"));
+  field("Support Needed", getVal("supportNeeded"));
   field("Rituals & Routines", getVal("ritualsRoutines"));
   field("Religious supports", getVal("religiousSupports"));
   field("Staff Preference", getVal("staffPreference"));
@@ -1791,31 +1801,30 @@ function updateUI() {
   
   field("Cultural Considerations", getVal("culturalDifferences"));
 
+  let incomeText = [];
   if (document.getElementById("unemployedCheck")?.checked) {
-    field("Personal Income", "Unemployed");
+    incomeText.push("Unemployed");
+  }
+  if (document.getElementById("incomeEmployedCheck")?.checked) {
+    incomeText.push(`Employed: ${getVal("incomeEmployedText") || "Not specified"}`);
+  }
+  if (document.getElementById("incomeMaintainCheck")?.checked) {
+    let v = getVal("incomeMaintainAmount");
+    let s = getVal("incomeMaintainSupports");
+    incomeText.push(`Maintain Benefits: ${v ? "$" + v : "No amount specified"} - Supports: ${s || "None"}`);
+  }
+  if (document.getElementById("incomeOwnPayeeCheck")?.checked) {
+    let v = getVal("incomeOwnPayeeAmount");
+    let s = getVal("incomeOwnPayeeSupports");
+    incomeText.push(`Own Payee: ${v ? "$" + v : "No amount specified"} - Supports: ${s || "None"}`);
+  }
+  if (document.getElementById("incomeHasPayeeCheck")?.checked) {
+    incomeText.push(`Has Payee: (Refer to Demographics section under Payee)`);
+  }
+  if (incomeText.length > 0) {
+    field("Personal Income", incomeText.join(" | "));
   } else {
-    let incomeText = [];
-    if (document.getElementById("incomeEmployedCheck")?.checked) {
-      incomeText.push(`Employed: ${getVal("incomeEmployedText") || "Not specified"}`);
-    }
-    if (document.getElementById("incomeMaintainCheck")?.checked) {
-      let v = getVal("incomeMaintainAmount");
-      let s = getVal("incomeMaintainSupports");
-      incomeText.push(`Maintain Benefits: ${v ? "$" + v : "No amount specified"} - Supports: ${s || "None"}`);
-    }
-    if (document.getElementById("incomeOwnPayeeCheck")?.checked) {
-      let v = getVal("incomeOwnPayeeAmount");
-      let s = getVal("incomeOwnPayeeSupports");
-      incomeText.push(`Own Payee: ${v ? "$" + v : "No amount specified"} - Supports: ${s || "None"}`);
-    }
-    if (document.getElementById("incomeHasPayeeCheck")?.checked) {
-      incomeText.push(`Has Payee: (Refer to Demographics section under Payee)`);
-    }
-    if (incomeText.length > 0) {
-      field("Personal Income", incomeText.join(" | "));
-    } else {
-      field("Personal Income", "None selected");
-    }
+    field("Personal Income", "Not specified");
   }
 
   
@@ -1828,6 +1837,8 @@ function updateUI() {
        if (document.getElementById("resResourcesYes")?.checked) {
          if (document.getElementById("resMeansWithin")?.checked) resC += " (Within means)";
          if (document.getElementById("resMeansNotWithin")?.checked) resC += ` (Not within means: ${getVal("resMeansNotWithinReason")})`;
+       } else if (document.getElementById("resResourcesNo")?.checked) {
+         resC += ` (Reason: ${getVal("resResourcesNoReason")})`;
        }
        field("Resources Considered for Room & Board", resC);
        field("Housing Resources Explored", getVal("resHousingExplored"));
@@ -1839,10 +1850,14 @@ function updateUI() {
     }
   }
 
-  field("Age 17+ SSI Prep", getVal("age17SsiSupport"));
-  if (document.getElementById("age17DifferingOpinionCheck")?.checked) {
-    field("Differing Opinions (Minor)", getVal("age17MinorDifferingOpinion"));
-    field("Differing Opinions (Adult)", getVal("age17AdultDifferingOpinion"));
+  if (document.getElementById("age17Yes")?.checked) {
+    field("Transitioning Youth - School (Age 17+ SSI Prep)", getVal("age17SsiSupport"));
+    if (document.getElementById("age17DifferingOpinionCheck")?.checked) {
+      field("Differing Opinions (Minor)", getVal("age17MinorDifferingOpinion"));
+      field("Differing Opinions (Adult)", getVal("age17AdultDifferingOpinion"));
+    }
+  } else if (document.getElementById("age17NA")?.checked) {
+    field("Transitioning Youth - School", "Not Applicable");
   }
 
   field("Water Temp Req", getVal("waterTemp"));
@@ -1891,7 +1906,10 @@ function updateUI() {
     field("  Learn About Benefits/Services", getVal("adultLearnBenefits"));
     
     // Referrals
-    const referralCbs = Array.from(document.querySelectorAll("#referralGrid input[type='checkbox']:checked")).map((cb) => cb.value);
+    const referralCbs = Array.from(document.querySelectorAll("#referralGrid input[type='checkbox']:checked")).map((cb) => {
+      if (cb.value === "Other") return `Other: ${getVal("referralOtherText") || "Not specified"}`;
+      return cb.value;
+    });
     field("  Community Support Programs", referralCbs.length > 0 ? referralCbs.join(", ") : "None");
     const rNotes = getVal("referralNotes");
     if (rNotes) line("    " + rNotes);
@@ -1927,9 +1945,15 @@ function updateUI() {
   // Start-Up Costs
   if (transitionStartUpCosts.length > 0) {
     line("TRANSITION START-UP COSTS:");
+    let startupTotal = 0;
     transitionStartUpCosts.forEach(item => {
       line(`  - ${item.itemName || "Unnamed Item"}: ${item.itemCost || "$0"}`);
+      let c = (item.itemCost || "").replace(/[^0-9.]/g, '');
+      let val = parseFloat(c);
+      if (!isNaN(val)) startupTotal += val;
     });
+    line(`  --------------------------`);
+    line(`  TOTAL: ${startupTotal.toFixed(2)}`);
     line("");
   }
 
@@ -2226,6 +2250,10 @@ function updateResidentialUI(sourceId) {
   const isResYes = document.getElementById("resResourcesYes")?.checked;
   const wrapResYes = document.getElementById("resResourcesYesFields");
   if (wrapResYes) wrapResYes.style.display = isResYes ? "block" : "none";
+  
+  const isResNo = document.getElementById("resResourcesNo")?.checked;
+  const wrapResNo = document.getElementById("resResourcesNoFields");
+  if (wrapResNo) wrapResNo.style.display = isResNo ? "block" : "none";
 
   const isNotWithin = document.getElementById("resMeansNotWithin")?.checked;
   const wrapNotWithin = document.getElementById("resMeansNotWithinFields");
@@ -2234,6 +2262,16 @@ function updateResidentialUI(sourceId) {
   const isInformedNo = document.getElementById("resInformedChoiceNo")?.checked;
   const wrapInformedNo = document.getElementById("resInformedChoiceNoFields");
   if (wrapInformedNo) wrapInformedNo.style.display = isInformedNo ? "block" : "none";
+}
+
+
+function updateAge17MainUI(sourceId) {
+  if (sourceId === 'age17Yes') document.getElementById('age17NA').checked = false;
+  if (sourceId === 'age17NA') document.getElementById('age17Yes').checked = false;
+  
+  const isYes = document.getElementById("age17Yes")?.checked;
+  const wrap = document.getElementById("age17Fields");
+  if (wrap) wrap.style.display = isYes ? "flex" : "none";
 }
 
 function updateAge17UI() {
@@ -2247,46 +2285,48 @@ function updatePersonalIncomeUI() {
   const wrapper = document.getElementById("personalIncomeWrapper");
   const tags = document.getElementById("personalIncomeTags");
   
+    const employedCheck = document.getElementById("incomeEmployedCheck");
+  const employedLabel = employedCheck ? employedCheck.closest("label.multi-option") : null;
+
+  if (wrapper) wrapper.style.display = "block";
+
   if (unemployed) {
-    if (wrapper) wrapper.style.display = "none";
-    // Hide all text boxes
-    if (document.getElementById("incomeEmployedFields")) document.getElementById("incomeEmployedFields").style.display = "none";
-    if (document.getElementById("incomeMaintainFields")) document.getElementById("incomeMaintainFields").style.display = "none";
-    if (document.getElementById("incomeOwnPayeeFields")) document.getElementById("incomeOwnPayeeFields").style.display = "none";
-    if (document.getElementById("incomeHasPayeeFields")) document.getElementById("incomeHasPayeeFields").style.display = "none";
+    if (employedLabel) employedLabel.style.display = "none";
+    if (employedCheck && employedCheck.checked) {
+       employedCheck.checked = false;
+    }
   } else {
-    if (wrapper) wrapper.style.display = "block";
-    
-    // Update Tags
-    const container = document.getElementById("personalIncomeContainer");
-    if(container) {
-      const checked = container.querySelectorAll('input[type="checkbox"]:checked');
-      if(tags) {
-        tags.innerHTML = "";
-        if (checked.length === 0) {
-          tags.innerHTML = '<span class="placeholder">Select options...</span>';
-        } else {
-          checked.forEach((cb) => {
-            const tag = document.createElement("span");
-            tag.className = "selected-tag";
-            tag.textContent = cb.value;
-            tags.appendChild(tag);
-          });
-        }
+    if (employedLabel) employedLabel.style.display = "flex";
+  }
+
+  // Update Tags
+  const container = document.getElementById("personalIncomeContainer");
+  if(container) {
+    const checked = container.querySelectorAll('input[type="checkbox"]:checked');
+    if(tags) {
+      tags.innerHTML = "";
+      if (checked.length === 0) {
+        tags.innerHTML = '<span class="placeholder">Select options...</span>';
+      } else {
+        checked.forEach((cb) => {
+          const tag = document.createElement("span");
+          tag.className = "selected-tag";
+          tag.textContent = cb.value;
+          tags.appendChild(tag);
+        });
       }
     }
-
-    // Toggle Text Boxes
-    const emp = document.getElementById("incomeEmployedCheck")?.checked;
-    const main = document.getElementById("incomeMaintainCheck")?.checked;
-    const own = document.getElementById("incomeOwnPayeeCheck")?.checked;
-    const has = document.getElementById("incomeHasPayeeCheck")?.checked;
-    
-    if (document.getElementById("incomeEmployedFields")) document.getElementById("incomeEmployedFields").style.display = emp ? "block" : "none";
-    if (document.getElementById("incomeMaintainFields")) document.getElementById("incomeMaintainFields").style.display = main ? "block" : "none";
-    if (document.getElementById("incomeOwnPayeeFields")) document.getElementById("incomeOwnPayeeFields").style.display = own ? "block" : "none";
-    if (document.getElementById("incomeHasPayeeFields")) document.getElementById("incomeHasPayeeFields").style.display = has ? "block" : "none";
   }
+
+  const emp = document.getElementById("incomeEmployedCheck")?.checked;
+  const maint = document.getElementById("incomeMaintainCheck")?.checked;
+  const payee = document.getElementById("incomeOwnPayeeCheck")?.checked;
+  const has = document.getElementById("incomeHasPayeeCheck")?.checked;
+
+  if (document.getElementById("incomeEmployedFields")) document.getElementById("incomeEmployedFields").style.display = emp ? "block" : "none";
+  if (document.getElementById("incomeMaintainFields")) document.getElementById("incomeMaintainFields").style.display = maint ? "block" : "none";
+  if (document.getElementById("incomeOwnPayeeFields")) document.getElementById("incomeOwnPayeeFields").style.display = payee ? "block" : "none";
+  if (document.getElementById("incomeHasPayeeFields")) document.getElementById("incomeHasPayeeFields").style.display = has ? "block" : "none";
 }
 
 function updateLearningStyles() {
@@ -3299,7 +3339,7 @@ function renderHcbsServices() {
               </div>
               ${s.sdsPaidFamilyMember === 'Yes' ? `
                 <div style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.02); border: 1px solid var(--border);">
-                  <div class="field-group full">
+                  <div class="field-group full" style="margin-bottom: 25px;">
                     <label>Is the individual opposed to the family member providing the support?</label>
                     <select onchange="updateHcbsService(${i}, 'sdsFamilyOpposed', this.value)">
                       <option value="">Select...</option>
@@ -3343,7 +3383,7 @@ function renderHcbsServices() {
             <input type="text" value="${esc(s.signeeNames || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'signeeNames', this.value)">
           </div>
           <div class="field-group">
-            <label>Provider and Services Choice Statement Effective Signed Date</label>
+            <label>Provider & Services Choice Statement Effective Signed Date</label>
             <input type="text" value="${esc(s.signedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'signedDate', this.value)">
           </div>
         </div>
@@ -3800,6 +3840,7 @@ function restoreFormData(fd) {
     updateLearningStyles();
     updatePersonalIncomeUI();
     updateResidentialUI();
+    updateAge17MainUI();
     updateAge17UI();
   }
   if (Array.isArray(fd._healthParams)) {
@@ -3812,6 +3853,7 @@ function restoreFormData(fd) {
     document.querySelectorAll('.referral-cb').forEach(cb => {
       cb.checked = fd._communityReferrals.includes(cb.value);
     });
+    if (typeof updateReferralUI === "function") updateReferralUI();
   }
 
   renderDnrAltLists();
@@ -4202,3 +4244,54 @@ setInterval(() => {
   saveToHistory();
   showToast("Auto-saved draft ✓", "success");
 }, 20 * 60 * 1000);
+
+
+// --- SCROLL SPY LOGIC ---
+function initScrollSpy() {
+  const workspace = document.querySelector('.main-workspace');
+  if (!workspace) return;
+
+  const navItems = Array.from(document.querySelectorAll('.nav-item'));
+  const sectionsMap = new Map();
+  
+  navItems.forEach(nav => {
+    const onclickStr = nav.getAttribute('onclick') || '';
+    const match = onclickStr.match(/'(sec-[^']+)'/);
+    if (match) {
+      sectionsMap.set(match[1], nav);
+    }
+  });
+
+  const observerOptions = {
+    root: workspace,
+    rootMargin: '-10% 0px -80% 0px',
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        const activeNav = sectionsMap.get(id);
+        if (activeNav) {
+          navItems.forEach(n => n.classList.remove('active-nav'));
+          activeNav.classList.add('active-nav');
+          // Optional: Scroll the sidebar to keep the active item in view
+          activeNav.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    });
+  }, observerOptions);
+
+  sectionsMap.forEach((nav, id) => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+}
+
+// Initialize on load
+document.addEventListener("DOMContentLoaded", () => {
+  initScrollSpy();
+});
+
+initScrollSpy();

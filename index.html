@@ -356,7 +356,7 @@
             <div class="nav-item" onclick="scrollToSection('sec-transition')"><span>13.</span> Transition</div>
             <div class="nav-item" onclick="scrollToSection('sec-behavioral-legacy')"><span>14.</span> Behavioral</div>
             <div class="nav-item" onclick="scrollToSection('sec-supervision')"><span>15.</span> Supervision</div>
-            <div class="nav-item" onclick="scrollToSection('sec-prev-goals')"><span>16.</span> Goals History</div>
+            <div class="nav-item" onclick="scrollToSection('sec-prev-goals')"><span>16.</span> Past/Current Goals</div>
             <div class="nav-item" onclick="scrollToSection('sec-outcomes')"><span>17.</span> Action Plan</div>
             <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>18.</span> Comments</div>
           </div>
@@ -590,7 +590,7 @@
               <span style="font-weight: 300; color: var(--gold)">Pro</span>
             </h1>
             <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-label); margin-left: 10px; border-left: 1px solid var(--border); padding-left: 10px;">
-              Missouri DMH/DDD Compliance Engine
+              Missouri DMH/DD Compliance Engine
             </div>
           </div>
           <div class="btn-bar">
@@ -1985,14 +1985,14 @@
                 <div style="font-size: 13px; color: var(--text-base); margin-bottom: 5px;">
                   In a cardiac or respiratory emergency, staff will not perform chest compressions or standard CPR. Staff will immediately administer:
                 </div>
-                <input type="text" id="dnrAltMustTake" placeholder="[insert specific physician order, e.g., rescue breathing only, positioning, or high-flow oxygen]" oninput="updateUI()">
+                <input type="text" id="dnrAltMustTake" placeholder="insert specific physician order, e.g., rescue breathing only, positioning, or high-flow oxygen" oninput="updateUI()">
                 <div style="font-size: 13px; color: var(--text-base); margin-top: 5px;">
                   and call 911.
                 </div>
               </div>
               <div class="field-group full" style="margin-bottom: 20px;">
                 <label>MUST AVOID:</label>
-                <input type="text" id="dnrAltMustAvoid" placeholder="[what was directed to avoid]" oninput="updateUI()">
+                <input type="text" id="dnrAltMustAvoid" placeholder="what was directed to avoid" oninput="updateUI()">
               </div>
                 <div class="field-group full">
                   <label>Residential or Service Setting</label>
@@ -2012,7 +2012,7 @@
               </div>
               <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-base); flex-wrap: wrap; margin-bottom: 20px;">
                 All staff supporting 
-                <input type="text" id="dnrAltIndividualName" placeholder="[individual's name]" style="width: 200px; padding: 6px 10px;" oninput="updateUI()"> 
+                <input type="text" id="dnrAltIndividualName" placeholder="individual's name" style="width: 200px; padding: 6px 10px;" oninput="updateUI()"> 
                 must be trained by a qualified medical professional on the specific protocols outlined in the Alternative to CPR Order prior to working independently.
               </div>
             
@@ -2022,13 +2022,13 @@
               </div>
               <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-base); flex-wrap: wrap; margin-bottom: 20px;">
                 The original, signed Appendix D Alternative to CPR Form is located 
-                <input type="text" id="dnrAltFormLocation" placeholder="[state where it is located and where a copy is]" style="flex: 1; min-width: 250px; padding: 6px 10px;" oninput="updateUI()">.
+                <input type="text" id="dnrAltFormLocation" placeholder="state where it is located and where a copy is" style="flex: 1; min-width: 250px; padding: 6px 10px;" oninput="updateUI()">.
               </div>
             
               <div class="subsection-label">5. Review and Oversight Schedule</div>
               <div class="field-group full" style="margin-bottom: 10px;">
                 <label>Plan Re-evaluation</label>
-                <input type="text" id="dnrAltReviewDate" placeholder="[Plan will be re-evaluated / date]" oninput="updateUI()">
+                <input type="text" id="dnrAltReviewDate" placeholder="Plan will be re-evaluated / date" oninput="updateUI()">
               </div>
               <div style="font-size: 13px; color: var(--text-base); margin-bottom: 20px;">
                 The Alternative to CPR protocol will be reviewed continuously by the planning team and the attending physician at minimum during the annual PCSP meeting, or sooner if a change in health status occurs.
@@ -2088,14 +2088,7 @@
             <div class="field-group full">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <label style="margin-bottom: 0;">Mental Health Supports - if applicable</label>
-                <div style="display: flex; gap: 20px; align-items: center;">
-                  <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main); margin-bottom: 0;">
-                    <input type="checkbox" id="mh_residential" onchange="updateUI()"> Residential Services
-                  </label>
-                  <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main); margin-bottom: 0;">
-                    <input type="checkbox" id="mh_nonResidential" onchange="updateUI()"> Non-Residential Services
-                  </label>
-                </div>
+                
               </div>
               <textarea id="mentalHealthSupports" placeholder="Counseling, therapy, medications, etc." oninput="updateUI()"></textarea>
             </div>
@@ -2144,25 +2137,16 @@
           </div>
           <div class="form-grid">
             <div class="field-group full">
-              <label>Specific Support Strategies</label>
-              <textarea id="aspirations" placeholder="Discuss limitation from assessment tool, and how the individual can be supported. Include supports that are effective and need to continue" oninput="updateUI()"></textarea>
+              <label>Assessment Limitations</label>
+              <textarea id="maasTools" placeholder="If waivered, discuss limitations on assessment tools and how the individual is supported." oninput="updateUI()"></textarea>
             </div>
-            <div class="field-group full">
-              <label>Former Goals &amp; Progress</label>
-              <textarea id="prevGoals" placeholder="Discuss former hopes, dreams, and concerns and the progress (or lack thereof) made." oninput="updateUI()"></textarea>
-            </div>
+            
             <div class="field-group full">
               <label>How to Support These Vision Outcomes</label>
               <textarea id="supportNeeded" placeholder="What specific supports are needed to help get their hopes, dreams, and concerns met?" oninput="updateUI()"></textarea>
             </div>
-            <div class="field-group">
-              <label>Personal Strengths &amp; Assets</label>
-              <textarea id="strengths" placeholder="Individual strengths, skills, and personal assets discovered during assessment." oninput="updateUI()"></textarea>
-            </div>
-            <div class="field-group">
-              <label>Assessment Limitations</label>
-              <textarea id="maasTools" placeholder="If waivered, discuss limitations on assessment tools and how the individual is supported." oninput="updateUI()"></textarea>
-            </div>
+            
+            
             <div class="field-group">
               <label>Rituals &amp; Routines</label>
               <textarea id="ritualsRoutines" placeholder="Rituals or routines that are important to the person for consistency." oninput="updateUI()"></textarea>
@@ -2205,7 +2189,7 @@
             </div>
             <div class="field-group">
               <label>Cultural Differences</label>
-              <textarea id="culturalDifferences" placeholder="Person does not believe in certain holidays, programs, celebrations, etc." oninput="updateUI()"></textarea>
+              <textarea id="culturalDifferences" placeholder="Examples may include differences in holidays observed, religious practices, cultural traditions, celebrations, dietary customs, or participation in programs and activities." oninput="updateUI()"></textarea>
             </div>
             <div class="field-group full">
               <div class="subsection-label" style="margin-top: 15px;">Personal Income</div>
@@ -2283,6 +2267,9 @@
                       <textarea id="resMeansNotWithinReason" placeholder="Reasons it was not within their means" oninput="updateUI()"></textarea>
                     </div>
                   </div>
+                  <div id="resResourcesNoFields" style="display: none; margin-top: 10px; padding-left: 15px; border-left: 2px solid var(--gold);">
+                    <textarea id="resResourcesNoReason" placeholder="Why were resources not considered?" oninput="updateUI()"></textarea>
+                  </div>
                 </div>
 
                 <div class="field-group full">
@@ -2297,21 +2284,26 @@
                     <label class="eth-check"><input type="checkbox" id="resInformedChoiceNo" onchange="updateResidentialUI(this.id); updateUI();"> No</label>
                   </div>
                   <div id="resInformedChoiceNoFields" style="display: none;">
-                    <textarea id="resInformedChoiceNoReason" placeholder="Why they weren't given informed choice" oninput="updateUI()"></textarea>
+                    <textarea id="resInformedChoiceNoReason" placeholder="Why weren't they given an informed choice?" oninput="updateUI()"></textarea>
                   </div>
                 </div>
 
                 <div class="field-group full">
                   <label>Monthly Personal Spending Allowance:</label>
                   <input type="text" id="resSpendingAllowanceAmount" placeholder="Amount" oninput="updateUI()" style="margin-bottom: 8px;">
-                  <textarea id="resSpendingAllowanceSupport" placeholder="How supported to manage these funds" oninput="updateUI()"></textarea>
+                  <textarea id="resSpendingAllowanceSupport" placeholder="How is the individual supported to manage these funds." oninput="updateUI()"></textarea>
                 </div>
 
               </div>
             </div>
 
             <div class="field-group full">
-              <div class="subsection-label" style="margin-top: 15px;">Individuals turning 17 years of age within their PCSP year or already 17 years of age or older.</div>
+              <div class="subsection-label" style="margin-top: 15px;">Transitioning Youth - School</div>
+              <div style="display: flex; gap: 15px; margin-top: 10px; margin-bottom: 10px;">
+                <label class="eth-check"><input type="checkbox" id="age17Yes" onchange="updateAge17MainUI(this.id); updateUI();"> Is 17 YOA or will be During Current PCSP year.</label>
+                <label class="eth-check"><input type="checkbox" id="age17NA" onchange="updateAge17MainUI(this.id); updateUI();"> Not Applicable</label>
+              </div>
+              <div id="age17Fields" style="display: none; flex-direction: column; gap: 10px;">
               
               <div class="field-group full">
                 <label>What support is needed in preparation for SSI:</label>
@@ -2326,11 +2318,11 @@
                 <div id="age17DifferingOpinionFields" style="display: none; padding-left: 15px; border-left: 2px solid var(--border); margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
                   <div class="field-group full">
                     <label>Minor: If parent(s) of minor child have a differing opinion than the individual on what is important for the individual.</label>
-                    <textarea id="age17MinorDifferingOpinion" placeholder="Stating what the differing opinion is..." oninput="updateUI()"></textarea>
+                    <textarea id="age17MinorDifferingOpinion" placeholder="State what the differing opinion is..." oninput="updateUI()"></textarea>
                   </div>
                   <div class="field-group full">
                     <label>Adult: If Guardian (per their request) has differing opinions from the individual in regard to what is important.</label>
-                    <textarea id="age17AdultDifferingOpinion" placeholder="Stating what the differing opinion is..." oninput="updateUI()"></textarea>
+                    <textarea id="age17AdultDifferingOpinion" placeholder="State what the differing opinion is..." oninput="updateUI()"></textarea>
                   </div>
                 </div>
               </div>
@@ -2410,11 +2402,11 @@
                   
                   <div class="field-group full">
                     <label>Self-Determination, Social and Soft Skills for Success</label>
-                    <textarea id="u16SoftSkills" placeholder="e.g. punctuality, communication, consistent" oninput="updateUI()"></textarea>
+                    <textarea id="u16SoftSkills" placeholder="e.g. punctuality, communication, follows directions" oninput="updateUI()"></textarea>
                   </div>
                   <div class="field-group full">
                     <label>Interest/Aptitude Exploration and Understanding Adult Roles</label>
-                    <textarea id="u16Aptitude" placeholder="What does the person doing, Jobs are they curious" oninput="updateUI()"></textarea>
+                    <textarea id="u16Aptitude" placeholder="Preferred work activities, skills, talents, etc" oninput="updateUI()"></textarea>
                   </div>
                   <div class="field-group full">
                     <label>Assist the Individual to learn about Available Work and Career Opportunities</label>
@@ -2422,7 +2414,7 @@
                   </div>
                   <div class="field-group full">
                     <label>Expand and Build Social Capital</label>
-                    <textarea id="u16SocialCapital" placeholder="Business Leaders" oninput="updateUI()"></textarea>
+                    <textarea id="u16SocialCapital" placeholder="Business Leaders, Community Connections" oninput="updateUI()"></textarea>
                   </div>
                   <div class="field-group full">
                     <label>Participate and Monitor Early Work Experience</label>
@@ -2443,12 +2435,12 @@
               <div class="form-grid">
                 
                 <div class="field-group full">
-                  <label>Match Career Interest Skills and Academic Skill with Real work within the Community:</label>
+                  <label>Match Career Interest Skills and Academic Coursework with Real work within the Community:</label>
                   <textarea id="adultMatchCareer" placeholder="e.g. connect what the individual is interested in with jobs within the community" oninput="updateUI()"></textarea>
                 </div>
                 
                 <div class="field-group full">
-                  <label>Determine How He/She will Improve Job Interview Skills, Resume Development, and Expertise in completing Job Applications</label>
+                  <label>Determine How He/She will Develop and Improve Job Interview Skills, Resume Development, and Expertise in completing Job Applications</label>
                   <textarea id="adultImproveSkills" placeholder="e.g. Identify accommodations that may be needed" oninput="updateUI()"></textarea>
                 </div>
                 
@@ -2464,7 +2456,10 @@
                     <label class="eth-check"><input type="checkbox" class="referral-cb" value="Centers for Independent Living" onchange="updateUI()"> CILs</label>
                     <label class="eth-check"><input type="checkbox" class="referral-cb" value="County Boards" onchange="updateUI()"> County Boards</label>
                     <label class="eth-check"><input type="checkbox" class="referral-cb" value="Missouri Job Centers" onchange="updateUI()"> MO Job Centers</label>
-                    <label class="eth-check"><input type="checkbox" class="referral-cb" value="Options" onchange="updateUI()"> Options</label>
+                    <label class="eth-check"><input type="checkbox" id="referralOtherCheck" class="referral-cb" value="Other" onchange="updateReferralUI(); updateUI()"> Other</label>
+                  </div>
+                  <div id="referralOtherDiv" style="display: none; margin-top: 10px;">
+                    <textarea id="referralOtherText" placeholder="Please specify other referral..." oninput="updateUI()"></textarea>
                   </div>
                   <textarea id="referralNotes" placeholder="Ensure appropriate referrals have been made and noted here." style="margin-top:10px;" oninput="updateUI()"></textarea>
                 </div>
@@ -2504,7 +2499,7 @@
                   <textarea id="commHealthSafetySupports" oninput="updateUI()"></textarea>
                 </div>
                 <div class="field-group full">
-                  <label>Identify Supports Needed to help Individual adjust to changes in Living Arrangements or Supports</label>
+                  <label>Describe what is needed to help the individual to adjust to changes in living arrangements, routines, services or daily life.</label>
                   <textarea id="commAdjustSupports" oninput="updateUI()"></textarea>
                 </div>
                 <div class="field-group full">
@@ -2521,6 +2516,7 @@
               <button class="btn btn-outline" type="button" onclick="addTransitionCost()" style="margin-top: 10px; align-self: flex-start;">
                 + Add Start-Up Cost
               </button>
+              <div id="transitionStartUpTotal" style="margin-top: 10px; font-weight: bold; color: var(--gold); font-size: 1.1em; display: none;">Total: $0.00</div>
             </div>
 
           </div>
