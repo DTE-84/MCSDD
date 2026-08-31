@@ -1694,7 +1694,20 @@ function updateUI() {
     line(`     - MUST AVOID: ${getVal("dnrAltMustAvoid") || "__________"}`);
     if (hcbsServices && hcbsServices.length > 0) {
       line("  Residential or Service Setting:");
-      hcbsServices.forEach((s) => line(`     - ${s.serviceName || "Unnamed Service"}`));
+      hcbsServices.forEach((s) => {
+        let text = s.serviceName || "Unnamed Service";
+        if (s.subcategories && s.subcategories.length > 0) {
+          let subText = s.subcategories.map(sub => {
+            let parts = [sub.name];
+            if (sub.pos21) parts.push("[-POS21 Inpatient]");
+            if (sub.pos02) parts.push("[-POS02 Other than patient's home]");
+            if (sub.pos10) parts.push("[-10 In patient's home]");
+            return parts.join(" ");
+          }).join(" | ");
+          text += ": " + subText;
+        }
+        line(`     - ${text}`);
+      });
     }
     line("  2. Emergency Services (911) Protocol");
     line("     Staff will call 911 immediately during an emergency. Staff must present the original, signed ALTERNATIVE to CPR Order Form directly to the first responders upon their arrival.");
@@ -3632,11 +3645,22 @@ function renderDnrAltLists() {
   const settingsContainer = document.getElementById("dnrAltSettingsContainer");
   if (settingsContainer) {
     if (hcbsServices.length === 0) {
-      settingsContainer.innerHTML = `<em style="color: var(--text-label);">No HCBS Services added in Section 7.</em>`;
+      settingsContainer.innerHTML = `<em style="color: var(--text-label);">No Programs or Services added in Section 8.</em>`;
     } else {
-      settingsContainer.innerHTML = hcbsServices.map((s, idx) => `
-        <div style="padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">${esc(s.serviceName || "Unnamed Service")}</div>
-      `).join("");
+      settingsContainer.innerHTML = hcbsServices.map((s, idx) => {
+        let text = s.serviceName || "Unnamed Service";
+        if (s.subcategories && s.subcategories.length > 0) {
+          let subText = s.subcategories.map(sub => {
+            let parts = [sub.name];
+            if (sub.pos21) parts.push("[-POS21 Inpatient]");
+            if (sub.pos02) parts.push("[-POS02 Other than patient's home]");
+            if (sub.pos10) parts.push("[-10 In patient's home]");
+            return parts.join(" ");
+          }).join(" | ");
+          text += ": " + subText;
+        }
+        return `<div style="padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">${esc(text)}</div>`;
+      }).join("");
     }
   }
 }
