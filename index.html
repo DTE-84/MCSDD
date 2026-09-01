@@ -406,6 +406,162 @@
 
       <!-- ── Main Workspace ── -->
       <main class="main-workspace">
+<!-- ── Section 0: PCSP Cover Letter ── -->
+        <div class="form-section" id="sec-cover-letter">
+          <div class="section-title">
+            <span>1</span> PCSP Cover Letter / Face Sheet
+          </div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Individual Photo (Optional)</label>
+              <div style="display: flex; gap: 20px; align-items: start">
+                <div
+                  id="photoPreview"
+                  style="
+                    width: 150px;
+                    height: 180px;
+                    border: 2px dashed var(--border);
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: var(--bg-light);
+                    overflow: hidden;
+                  "
+                >
+                  <span
+                    id="photoPlaceholder"
+                    style="
+                      font-size: 10px;
+                      color: var(--text-label);
+                      text-align: center;
+                      padding: 10px;
+                    "
+                    >No Image Uploaded</span
+                  >
+                  <img
+                    id="coverPhoto"
+                    style="
+                      display: none;
+                      width: 100%;
+                      height: 100%;
+                      object-fit: cover;
+                    "
+                  />
+                </div>
+                <div
+                  style="
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                  "
+                >
+                  <button
+                    class="btn btn-outline"
+                    onclick="document.getElementById('photoInput').click()"
+                  >
+                    📷 Upload Photo
+                  </button>
+                  <button
+                    class="btn btn-danger"
+                    id="removePhotoBtn"
+                    style="display: none; padding: 8px 16px; font-size: 12px"
+                    onclick="removePhoto()"
+                  >
+                    Remove Photo
+                  </button>
+                  <input
+                    type="file"
+                    id="photoInput"
+                    accept="image/*"
+                    style="display: none"
+                    onchange="handlePhotoUpload(event)"
+                  />
+                  <p
+                    style="
+                      font-size: 10px;
+                      color: var(--text-label);
+                      font-style: italic;
+                    "
+                  >
+                    Note: Photos are stored locally in your browser's RAM and
+                    included in .pcsp exports.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="field-group half">
+              <label>Full Legal Name</label>
+              <input
+                type="text"
+                id="coverLegalName"
+                placeholder="Full Name as it appears on DMH records"
+                oninput="updateUI()"
+              />
+            </div>
+            
+            <div class="field-group">
+              <label>DMH ID #</label>
+              <input
+                type="text"
+                id="coverDmhID"
+                placeholder="7-digit ID"
+                oninput="updateUI()"
+              />
+            </div>
+            <div class="field-group full">
+              <label>Funding Type</label>
+              <input type="hidden" id="coverFundingType" value="" />
+              <div class="funding-grid" id="fundingGrid">
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Comprehensive Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Comprehensive Waiver</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Support Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Support Waiver</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Grant Funding" onchange="syncFundingCheckboxes(); updateUI()" /> Grant Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Sarah Lopez Waiver (MOCDD)" onchange="syncFundingCheckboxes(); updateUI()" /> Sarah Lopez Wavier(MOCDD)</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="PAC Funding" onchange="syncFundingCheckboxes(); updateUI()" /> PAC Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="NEAI Funding" onchange="syncFundingCheckboxes(); updateUI()" /> NEAI Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="No Funding" onchange="syncFundingCheckboxes(); updateUI()" /> No Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Partnership for Hope Waiver" onchange="syncFundingCheckboxes(); updateUI()" />Partnership for Hope Waiver</label>
+                <label class="eth-check"><input type="checkbox" id="fundingOtherCb" value="Other" onchange="toggleFundingOther(); syncFundingCheckboxes(); updateUI()" /> Other</label>
+              </div>
+              <div id="fundingOtherGroup" style="display: none; margin-top: 8px">
+                <input type="text" id="fundingOtherText" placeholder="Please specify other funding" style="width: 100%; box-sizing: border-box" oninput="syncFundingCheckboxes(); updateUI()" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label>PCSP Meeting Date</label>
+              <input type="date" id="coverMeetingDate" oninput="updateUI()" />
+            </div>
+            <div class="field-group">
+              <label>PCSP Implementation Date</label>
+              <input type="date" id="coverImplDate" oninput="updateUI()" />
+            </div>
+            <div class="field-group full">
+              <label>DMH Home / Facility Name (If Applicable)</label>
+              <input
+                type="text"
+                id="coverHomeName"
+                placeholder="e.g. Oak Street Group Home"
+                oninput="updateUI()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 1: Demographics / Contributors / Legal ── -->
+        
+
+          <div
+            class="section-title"
+            style="color: var(--marion-blue); border-color: var(--marion-blue)"
+          >
+            PCSP DOCUMENT PREVIEW
+          </div>
+          
+        <!-- Print-only Executive Cover Sheet (Face Sheet) -->
+        
+
+
 <div class="form-section" id="sec-demographics">
           <div class="section-title">
             <span>2</span> Demographics / Contributors Information / Legal
@@ -2886,162 +3042,7 @@
           </label>
         </div>
 
-        <!-- ── Section 0: PCSP Cover Letter ── -->
-        <div class="form-section" id="sec-cover-letter">
-          <div class="section-title">
-            <span>1</span> PCSP Cover Letter / Face Sheet
-          </div>
-          <div class="form-grid">
-            <div class="field-group full">
-              <label>Individual Photo (Optional)</label>
-              <div style="display: flex; gap: 20px; align-items: start">
-                <div
-                  id="photoPreview"
-                  style="
-                    width: 150px;
-                    height: 180px;
-                    border: 2px dashed var(--border);
-                    border-radius: 12px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: var(--bg-light);
-                    overflow: hidden;
-                  "
-                >
-                  <span
-                    id="photoPlaceholder"
-                    style="
-                      font-size: 10px;
-                      color: var(--text-label);
-                      text-align: center;
-                      padding: 10px;
-                    "
-                    >No Image Uploaded</span
-                  >
-                  <img
-                    id="coverPhoto"
-                    style="
-                      display: none;
-                      width: 100%;
-                      height: 100%;
-                      object-fit: cover;
-                    "
-                  />
-                </div>
-                <div
-                  style="
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                  "
-                >
-                  <button
-                    class="btn btn-outline"
-                    onclick="document.getElementById('photoInput').click()"
-                  >
-                    📷 Upload Photo
-                  </button>
-                  <button
-                    class="btn btn-danger"
-                    id="removePhotoBtn"
-                    style="display: none; padding: 8px 16px; font-size: 12px"
-                    onclick="removePhoto()"
-                  >
-                    Remove Photo
-                  </button>
-                  <input
-                    type="file"
-                    id="photoInput"
-                    accept="image/*"
-                    style="display: none"
-                    onchange="handlePhotoUpload(event)"
-                  />
-                  <p
-                    style="
-                      font-size: 10px;
-                      color: var(--text-label);
-                      font-style: italic;
-                    "
-                  >
-                    Note: Photos are stored locally in your browser's RAM and
-                    included in .pcsp exports.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="field-group half">
-              <label>Full Legal Name</label>
-              <input
-                type="text"
-                id="coverLegalName"
-                placeholder="Full Name as it appears on DMH records"
-                oninput="updateUI()"
-              />
-            </div>
-            
-            <div class="field-group">
-              <label>DMH ID #</label>
-              <input
-                type="text"
-                id="coverDmhID"
-                placeholder="7-digit ID"
-                oninput="updateUI()"
-              />
-            </div>
-            <div class="field-group full">
-              <label>Funding Type</label>
-              <input type="hidden" id="coverFundingType" value="" />
-              <div class="funding-grid" id="fundingGrid">
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Comprehensive Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Comprehensive Waiver</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Support Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Support Waiver</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Grant Funding" onchange="syncFundingCheckboxes(); updateUI()" /> Grant Funding</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Sarah Lopez Waiver (MOCDD)" onchange="syncFundingCheckboxes(); updateUI()" /> Sarah Lopez Wavier(MOCDD)</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="PAC Funding" onchange="syncFundingCheckboxes(); updateUI()" /> PAC Funding</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="NEAI Funding" onchange="syncFundingCheckboxes(); updateUI()" /> NEAI Funding</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="No Funding" onchange="syncFundingCheckboxes(); updateUI()" /> No Funding</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Partnership for Hope Waiver" onchange="syncFundingCheckboxes(); updateUI()" />Partnership for Hope Waiver</label>
-                <label class="eth-check"><input type="checkbox" id="fundingOtherCb" value="Other" onchange="toggleFundingOther(); syncFundingCheckboxes(); updateUI()" /> Other</label>
-              </div>
-              <div id="fundingOtherGroup" style="display: none; margin-top: 8px">
-                <input type="text" id="fundingOtherText" placeholder="Please specify other funding" style="width: 100%; box-sizing: border-box" oninput="syncFundingCheckboxes(); updateUI()" />
-              </div>
-            </div>
-            <div class="field-group">
-              <label>PCSP Meeting Date</label>
-              <input type="date" id="coverMeetingDate" oninput="updateUI()" />
-            </div>
-            <div class="field-group">
-              <label>PCSP Implementation Date</label>
-              <input type="date" id="coverImplDate" oninput="updateUI()" />
-            </div>
-            <div class="field-group full">
-              <label>DMH Home / Facility Name (If Applicable)</label>
-              <input
-                type="text"
-                id="coverHomeName"
-                placeholder="e.g. Oak Street Group Home"
-                oninput="updateUI()"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Section 1: Demographics / Contributors / Legal ── -->
-        
-
-          <div
-            class="section-title"
-            style="color: var(--marion-blue); border-color: var(--marion-blue)"
-          >
-            PCSP DOCUMENT PREVIEW
-          </div>
-          
-        <!-- Print-only Executive Cover Sheet (Face Sheet) -->
-        
-
-<div id="narrativeDisplay">
+        <div id="narrativeDisplay">
             Complete sections to generate the full Missouri PCSP summary...
           </div>
           <div class="btn-bar">
