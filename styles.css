@@ -1473,11 +1473,7 @@ input:checked + .slider:before {
 }
 
 	/* Executive Cover Sheet (Face Sheet) for Print */
-	#printCoverSheet {
-		display: block !important;
-		page-break-after: always;
-		margin-bottom: 50px;
-	}
+	#printCoverSheet { display: block !important; page-break-after: always; margin-bottom: 50px; }
 }
 
 /* ─── COVER DOC STYLES (Print & Display) ─── */
