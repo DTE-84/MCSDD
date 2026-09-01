@@ -857,12 +857,15 @@ input:checked + .slider:before {
 		font-size: 11pt;
 	}
 	.app-container {
-		display: block;
+		display: block !important;
+		height: auto !important;
+		overflow: visible !important;
 	}
 	.main-workspace {
 		padding: 0;
 		width: 100%;
-		overflow: visible;
+		overflow: visible !important;
+		height: auto !important;
 	}
 	.individual-header {
 		background: var(--marion-blue) !important;
@@ -1393,6 +1396,8 @@ input:checked + .slider:before {
 	/* Show only the narrative output */
 	.app-container {
 		display: block !important;
+		height: auto !important;
+		overflow: visible !important;
 	}
 	.side-panel {
 		display: none !important;
@@ -1679,4 +1684,21 @@ textarea:focus-visible {
 }
 [data-theme="dark"] .comm-check-label {
 	color: var(--success);
+
+	.print-label {
+		color: #0F52BA !important; /* Marion Blue for Subject Title */
+		font-weight: 700;
+	}
+	.print-value {
+		color: #212529 !important; /* Charcoal for Value */
+		font-weight: normal;
+	}
+	.print-head {
+		color: #1A365D !important; /* Darker Blue for Section Headers */
+		font-weight: 800;
+	}
+	.print-head-line {
+		color: #D4AF37 !important; /* Gold line */
+	}
+
 }

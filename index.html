@@ -855,12 +855,41 @@
             </div>
             <div class="field-group" id="transferringDmhContainer" style="display: none;">
               <label>Transferred DMH Office Type</label>
-              <select id="transferredOfficeType" onchange="updateUI()">
+              <select id="transferredOfficeType" onchange="toggleTransferringLocation(); updateUI()">
                 <option value="">-- Select --</option>
                 <option value="Regional Office">Regional Office</option>
                 <option value="Satellite Office">Satellite Office</option>
                 <option value="Habilitation Center">Habilitation Center</option>
               </select>
+            </div>
+            <div class="field-group" id="transferringLocationContainer" style="display: none;">
+              <label>Location of Facility</label>
+              <input type="text" id="transferredLocation" placeholder="Enter location..." oninput="updateUI()" />
+            </div>
+            <div class="field-group full" id="transferringExtraContainer" style="display: none; padding-top: 15px; border-top: 1px dashed var(--border);">
+              <div class="field-group full">
+                <label>Transferred DMH Home / Facility Name (If Applicable) or Natural Home Address</label>
+                <select id="transferredHomeType" onchange="toggleTransferringHome(); updateUI()">
+                  <option value="">-- Select --</option>
+                  <option value="DMH Home or Facility">DMH Home or Facility</option>
+                  <option value="Natural Home">Natural Home</option>
+                </select>
+              </div>
+              
+              <div class="field-group full" id="transferredAgencyContainer" style="display: none;">
+                <label>Name of Agency</label>
+                <input type="text" id="transferredAgencyName" placeholder="Enter name of agency..." oninput="updateUI()" />
+              </div>
+
+              <div class="field-group full">
+                <label>Transferred Location Address</label>
+                <input type="text" id="transferredLocationAddress" placeholder="Enter address..." oninput="updateUI()" />
+              </div>
+
+              <div class="field-group full">
+                <label>Notable Changes due to Transfer</label>
+                <textarea id="transferredNotableChanges" placeholder="Enter notable changes..." oninput="updateUI()"></textarea>
+              </div>
             </div>
 
 
@@ -1515,6 +1544,7 @@
               <label>Primary Communication Method(s)</label>
               <div class="comm-method-grid" id="commMethodGrid">
                 <label class="eth-check"><input type="checkbox" value="Verbal / Spoken" onchange="updateUI()"> Verbal / Spoken</label>
+                <label class="eth-check"><input type="checkbox" value="ASL / Sign Language" onchange="updateUI()"> ASL / Sign Language</label>
                 <label class="eth-check"><input type="checkbox" value="Written Communication" onchange="updateUI()"> Written Communication</label>
                 <label class="eth-check"><input type="checkbox" value="Behavior as Communication" onchange="updateUI()"> Behavior as Communication</label>
                 <label class="eth-check"><input type="checkbox" value="Eye Gaze / Pointing" onchange="updateUI()"> Eye Gaze / Pointing</label>
@@ -1712,13 +1742,15 @@
                   <label>1. Discuss IEP and supports for school.</label>
                   <textarea id="hcbsEduQ1" oninput="updateUI()"></textarea>
                 </div>
-                <div class="field-group full">
-                  <label>2. Current release signed for school date:</label>
-                  <input type="date" id="hcbsEduQ2" oninput="updateUI()">
-                </div>
-                <div class="field-group full">
-                  <label>3. Dates requested IEP if IEP not received:</label>
-                  <textarea id="hcbsEduQ3" placeholder="_____,______,___" oninput="updateUI()"></textarea>
+                <div style="display: flex; gap: 15px; align-items: flex-start; margin-bottom: 15px;">
+                  <div class="field-group" style="flex: 1; margin-bottom: 0;">
+                    <label>2. Current release signed for school date:</label>
+                    <input type="date" id="hcbsEduQ2" oninput="updateUI()">
+                  </div>
+                  <div class="field-group" style="flex: 1; margin-bottom: 0;">
+                    <label>3. Dates requested IEP if IEP not received:</label>
+                    <input type="date" id="hcbsEduQ3" oninput="updateUI()">
+                  </div>
                 </div>
               </div>
             </div>
@@ -1996,9 +2028,7 @@
               </div>
                 <div class="field-group full">
                   <label>Residential or Service Setting</label>
-                  <div id="dnrAltSettingsContainer" style="font-size: 13px; color: var(--text-main); background: #fff; border: 1px solid var(--border); padding: 10px; border-radius: 4px; min-height: 40px;">
-                    <em style="color: var(--text-label);">Selected Section 8 services will populate here...</em>
-                  </div>
+                  <textarea id="dnrAltSettings" style="width: 100%; min-height: 60px;" placeholder="Type the appropriate plan/service and code..." oninput="updateUI()"></textarea>
                 </div>
             
               <div class="subsection-label">2. Emergency Services (911) Protocol</div>
@@ -2525,23 +2555,66 @@
             <span>14</span> Behavioral
           </div>
           <div class="form-grid">
-            <div class="field-group">
+            <div class="field-group full">
               <label>Behavioral Support</label>
-              <select id="behavioralStatus" onchange="updateUI()">
-                <option value="None">None Needed</option>
-                <option value="FBA Active">FBA Active</option>
-                <option value="BSP Active">BSP Active</option>
-                <option value="ATSC Involved">ATSC Involved</option>
-              </select>
+              <div style="display: flex; gap: 15px; align-items: flex-start;">
+                <div style="flex: 1;">
+                  <input type="hidden" id="behavioralStatus" onchange="updateUI()">
+                  <div class="multi-select-container" id="behavioralStatusContainer" style="width: 100%;">
+                    <div class="multi-select-display" onclick="toggleMultiSelect('behavioralStatusContainer')">
+                      <div class="selected-tags" id="behavioralStatusTags">
+                        <span class="placeholder">Select options...</span>
+                      </div>
+                    </div>
+                    <div class="multi-select-dropdown">
+                      <label class="multi-option"><input type="checkbox" value="None Needed" onchange="updateBehavioralStatusUI(); updateUI();"><span>None Needed</span></label>
+                      <label class="multi-option"><input type="checkbox" value="FBA Active" onchange="updateBehavioralStatusUI(); updateUI();"><span>FBA Active</span></label>
+                      <label class="multi-option"><input type="checkbox" value="FBA Inactive but Utilized as support" onchange="updateBehavioralStatusUI(); updateUI();"><span>FBA Inactive but Utilized as support</span></label>
+                      <label class="multi-option"><input type="checkbox" value="BSP Active" onchange="updateBehavioralStatusUI(); updateUI();"><span>BSP Active</span></label>
+                      <label class="multi-option"><input type="checkbox" value="ATSC Involved" onchange="updateBehavioralStatusUI(); updateUI();"><span>ATSC Involved</span></label>
+                    </div>
+                  </div>
+                </div>
+                <label class="eth-check" style="margin-top: 10px; flex-shrink: 0;">
+                  <input type="checkbox" id="behavioralGoalAdded" onchange="updateUI()">
+                  Goal Added in Action Plan (required)
+                </label>
+              </div>
             </div>
-            <div class="field-group">
-              <label>Staff Precautions</label>
-              <select id="oshaPrecaution" onchange="updateUI()">
-                <option value="Standard universal precautions apply.">Standard Precautions</option>
-                <option value="Two-staff escort required for community.">2-Staff Escort Protocol</option>
-                <option value="Staff to maintain clear path to exit.">Environmental Awareness</option>
-                <option value="Utilize de-escalation (Mandt/NCI).">De-escalation Protocol</option>
-              </select>
+            
+            <div class="field-group full">
+              <label>Implemented Crisis Plan</label>
+              <div style="display: flex; gap: 15px;">
+                <label class="eth-check"><input type="checkbox" id="crisisPlanYes" onchange="document.getElementById('crisisPlanNo').checked=false; toggleCrisisPlan(); updateUI()"> Yes</label>
+                <label class="eth-check"><input type="checkbox" id="crisisPlanNo" onchange="document.getElementById('crisisPlanYes').checked=false; toggleCrisisPlan(); updateUI()"> No</label>
+              </div>
+              <div id="crisisPlanDetailsContainer" style="display: none; margin-top: 10px; border-left: 2px solid var(--border); padding-left: 15px;">
+                <div class="field-group full" style="margin-bottom: 10px;">
+                  <label>Location of Crisis Plan</label>
+                  <input type="text" id="crisisPlanLocation" placeholder="Location..." oninput="updateUI()">
+                </div>
+                <div class="field-group full" style="margin-bottom: 0;">
+                  <label>Detail the Crisis Plan</label>
+                  <textarea id="crisisPlanDetail" placeholder="Details..." oninput="updateUI()"></textarea>
+                </div>
+              </div>
+            </div>
+            
+            <div class="field-group full">
+              <label>Was the Behavioral Assessment Completed by the SC</label>
+              <div style="display: flex; gap: 15px;">
+                <label class="eth-check"><input type="checkbox" id="behavioralAssessmentYes" onchange="document.getElementById('behavioralAssessmentNo').checked=false; toggleBehavioralAssessment(); updateUI()"> Yes</label>
+                <label class="eth-check"><input type="checkbox" id="behavioralAssessmentNo" onchange="document.getElementById('behavioralAssessmentYes').checked=false; toggleBehavioralAssessment(); updateUI()"> No</label>
+              </div>
+              <div id="behavioralAssessmentDateContainer" style="display: none; margin-top: 10px; border-left: 2px solid var(--border); padding-left: 15px;">
+                <div class="field-group full" style="margin-bottom: 0;">
+                  <label>Date Completed</label>
+                  <input type="date" id="behavioralAssessmentDate" oninput="updateUI()">
+                  <div style="font-size: 13px; color: var(--text-base); margin-top: 8px;">
+                    <em>See attachment for Behavioral Risk Assessment details</em>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="field-group full">
               <label>Behavioral Summary / Notes</label>
@@ -2569,47 +2642,76 @@
             <div style="font-weight: 600; border-bottom: 1px solid #ccc; padding-bottom: 4px;">Risk Level</div>
 
             <div style="font-size: 13px; font-weight: 500;">Chemicals</div>
-            <select id="sup_chemicals" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="sup_chemicals" onchange="updateUI()">
+<option value="1. Independent – No supervision required">1. Independent</option>
+                <option value="2. Intermittent/Periodic Checks – Staff/caregiver checks in at set intervals">2. Intermittent/Periodic Checks</option>
+                <option value="3. Available/On-Call – Support is not present but reachable/nearby">3. Available/On-Call</option>
+                <option value="4. Close Supervision – Staff/caregiver in close proximity">4. Close Supervision</option>
+                <option value="5. Line-of-Sight – Individual must be visible at all times">5. Line-of-Sight</option>
+                <option value="6. Direct/Hands-On (1:1) – Staff/caregiver within arm's reach">6. Direct/Hands-On (1:1)</option>
+</select>
             <select id="risk_chemicals" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
 
             <div style="font-size: 13px; font-weight: 500;">Cooking</div>
-            <select id="sup_cooking" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="sup_cooking" onchange="updateUI()">
+<option value="1. Independent – No supervision required">1. Independent</option>
+                <option value="2. Intermittent/Periodic Checks – Staff/caregiver checks in at set intervals">2. Intermittent/Periodic Checks</option>
+                <option value="3. Available/On-Call – Support is not present but reachable/nearby">3. Available/On-Call</option>
+                <option value="4. Close Supervision – Staff/caregiver in close proximity">4. Close Supervision</option>
+                <option value="5. Line-of-Sight – Individual must be visible at all times">5. Line-of-Sight</option>
+                <option value="6. Direct/Hands-On (1:1) – Staff/caregiver within arm's reach">6. Direct/Hands-On (1:1)</option>
+</select>
             <select id="risk_cooking" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
 
-            <div style="font-size: 13px; font-weight: 500;">911</div>
-            <select id="sup_911" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
-            <select id="risk_911" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+            
 
-            <div style="font-size: 13px; font-weight: 500;">Support for emergency procedures</div>
-            <select id="sup_emerg_procedures" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
-            <select id="risk_emerg_procedures" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+            
 
             <div style="font-size: 13px; font-weight: 500;">Stranger awareness</div>
-            <select id="sup_stranger" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="sup_stranger" onchange="updateUI()">
+<option value="1. Independent – No supervision required">1. Independent</option>
+                <option value="2. Intermittent/Periodic Checks – Staff/caregiver checks in at set intervals">2. Intermittent/Periodic Checks</option>
+                <option value="3. Available/On-Call – Support is not present but reachable/nearby">3. Available/On-Call</option>
+                <option value="4. Close Supervision – Staff/caregiver in close proximity">4. Close Supervision</option>
+                <option value="5. Line-of-Sight – Individual must be visible at all times">5. Line-of-Sight</option>
+                <option value="6. Direct/Hands-On (1:1) – Staff/caregiver within arm's reach">6. Direct/Hands-On (1:1)</option>
+</select>
             <select id="risk_stranger" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
 
-            <div style="font-size: 13px; font-weight: 500;">Emergency safety / home dangers</div>
-            <select id="sup_emerg_safety" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
-            <select id="risk_emerg_safety" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+            
 
             <div style="font-size: 13px; font-weight: 500;">Choking risk / aspiration supports needed</div>
-            <select id="sup_choking_risk" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="sup_choking_risk" onchange="updateUI()">
+<option value="1. Independent – No supervision required">1. Independent</option>
+                <option value="2. Intermittent/Periodic Checks – Staff/caregiver checks in at set intervals">2. Intermittent/Periodic Checks</option>
+                <option value="3. Available/On-Call – Support is not present but reachable/nearby">3. Available/On-Call</option>
+                <option value="4. Close Supervision – Staff/caregiver in close proximity">4. Close Supervision</option>
+                <option value="5. Line-of-Sight – Individual must be visible at all times">5. Line-of-Sight</option>
+                <option value="6. Direct/Hands-On (1:1) – Staff/caregiver within arm's reach">6. Direct/Hands-On (1:1)</option>
+</select>
             <select id="risk_choking_risk" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
 
             <div style="font-size: 13px; font-weight: 500;">Mobility support needs / falls</div>
-            <select id="sup_mobility_falls" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
+            <select id="sup_mobility_falls" onchange="updateUI()">
+<option value="1. Independent – No supervision required">1. Independent</option>
+                <option value="2. Intermittent/Periodic Checks – Staff/caregiver checks in at set intervals">2. Intermittent/Periodic Checks</option>
+                <option value="3. Available/On-Call – Support is not present but reachable/nearby">3. Available/On-Call</option>
+                <option value="4. Close Supervision – Staff/caregiver in close proximity">4. Close Supervision</option>
+                <option value="5. Line-of-Sight – Individual must be visible at all times">5. Line-of-Sight</option>
+                <option value="6. Direct/Hands-On (1:1) – Staff/caregiver within arm's reach">6. Direct/Hands-On (1:1)</option>
+</select>
             <select id="risk_mobility_falls" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
 
-            <div style="font-size: 13px; font-weight: 500;">Probation / parole</div>
-            <select id="sup_probation" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
-            <select id="risk_probation" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+            
 
-            <div style="font-size: 13px; font-weight: 500;">Criminal and other behavior that places person or others at risk</div>
-            <select id="sup_criminal_behavior" onchange="updateUI()"><option value="Standard">Standard</option><option value="Line of Sight">Line of Sight</option></select>
-            <select id="risk_criminal_behavior" onchange="updateUI()"><option value="Low">Low Risk</option><option value="Moderate">Moderate Risk</option><option value="High">High Risk</option></select>
+            
           </div>
 
           <div class="form-grid">
+            <div class="field-group full" style="margin-bottom: 20px;">
+              <label>Criminal and other Behavior / Probation / Parole</label>
+              <textarea id="criminalBehaviorNotes" placeholder="Enter details..." oninput="updateUI()"></textarea>
+            </div>
             <div class="field-group full">
               <label>Evacuation / 911 Plan</label>
               <textarea id="evacPlan" placeholder="Describe steps for emergencies and evacuation." oninput="updateUI()"></textarea>
@@ -2690,10 +2792,7 @@
             </div>
           </div>
 
-          <div id="dueProcessContainer"></div>
-          <button class="btn btn-outline" type="button" onclick="addDueProcess()" style="margin-bottom: 20px;" id="addDueProcessBtn">
-            + Add Limitation / Due Process
-          </button>
+          
           
           <div style="font-size: 11px; color: var(--text-label); font-style: italic; margin-top: -10px; border-top: 1px dashed var(--border); padding-top: 10px;">
             * Contains information regarding right to appeal. "If _________ wishes to file a complaint, _________ will be referred to the Office of Constituent Services."

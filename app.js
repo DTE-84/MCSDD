@@ -358,7 +358,7 @@ const FORM_FIELDS = [
   "dmhLocation",
   "isTransferring",
   "transferredTcm",
-  "transferredOfficeType",
+  "transferredOfficeType", "transferredLocation", "transferredHomeType", "transferredAgencyName", "transferredLocationAddress", "transferredNotableChanges",
   "maritalStatus",
   "voterStatus",
   "religion",
@@ -446,21 +446,29 @@ const FORM_FIELDS = [
   "referralNotes", "referralOtherText",
   // Section 14 - Behavioral
   "behavioralStatus",
+  "behavioralGoalAdded",
+  "crisisPlanYes",
+  "crisisPlanNo",
+  "crisisPlanLocation",
+  "crisisPlanDetail",
+  "behavioralAssessmentYes",
+  "behavioralAssessmentNo",
+  "behavioralAssessmentDate",
   "psychotropicProtocol",
   "behavioralNotes",
   // Section 15 - Supervision
   "alteredSupervision",
   "sup_chemicals", "risk_chemicals",
   "sup_cooking", "risk_cooking",
-  "sup_911", "risk_911",
-  "sup_emerg_procedures", "risk_emerg_procedures",
+  
+  
   "sup_stranger", "risk_stranger",
-  "sup_emerg_safety", "risk_emerg_safety",
+  
   "sup_choking_risk", "risk_choking_risk",
   "sup_mobility_falls", "risk_mobility_falls",
-  "sup_probation", "risk_probation",
-  "sup_criminal_behavior", "risk_criminal_behavior",
-  "oshaPrecaution",
+  
+  
+  
   "backupPlan",
   "staffSupportNeeds",
   "needsEmergencyAssistance",
@@ -548,10 +556,11 @@ const FORM_FIELDS = [
   "hp_SeizureLogs",
   "hp_BowelLogs",
   "healthRisks",
+  "criminalBehaviorNotes",
   "evacPlan",
   "dnrStatus",
   "dnrAltMustTake",
-  "dnrAltMustAvoid",
+  "dnrAltMustAvoid", "dnrAltSettings",
   "dnrAltIndividualName",
   "dnrAltFormLocation",
   "dnrAltReviewDate",
@@ -1023,6 +1032,7 @@ function addGoal() {
     task: "",
     responsible: [],
     frequency: [],
+    throughDate: "",
   });
   renderGoals();
   updateUI();
@@ -1096,6 +1106,7 @@ function renderGoals() {
               .join("")}
           </div>
         </div>
+        <div class="field-group"><label>Through Date</label><input type="date" value="${esc(goal.throughDate || '')}" oninput="updateGoalField(${goal.id},'throughDate',this.value)"></div>
       </div>
     </div>`,
     )
@@ -1212,7 +1223,54 @@ function updateTransitionCostTotal() {
   totalDiv.style.display = 'block';
 }
 
+function updateBehavioralStatusUI() {
+  const container = document.getElementById("behavioralStatusContainer");
+  const tags = document.getElementById("behavioralStatusTags");
+  const hiddenInput = document.getElementById("behavioralStatus");
+  if(!container || !tags || !hiddenInput) return;
+  
+  const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+  const selected = [];
+  checkboxes.forEach(cb => {
+    if (cb.checked) selected.push(cb.value);
+  });
+  
+  if (selected.length === 0) {
+    tags.innerHTML = '<span class="placeholder">Select options...</span>';
+  } else {
+    tags.innerHTML = selected.map(val => `<span class="tag">${val}</span>`).join('');
+  }
+  
+  hiddenInput.value = selected.join(", ");
+}
+
+function restoreBehavioralStatus(val) {
+  if (!val) return;
+  const container = document.getElementById("behavioralStatusContainer");
+  if (!container) return;
+  const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+  const selected = val.split(", ").map(s => s.trim());
+  checkboxes.forEach(cb => {
+    cb.checked = selected.includes(cb.value);
+  });
+  updateBehavioralStatusUI();
+}
+
+
+function toggleCrisisPlan() {
+  const isYes = document.getElementById("crisisPlanYes")?.checked;
+  const container = document.getElementById("crisisPlanDetailsContainer");
+  if(container) container.style.display = isYes ? "block" : "none";
+}
+
+function toggleBehavioralAssessment() {
+  const isYes = document.getElementById("behavioralAssessmentYes")?.checked;
+  const container = document.getElementById("behavioralAssessmentDateContainer");
+  if(container) container.style.display = isYes ? "block" : "none";
+}
+
 function updateUI() {
+  if(typeof toggleTransferringLocation === 'function') toggleTransferringLocation();
   updateTransitionCostTotal();
   const isPrivacyOn = document.getElementById("privacyToggle").checked;
   const getVal = (id) => {
@@ -1278,11 +1336,11 @@ function updateUI() {
     t += s + "\n";
   };
   const head = (s) => {
-    line(s);
-    line("─".repeat(67));
+    line(`<span class="print-head">${esc(s)}</span>`);
+    line(`<span class="print-head-line">${"─".repeat(67)}</span>`);
     line("");
   };
-  const field = (l, v) => line(`${l}: ${v || "N/A"}`);
+  const field = (l, v) => line(`<span class="print-label">${esc(l)}:</span> <span class="print-value">${esc(v || "N/A")}</span>`);
 
   head("1. PCSP COVER LETTER / FACE SHEET");
   line("Marion County Services for the Developmentally Disabled");
@@ -1307,6 +1365,18 @@ function updateUI() {
     field("Transferring", "Yes");
     field("Transferred TCM Agency", getVal("transferredTcm"));
     field("Transferred DMH Office Type", getVal("transferredOfficeType"));
+    if (getVal("transferredOfficeType")) {
+      field("Location of Facility", getVal("transferredLocation"));
+    }
+    const homeType = getVal("transferredHomeType");
+    if (homeType) {
+      field("Transferred DMH Home / Facility", homeType);
+      if (homeType === "DMH Home or Facility") {
+        field("Name of Agency", getVal("transferredAgencyName"));
+      }
+    }
+    field("Transferred Location Address", getVal("transferredLocationAddress"));
+    field("Notable Changes due to Transfer", getVal("transferredNotableChanges"));
   }
   const rel = getVal("religion");
   if (rel === "Other") {
@@ -1509,8 +1579,17 @@ function updateUI() {
           field("      Paid Family Member Providing Supports?", s.sdsPaidFamilyMember);
           if (s.sdsPaidFamilyMember === "Yes") {
             field("        Individual opposed to family member?", s.sdsFamilyOpposed);
+            if (s.sdsFamilyOpposed === 'Yes') {
+              field("        Opposition Details", s.sdsFamilyOpposedDetails);
+            }
             field("        Supports solely for individual", s.sdsFamilyHouseholdTasks ? "Yes" : "No");
+            if (!s.sdsFamilyHouseholdTasks) {
+              field("        Household Tasks Details", s.sdsFamilyHouseholdTasksDetails);
+            }
             field("        Team agrees family best meets needs", s.sdsFamilyBestMeetNeeds ? "Yes" : "No");
+            if (!s.sdsFamilyBestMeetNeeds) {
+              field("        Team Agreement Details", s.sdsFamilyBestMeetNeedsDetails);
+            }
           }
         }
         
@@ -1714,23 +1793,7 @@ function updateUI() {
     line("  1. Specified Modified Interventions");
     line(`     - Staff MUST TAKE: In a cardiac or respiratory emergency, staff will not perform chest compressions or standard CPR. Staff will immediately administer ${getVal("dnrAltMustTake") || "__________"} and call 911.`);
     line(`     - MUST AVOID: ${getVal("dnrAltMustAvoid") || "__________"}`);
-    if (hcbsServices && hcbsServices.length > 0) {
-      line("  Residential or Service Setting:");
-      hcbsServices.forEach((s) => {
-        let text = s.serviceName || "Unnamed Service";
-        if (s.subcategories && s.subcategories.length > 0) {
-          let subText = s.subcategories.map(sub => {
-            let parts = [sub.name];
-            if (sub.pos21) parts.push("[-POS21 Inpatient]");
-            if (sub.pos02) parts.push("[-POS02 Other than patient's home]");
-            if (sub.pos10) parts.push("[-10 In patient's home]");
-            return parts.join(" ");
-          }).join(" | ");
-          text += ": " + subText;
-        }
-        line(`     - ${text}`);
-      });
-    }
+    line(`  Residential or Service Setting: ${getVal("dnrAltSettings") || "__________"}`);
     line("  2. Emergency Services (911) Protocol");
     line("     Staff will call 911 immediately during an emergency. Staff must present the original, signed ALTERNATIVE to CPR Order Form directly to the first responders upon their arrival.");
     line("  3. Staff Training Requirements");
@@ -1957,7 +2020,27 @@ function updateUI() {
 
   head("14. BEHAVIORAL");
   field("Behavioral Status", getVal("behavioralStatus"));
-  field("Staff Precautions", getVal("oshaPrecaution"));
+  field("Goal Added in Action Plan", document.getElementById("behavioralGoalAdded")?.checked ? "Yes" : "No");
+
+  const cpYes = document.getElementById("crisisPlanYes")?.checked;
+  const cpNo = document.getElementById("crisisPlanNo")?.checked;
+  if(cpYes || cpNo) {
+    field("Implemented Crisis Plan", cpYes ? "Yes" : "No");
+    if(cpYes) {
+      field("  Location of Crisis Plan", getVal("crisisPlanLocation"));
+      field("  Crisis Plan Details", getVal("crisisPlanDetail"));
+    }
+  }
+
+  const baYes = document.getElementById("behavioralAssessmentYes")?.checked;
+  const baNo = document.getElementById("behavioralAssessmentNo")?.checked;
+  if(baYes || baNo) {
+    field("Behavioral Assessment Completed by SC", baYes ? "Yes" : "No");
+    if(baYes) {
+      field("  Assessment Date", getVal("behavioralAssessmentDate"));
+      line("  See attachment for Behavioral Risk Assessment details");
+    }
+  }
   field("Psychotropic Protocol", getVal("psychotropicProtocol"));
   field("Behavioral Notes", getVal("behavioralNotes"));
   line("");
@@ -1970,19 +2053,15 @@ function updateUI() {
   const domains = [
     { label: "Chemicals", id: "chemicals" },
     { label: "Cooking", id: "cooking" },
-    { label: "911", id: "911" },
-    { label: "Support for emergency procedures", id: "emerg_procedures" },
     { label: "Stranger awareness", id: "stranger" },
-    { label: "Emergency safety / home dangers", id: "emerg_safety" },
     { label: "Choking risk / aspiration supports needed", id: "choking_risk" },
-    { label: "Mobility support needs / falls", id: "mobility_falls" },
-    { label: "Probation / parole", id: "probation" },
-    { label: "Criminal and other behavior that places person or others at risk", id: "criminal_behavior" }
+    { label: "Mobility support needs / falls", id: "mobility_falls" }
   ];
   domains.forEach(d => {
     line(`  - ${d.label}: Supervision (${getVal(`sup_${d.id}`)}) | Risk (${getVal(`risk_${d.id}`)})`);
   });
   
+  field("Criminal and other Behavior / Probation / Parole", getVal("criminalBehaviorNotes"));
   field("Staff Support Needs", getVal("staffSupportNeeds"));
 
   if (document.getElementById("needsEmergencyAssistance")?.checked) {
@@ -2006,19 +2085,8 @@ function updateUI() {
     line("  - No active limitations.");
   } else if (document.getElementById("dueProcessAttached")?.checked) {
     line("  - See Attached.");
-  } else if (dueProcessItems.length === 0) {
-    line("  - No limitations documented.");
   } else {
-    dueProcessItems.forEach((dp, idx) => {
-      line(`Limitation #${idx + 1}:`);
-      line(`  - Meeting Invitation: ${dp.invitation}`);
-      line(`  - Description: ${dp.description}`);
-      line(`  - Less Intrusive Methods: ${dp.lessIntrusive}`);
-      line(`  - Historical Pattern: ${dp.historical}`);
-      line(`  - Teaching & Support: ${dp.teaching}`);
-      line(`  - Lifting Criteria: ${dp.liftingCriteria}`);
-      line(`  - Monitoring: ${dp.monitoring}`);
-    });
+    line("  - No limitations documented.");
   }
   line("");
   const fName = getVal("firstName") || "the individual";
@@ -2047,7 +2115,7 @@ function updateUI() {
     goalsData
       .map(
         (g) =>
-          `[${g.domain}] Goal: ${g.goal} | Task: ${g.task} | Responsible: ${g.responsible.join(", ")} | Frequency: ${g.frequency.join(", ")}`,
+          `[${g.domain}] Goal: ${g.goal} | Task: ${g.task} | Responsible: ${g.responsible.join(", ")} | Frequency: ${g.frequency.join(", ")}${g.throughDate ? " | Through Date: " + g.throughDate : ""}`,
       )
       .join("\n"),
   );
@@ -2164,7 +2232,7 @@ function updateUI() {
   line("\n" + "═".repeat(67));
   line(`PCSP FOR: ${displayName.toUpperCase()} | DMH ID: ${displayDMH}`);
 
-  document.getElementById("narrativeDisplay").innerText = t;
+  document.getElementById("narrativeDisplay").innerHTML = t;
 }
 
 // ── UTILS ──
@@ -2457,12 +2525,26 @@ function toggleDmhLocation() {
     container.style.display = officeType ? "block" : "none";
   }
 }
+function toggleTransferringLocation() {
+  const type = document.getElementById("transferredOfficeType")?.value;
+  const container = document.getElementById("transferringLocationContainer");
+  if (container) {
+    container.style.display = type ? "block" : "none";
+  }
+}
+function toggleTransferringHome() {
+  const t = document.getElementById("transferredHomeType")?.value;
+  const c = document.getElementById("transferredAgencyContainer");
+  if (c) c.style.display = (t === "DMH Home or Facility") ? "block" : "none";
+}
 function toggleTransferring() {
   const isTransferring = document.getElementById("isTransferring").checked;
   const tcmContainer = document.getElementById("transferringTcmContainer");
   const dmhContainer = document.getElementById("transferringDmhContainer");
   if (tcmContainer) tcmContainer.style.display = isTransferring ? "block" : "none";
   if (dmhContainer) dmhContainer.style.display = isTransferring ? "block" : "none";
+  const extraContainer = document.getElementById("transferringExtraContainer");
+  if (extraContainer) extraContainer.style.display = isTransferring ? "block" : "none";
 }
 function toggleReligionOther() {
   document.getElementById("religionOtherGroup").style.display =
@@ -3249,7 +3331,7 @@ function renderHcbsServices() {
         ` : ''}
         ${s.serviceName && !s.sdsUtilized ? `
           <div style="display: flex; gap: 15px; margin-top: 15px; padding: 0 5px;">
-            <div class="field-group" style="flex: 2;">
+            <div class="field-group" style="flex: 1;">
               <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Service/Program Details</label>
               <textarea oninput="updateHcbsService(${i}, 'serviceDetails', this.value)" style="min-height: 80px;">${esc(s.serviceDetails || "")}</textarea>
             </div>
@@ -3339,23 +3421,34 @@ function renderHcbsServices() {
                 <div style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.02); border: 1px solid var(--border);">
                   <div class="field-group full" style="margin-bottom: 25px;">
                     <label>Is the individual opposed to the family member providing the support?</label>
-                    <select onchange="updateHcbsService(${i}, 'sdsFamilyOpposed', this.value)">
-                      <option value="">Select...</option>
-                      <option value="Yes" ${s.sdsFamilyOpposed === 'Yes' ? 'selected' : ''}>Yes</option>
-                      <option value="No" ${s.sdsFamilyOpposed === 'No' ? 'selected' : ''}>No</option>
-                    </select>
+                    <div style="display: flex; gap: 15px; align-items: flex-start;">
+                      <select style="width: 150px; flex-shrink: 0;" onchange="updateHcbsService(${i}, 'sdsFamilyOpposed', this.value)">
+                        <option value="">Select...</option>
+                        <option value="Yes" ${s.sdsFamilyOpposed === 'Yes' ? 'selected' : ''}>Yes</option>
+                        <option value="No" ${s.sdsFamilyOpposed === 'No' ? 'selected' : ''}>No</option>
+                      </select>
+                      ${s.sdsFamilyOpposed === 'Yes' ? `
+                        <textarea style="flex: 1;" placeholder="Provide detailed information regarding the opposition..." oninput="updateHcbsService(${i}, 'sdsFamilyOpposedDetails', this.value)">${esc(s.sdsFamilyOpposedDetails || "")}</textarea>
+                      ` : ''}
+                    </div>
                   </div>
                   <div class="field-group full">
                     <label class="eth-check">
                       <input type="checkbox" ${s.sdsFamilyHouseholdTasks ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsFamilyHouseholdTasks', this.checked)">
                       The supports to be provided are solely for the individual and not household tasks expected to be shared with people who live in the family unit.
                     </label>
+                    ${!s.sdsFamilyHouseholdTasks ? `
+                      <textarea style="margin-top: 10px;" placeholder="Please detail why..." oninput="updateHcbsService(${i}, 'sdsFamilyHouseholdTasksDetails', this.value)">${esc(s.sdsFamilyHouseholdTasksDetails || "")}</textarea>
+                    ` : ''}
                   </div>
                   <div class="field-group full">
                     <label class="eth-check">
                       <input type="checkbox" ${s.sdsFamilyBestMeetNeeds ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsFamilyBestMeetNeeds', this.checked)">
                       The PCSP team agrees that the family member providing the individual assistance will best meet the individual's needs.
                     </label>
+                    ${!s.sdsFamilyBestMeetNeeds ? `
+                      <textarea style="margin-top: 10px;" placeholder="Please detail why..." oninput="updateHcbsService(${i}, 'sdsFamilyBestMeetNeedsDetails', this.value)">${esc(s.sdsFamilyBestMeetNeedsDetails || "")}</textarea>
+                    ` : ''}
                   </div>
                 </div>
               ` : ''}
@@ -3680,27 +3773,7 @@ function renderDnrAltLists() {
     `).join("");
   }
   
-  const settingsContainer = document.getElementById("dnrAltSettingsContainer");
-  if (settingsContainer) {
-    if (hcbsServices.length === 0) {
-      settingsContainer.innerHTML = `<em style="color: var(--text-label);">No Programs or Services added in Section 8.</em>`;
-    } else {
-      settingsContainer.innerHTML = hcbsServices.map((s, idx) => {
-        let text = s.serviceName || "Unnamed Service";
-        if (s.subcategories && s.subcategories.length > 0) {
-          let subText = s.subcategories.map(sub => {
-            let parts = [sub.name];
-            if (sub.pos21) parts.push("[-POS21 Inpatient]");
-            if (sub.pos02) parts.push("[-POS02 Other than patient's home]");
-            if (sub.pos10) parts.push("[-10 In patient's home]");
-            return parts.join(" ");
-          }).join(" | ");
-          text += ": " + subText;
-        }
-        return `<div style="padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">${esc(text)}</div>`;
-      }).join("");
-    }
-  }
+  
 }
 
 // ── PERSISTENCE ──
