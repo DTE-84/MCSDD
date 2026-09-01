@@ -13,27 +13,6 @@
 	--text-label: #555;
 }
 
-[data-theme="dark"] {
-	/* Backgrounds */
-	--bg-light: #0a0a0c;
-	--header-bg: #121216;
-	/* Borders */
-	--border: rgba(0, 255, 157, 0.15);
-	/* Brand */
-	--marion-blue: #314397; /* Kinetic Green */
-	--marion-blue-light: #2b4593;
-	--gold: #ffd700;
-	--gold-light: #ffeb3b;
-	/* Text hierarchy */
-	--text-main: #f4f1eb;
-	--text-label: #8a8fa8;
-	--text-heading: #ffffff;
-	--text-muted: #5c6378;
-	/* States */
-	--success: #00ff9d;
-	--danger: #ff4d4d;
-	--shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
 
 /* ── Lock Screen Styles ── */
 #lockScreen {
@@ -108,7 +87,7 @@
 }
 .welcome-card {
 	background: linear-gradient(145deg, #121216 0%, #0d0d10 100%);
-	border: 1px solid rgba(0, 255, 157, 0.15);
+	border: 1px solid rgba(255, 215, 0, 0.15);
 	border-radius: 16px;
 	width: 800px;
 	max-width: 100%;
@@ -1041,164 +1020,39 @@ input:checked + .slider:before {
    ════════════════════════════════════════════════════════════ */
 
 /* ── Page & workspace ── */
-[data-theme="dark"] .main-workspace {
-	background: #0f1117;
-	color: #e8eaf0;
-}
 
 /* ── Form cards ── */
-[data-theme="dark"] .form-section {
-	background: #1a1d27;
-	border-color: #2e3347;
-}
 
 /* ── ALL field labels (the uppercase topics above every input) ── */
-[data-theme="dark"] label {
-	color: #a0a8c0;
-}
 
 /* ── Section titles (e.g. "1 Demographics") ── */
-[data-theme="dark"] .section-title {
-	color: #c5cce0;
-	border-bottom-color: #c9a84c;
-}
 
 /* ── Subsection banner bars ── */
-[data-theme="dark"] .subsection-label {
-	background: #1e2130;
-	color: #c9a84c;
-	border-left-color: #c9a84c;
-}
 
 /* ── Inputs, selects, textareas ── */
-[data-theme="dark"] input,
-[data-theme="dark"] select,
-[data-theme="dark"] textarea {
-	background: #1e2130;
-	color: #e8eaf0;
-	border-color: #2e3347;
-}
-[data-theme="dark"] input:focus,
-[data-theme="dark"] select:focus,
-[data-theme="dark"] textarea:focus {
-	border-color: #5b8dee;
-	background: #252838;
-}
-[data-theme="dark"] input::placeholder,
-[data-theme="dark"] textarea::placeholder {
-	color: #5c6378;
-}
 
 /* ── Output / narrative area ── */
-[data-theme="dark"] .output-section {
-	background: #1a1d27;
-	border-color: #5b8dee;
-}
-[data-theme="dark"] #narrativeDisplay {
-	background: #1e2130;
-	color: #dde1ec;
-	border-color: #2e3347;
-}
+
 
 /* ── Side panels ── */
-[data-theme="dark"] .side-panel {
-	background: #1a1d27;
-	border-color: #2e3347;
-}
-[data-theme="dark"] .panel-content {
-	background: #1a1d27;
-}
-[data-theme="dark"] .resource-card {
-	background: #1e2130;
-	border-color: #2e3347;
-}
-[data-theme="dark"] .resource-card:hover {
-	border-color: #5b8dee;
-	background: #252838;
-}
-[data-theme="dark"] .resource-name {
-	color: #7aa3f5;
-}
-[data-theme="dark"] .resource-info {
-	color: #8b92a8;
-}
 
 /* ── History items ── */
-[data-theme="dark"] .history-item {
-	border-bottom-color: #2e3347;
-	color: #c5cce0;
-}
-[data-theme="dark"] .history-item:hover {
-	background: #252838;
-}
-[data-theme="dark"] .history-title {
-	color: #7aa3f5;
-}
-[data-theme="dark"] .history-date {
-	color: #5c6378;
-}
 
 /* ── Tabs ── */
-[data-theme="dark"] .tab-btn {
-	background: #1e2130;
-	color: #a0a8c0;
-}
-[data-theme="dark"] .tab-btn.active {
-	background: #5b8dee;
-	color: #ffffff;
-}
 
 /* ── Privacy banner ── */
-[data-theme="dark"] .privacy-banner {
-	background: #141b2d;
-	color: #7aa3f5;
-	border: 1px solid #2e3347;
-}
 
 /* ── Individual sticky header ── */
-[data-theme="dark"] .individual-header {
-	background: #1a1d27;
-	border-bottom-color: #c9a84c;
-	border-color: #2e3347;
-}
 
 /* ── Legal / rep cards ── */
-[data-theme="dark"] .legal-rep-card {
-	background: #1e2130;
-	border-color: #2e3347;
-}
-[data-theme="dark"] .rep-title {
-	color: #7aa3f5;
-}
 
 /* ── Outline button ── */
-[data-theme="dark"] .btn-outline {
-	border-color: #2e3347;
-	color: #a0a8c0;
-}
-[data-theme="dark"] .btn-outline:hover {
-	background: #252838;
-	color: #e8eaf0;
-}
 
 /* ── App header border ── */
-[data-theme="dark"] .app-header {
-	border-bottom-color: #2e3347;
-}
 
 /* ── Menu / hamburger ── */
-[data-theme="dark"] .menu-btn {
-	color: #7aa3f5;
-}
-[data-theme="dark"] .menu-btn:hover {
-	background: #1e2130;
-}
 
 /* ── Checkbox labels (eth-check, multi-option) ── */
-[data-theme="dark"] .eth-check,
-[data-theme="dark"] .multi-option {
-	color: #c5cce0;
-}
 
 /* ════════════════════════════════════════════════════════════
    MULTI-OPTION checkboxes (learning styles, health params, etc.)
@@ -1297,20 +1151,6 @@ input:checked + .slider:before {
 	color: var(--marion-blue);
 }
 
-[data-theme="dark"] .multi-select-display {
-	border-color: #2e3347;
-	background: #1e2130;
-}
-[data-theme="dark"] .multi-select-dropdown {
-	background: #1a1d27;
-	border-color: #2e3347;
-}
-[data-theme="dark"] .multi-select-dropdown .multi-option {
-	color: #c5cce0;
-}
-[data-theme="dark"] .multi-select-dropdown .multi-option:hover {
-	color: #7aa3f5;
-}
 
 /* ════════════════════════════════════════════════════════════
    SELECTED TAG PILLS (inside multi-select display)
@@ -1326,10 +1166,6 @@ input:checked + .slider:before {
 	border-radius: 12px;
 	margin: 2px 3px 2px 0;
 	white-space: nowrap;
-}
-[data-theme="dark"] .selected-tag {
-	background: #2d4a7a;
-	color: #c5d8ff;
 }
 .placeholder {
 	color: var(--text-label);
@@ -1368,10 +1204,6 @@ input:checked + .slider:before {
 	letter-spacing: 1px;
 	z-index: 9998;
 	pointer-events: none;
-}
-[data-theme="dark"] .main-workspace.drag-over::after {
-	background: rgba(10, 15, 30, 0.88);
-	color: #7aa3f5;
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -1655,9 +1487,6 @@ textarea:focus-visible {
 	border: 1px solid transparent;
 }
 
-[data-theme="dark"] .eth-check {
-	background: rgba(255, 255, 255, 0.03);
-}
 
 .eth-check:hover {
 	background: rgba(201, 168, 76, 0.1);
@@ -1682,23 +1511,26 @@ textarea:focus-visible {
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
 }
-[data-theme="dark"] .comm-check-label {
-	color: var(--success);
+/* PCSP Global Print/Narrative Formatting (Navy/Gold/Blue/White) */
+.print-label {
+	color: #003366 !important; /* Navy */
+	font-weight: 700 !important;
+}
+.print-value {
+	color: #333333 !important; /* Dark Grey/Black for readability against white */
+	font-weight: normal !important;
+}
+.print-head {
+	color: #004d99 !important; /* Blue */
+	font-weight: 800 !important;
+}
+.print-head-line {
+	color: #c5a059 !important; /* Gold */
+}
 
-	.print-label {
-		color: #0F52BA !important; /* Marion Blue for Subject Title */
-		font-weight: 700;
-	}
-	.print-value {
-		color: #212529 !important; /* Charcoal for Value */
-		font-weight: normal;
-	}
-	.print-head {
-		color: #1A365D !important; /* Darker Blue for Section Headers */
-		font-weight: 800;
-	}
-	.print-head-line {
-		color: #D4AF37 !important; /* Gold line */
-	}
-
+/* Force Document Preview to always be White background (Paper style) */
+#narrativeDisplay {
+    background: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid #003366 !important;
 }
