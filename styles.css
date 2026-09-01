@@ -1739,3 +1739,29 @@ textarea:focus-visible {
 	border-radius: 4px;
 	padding-left: 10px; /* offset the 2px border so text aligns */
 }
+
+@media print {
+    html, body {
+        height: auto !important;
+        overflow: visible !important;
+        position: static !important;
+    }
+    .main-workspace, .app-container {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+        position: static !important;
+    }
+    .output-section {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+        page-break-before: auto !important;
+    }
+    #narrativeDisplay {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+        page-break-before: auto !important;
+    }
+}
