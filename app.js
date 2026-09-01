@@ -1238,7 +1238,7 @@ function updateBehavioralStatusUI() {
   if (selected.length === 0) {
     tags.innerHTML = '<span class="placeholder">Select options...</span>';
   } else {
-    tags.innerHTML = selected.map(val => `<span class="tag">${val}</span>`).join('');
+    tags.innerHTML = selected.map(val => `<span class="selected-tag">${val}</span>`).join('');
   }
   
   hiddenInput.value = selected.join(", ");
