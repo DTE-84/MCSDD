@@ -407,389 +407,6 @@
       <!-- ── Main Workspace ── -->
       <main class="main-workspace">
         <!-- Print-only Executive Cover Sheet (Face Sheet) -->
-        <div id="printCoverSheet" class="cover-doc">
-          <div class="cover-header-bar">
-            <div class="cover-seal">
-              <svg
-                viewBox="0 0 80 80"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="40"
-                  cy="40"
-                  r="38"
-                  stroke="#c9a84c"
-                  stroke-width="2"
-                />
-                <circle
-                  cx="40"
-                  cy="40"
-                  r="33"
-                  stroke="#c9a84c"
-                  stroke-width="1"
-                  stroke-dasharray="3 2.5"
-                />
-                <polygon
-                  points="40,18 44.5,32 59,32 47.7,40.8 52.2,55 40,46.5 27.8,55 32.3,40.8 21,32 35.5,32"
-                  fill="none"
-                  stroke="#c9a84c"
-                  stroke-width="1.5"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <div>
-              <div class="cover-agency-name">
-                Marion County Services for Developmental Disabilities
-              </div>
-              <div class="cover-agency-sub">
-                Marion County · Division of Developmental Disabilities
-              </div>
-            </div>
-          </div>
-          <div class="cover-body">
-            <div class="cover-pcsp-layout">
-              <!-- Photo -->
-              <div class="cover-photo-col">
-                <div class="cover-photo-box" id="printPhotoBox">
-                  <img
-                    id="printPhotoImg"
-                    src=""
-                    alt="Individual Photo"
-                    style="
-                      display: none;
-                      width: 100%;
-                      height: 100%;
-                      object-fit: cover;
-                    "
-                  />
-                  <div
-                    id="printPhotoPlaceholder"
-                    style="text-align: center; padding: 20px; opacity: 0.3"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#c9a84c"
-                      stroke-width="1"
-                      width="32"
-                      height="32"
-                    >
-                      <circle cx="12" cy="8" r="4" />
-                      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="cover-hipaa-badge">HIPAA Protected</div>
-              </div>
-              <!-- Meta Grid -->
-              <div class="cover-fields-col">
-                <div class="cover-title-main">Person-Centered Support Plan</div>
-                <div class="cover-meta-grid">
-                  <div class="cover-meta-item full">
-                    <label>Full Legal Name</label>
-                    <span id="printName">—</span>
-                  </div>
-                  <div class="cover-meta-item">
-                    <label>DMH ID Number</label>
-                    <span id="printDMH">—</span>
-                  </div>
-
-                  <div class="cover-meta-item">
-                    <label>Funding Type</label>
-                    <span id="printFunding">—</span>
-                  </div>
-                  <div class="cover-meta-item">
-                    <label>PCSP Implementation Date</label>
-                    <span id="printImplDate">—</span>
-                  </div>
-                  <div class="cover-meta-item">
-                    <label>Meeting Date</label>
-                    <span id="printMeetingDate">—</span>
-                  </div>
-                  <div class="cover-meta-item">
-                    <label>Case Manager</label>
-                    <span id="printCaseManager">—</span>
-                  </div>
-                  <div class="cover-meta-item">
-                    <label>Facility / Home</label>
-                    <span id="printHome">—</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Legal Description/Summary -->
-            <div class="cover-desc-block" style="margin-top: 30px">
-              This document constitutes the official Person-Centered Support
-              Plan for the above-named individual. All services must be provided
-              in accordance with the outcomes, strategies, and legal authorities
-              detailed within the following clinical documentation.
-            </div>
-          </div>
-          <div
-            class="cover-footer-bar"
-            style="
-              background: #0a0f1e;
-              padding: 10px 40px;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-            "
-          >
-            <span
-              style="
-                font-size: 0.6rem;
-                color: rgba(201, 168, 76, 0.5);
-                text-transform: uppercase;
-                letter-spacing: 1px;
-              "
-              >MCSDD Official Document</span
-            >
-            <span
-              style="
-                font-size: 0.6rem;
-                color: rgba(201, 168, 76, 0.5);
-                text-transform: uppercase;
-                letter-spacing: 1px;
-              "
-              >Confidential PHI</span
-            >
-            <span
-              style="
-                font-size: 0.6rem;
-                color: rgba(201, 168, 76, 0.5);
-                text-transform: uppercase;
-                letter-spacing: 1px;
-              "
-              >Marion County, Missouri</span
-            >
-          </div>
-        </div>
-
-        <!-- Sticky Individual Info Header -->
-        <div class="individual-header" id="individualHeader">
-          <span class="ind-name" id="headerName">No Individual Selected</span>
-          <span>📅 DOB: <strong id="headerDOB">—</strong></span>
-          <span>🪪 DMH #: <strong id="headerDMH">—</strong></span>
-        </div>
-
-        <!-- App Title Bar -->
-        <div class="app-header">
-          <div class="header-left">
-            <button
-              class="menu-btn"
-              onclick="toggleSidebar()"
-              title="Toggle Resources"
-            >
-              ☰
-            </button>
-            <img src="MCSDDLogo.svg" style="height: 48px; width: auto; margin-right: 15px;" alt="Logo" />
-            <h1 class="font-serif">
-              PCSP Assistant
-              <span style="font-weight: 300; color: var(--gold)">Pro</span>
-            </h1>
-            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-label); margin-left: 10px; border-left: 1px solid var(--border); padding-left: 10px;">
-              Missouri DMH/DD Compliance Engine
-            </div>
-          </div>
-          <div class="btn-bar">
-            <div class="hipaa-badge" style="font-size: 10px; font-weight: 800; color: var(--success); display: flex; align-items: center; gap: 5px; margin-right: 15px; border: 1px solid var(--success); padding: 4px 8px; border-radius: 4px;">
-              <span style="width: 6px; height: 6px; background: var(--success); border-radius: 50%; display: inline-block;"></span>
-              HIPAA SECURE (LOCAL)
-            </div>
-            <button class="btn btn-danger" onclick="wipeSessionData()" title="Wipe all data from browser cache">
-              🗑️ Wipe Data
-            </button>
-            <button
-              class="btn btn-outline"
-              id="themeToggle"
-              onclick="toggleTheme()"
-              title="Toggle Dark/Light Mode"
-              aria-label="Toggle dark and light mode"
-              style="padding: 8px 12px; font-size: 18px"
-            >
-              🌓
-            </button>
-            <span
-              id="autoSaveIndicator"
-              style="
-                font-size: 11px;
-                font-weight: 600;
-                color: var(--success);
-                opacity: 0;
-                transition: opacity 0.5s;
-                white-space: nowrap;
-                align-self: center;
-              "
-              >✓ Auto-saved</span
-            >
-            <button class="btn btn-outline" onclick="resetForm()">
-              New Plan
-            </button>
-          </div>
-        </div>
-
-        <!-- HIPAA Privacy Toggle -->
-        <div class="privacy-banner">
-          <span
-            >🔒 HIPAA PRIVACY MODE: [ON] Mask sensitive data while
-            drafting.</span
-          >
-          <label class="switch">
-            <input
-              type="checkbox"
-              id="privacyToggle"
-              checked
-              onchange="updateUI()"
-            />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <!-- ── Section 0: PCSP Cover Letter ── -->
-        <div class="form-section" id="sec-cover-letter">
-          <div class="section-title">
-            <span>1</span> PCSP Cover Letter / Face Sheet
-          </div>
-          <div class="form-grid">
-            <div class="field-group full">
-              <label>Individual Photo (Optional)</label>
-              <div style="display: flex; gap: 20px; align-items: start">
-                <div
-                  id="photoPreview"
-                  style="
-                    width: 150px;
-                    height: 180px;
-                    border: 2px dashed var(--border);
-                    border-radius: 12px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: var(--bg-light);
-                    overflow: hidden;
-                  "
-                >
-                  <span
-                    id="photoPlaceholder"
-                    style="
-                      font-size: 10px;
-                      color: var(--text-label);
-                      text-align: center;
-                      padding: 10px;
-                    "
-                    >No Image Uploaded</span
-                  >
-                  <img
-                    id="coverPhoto"
-                    style="
-                      display: none;
-                      width: 100%;
-                      height: 100%;
-                      object-fit: cover;
-                    "
-                  />
-                </div>
-                <div
-                  style="
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                  "
-                >
-                  <button
-                    class="btn btn-outline"
-                    onclick="document.getElementById('photoInput').click()"
-                  >
-                    📷 Upload Photo
-                  </button>
-                  <button
-                    class="btn btn-danger"
-                    id="removePhotoBtn"
-                    style="display: none; padding: 8px 16px; font-size: 12px"
-                    onclick="removePhoto()"
-                  >
-                    Remove Photo
-                  </button>
-                  <input
-                    type="file"
-                    id="photoInput"
-                    accept="image/*"
-                    style="display: none"
-                    onchange="handlePhotoUpload(event)"
-                  />
-                  <p
-                    style="
-                      font-size: 10px;
-                      color: var(--text-label);
-                      font-style: italic;
-                    "
-                  >
-                    Note: Photos are stored locally in your browser's RAM and
-                    included in .pcsp exports.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="field-group half">
-              <label>Full Legal Name</label>
-              <input
-                type="text"
-                id="coverLegalName"
-                placeholder="Full Name as it appears on DMH records"
-                oninput="updateUI()"
-              />
-            </div>
-            
-            <div class="field-group">
-              <label>DMH ID #</label>
-              <input
-                type="text"
-                id="coverDmhID"
-                placeholder="7-digit ID"
-                oninput="updateUI()"
-              />
-            </div>
-            <div class="field-group full">
-              <label>Funding Type</label>
-              <input type="hidden" id="coverFundingType" value="" />
-              <div class="funding-grid" id="fundingGrid">
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Comprehensive Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Comprehensive Waiver</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Support Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Support Waiver</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Grant Funding" onchange="syncFundingCheckboxes(); updateUI()" /> Grant Funding</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Sarah Lopez Waiver (MOCDD)" onchange="syncFundingCheckboxes(); updateUI()" /> Sarah Lopez Wavier(MOCDD)</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="PAC Funding" onchange="syncFundingCheckboxes(); updateUI()" /> PAC Funding</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="NEAI Funding" onchange="syncFundingCheckboxes(); updateUI()" /> NEAI Funding</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="No Funding" onchange="syncFundingCheckboxes(); updateUI()" /> No Funding</label>
-                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Partnership for Hope Waiver" onchange="syncFundingCheckboxes(); updateUI()" />Partnership for Hope Waiver</label>
-                <label class="eth-check"><input type="checkbox" id="fundingOtherCb" value="Other" onchange="toggleFundingOther(); syncFundingCheckboxes(); updateUI()" /> Other</label>
-              </div>
-              <div id="fundingOtherGroup" style="display: none; margin-top: 8px">
-                <input type="text" id="fundingOtherText" placeholder="Please specify other funding" style="width: 100%; box-sizing: border-box" oninput="syncFundingCheckboxes(); updateUI()" />
-              </div>
-            </div>
-            <div class="field-group">
-              <label>PCSP Meeting Date</label>
-              <input type="date" id="coverMeetingDate" oninput="updateUI()" />
-            </div>
-            <div class="field-group">
-              <label>PCSP Implementation Date</label>
-              <input type="date" id="coverImplDate" oninput="updateUI()" />
-            </div>
-            <div class="field-group full">
-              <label>DMH Home / Facility Name (If Applicable)</label>
-              <input
-                type="text"
-                id="coverHomeName"
-                placeholder="e.g. Oak Street Group Home"
-                oninput="updateUI()"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Section 1: Demographics / Contributors / Legal ── -->
         <div class="form-section" id="sec-demographics">
           <div class="section-title">
             <span>2</span> Demographics / Contributors Information / Legal
@@ -2042,7 +1659,7 @@
               </div>
               <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-base); flex-wrap: wrap; margin-bottom: 20px;">
                 All staff supporting 
-                <input type="text" id="dnrAltIndividualName" placeholder="individual's name" style="width: 200px; padding: 6px 10px;" oninput="updateUI()"> 
+                <span class="auto-name-fill" style="font-weight: 700; color: var(--marion-blue);">[Individual Name]</span> 
                 must be trained by a qualified medical professional on the specific protocols outlined in the Alternative to CPR Order prior to working independently.
               </div>
             
@@ -2401,9 +2018,9 @@
               <div class="subsection-label">Asset Development and Financial Literacy</div>
               <div style="font-size: 13px; color: var(--text-base); line-height: 1.6; margin-bottom: 15px;">
                 To promote financial literacy, self-determination, and a successful transition into the workforce, 
-                <input type="text" id="wipaName1" placeholder="Individual's Name" style="width: 180px; padding: 4px; display: inline-block; font-size: 13px; text-align: center; border: 1px solid var(--border); border-radius: 4px;" oninput="updateUI()"> 
+                <span class="auto-name-fill" style="font-weight: 700; color: var(--marion-blue);">[Individual Name]</span> 
                 will utilize the Work Incentives Planning and Assistance (WIPA) program. A certified Community Work Incentives Coordinator (CWIC) will provide the individualized benefits counseling to evaluate how the employment wages will interact with Supplemental Security Income (SSI) Social Security Disability Insurance (SSDI), Medicaid/Medicare, and other public benefits. This collaborative planning will empower 
-                <input type="text" id="wipaName2" placeholder="Individual's Name" style="width: 180px; padding: 4px; display: inline-block; font-size: 13px; text-align: center; border: 1px solid var(--border); border-radius: 4px;" oninput="updateUI()"> 
+                <span class="auto-name-fill" style="font-weight: 700; color: var(--marion-blue);">[Individual Name]</span> 
                 to maximize active Social Security work incentives, mitigate the risk of overpayments, and build long-term economic independence.
               </div>
             </div>
@@ -3030,6 +2647,391 @@
 
         <!-- ── PCSP Document Preview & Export ── -->
         <div class="output-section">
+<div id="printCoverSheet" class="cover-doc">
+          <div class="cover-header-bar">
+            <div class="cover-seal">
+              <svg
+                viewBox="0 0 80 80"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="38"
+                  stroke="#c9a84c"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="33"
+                  stroke="#c9a84c"
+                  stroke-width="1"
+                  stroke-dasharray="3 2.5"
+                />
+                <polygon
+                  points="40,18 44.5,32 59,32 47.7,40.8 52.2,55 40,46.5 27.8,55 32.3,40.8 21,32 35.5,32"
+                  fill="none"
+                  stroke="#c9a84c"
+                  stroke-width="1.5"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div>
+              <div class="cover-agency-name">
+                Marion County Services for Developmental Disabilities
+              </div>
+              <div class="cover-agency-sub">
+                Marion County · Division of Developmental Disabilities
+              </div>
+            </div>
+          </div>
+          <div class="cover-body">
+            <div class="cover-pcsp-layout">
+              <!-- Photo -->
+              <div class="cover-photo-col">
+                <div class="cover-photo-box" id="printPhotoBox">
+                  <img
+                    id="printPhotoImg"
+                    src=""
+                    alt="Individual Photo"
+                    style="
+                      display: none;
+                      width: 100%;
+                      height: 100%;
+                      object-fit: cover;
+                    "
+                  />
+                  <div
+                    id="printPhotoPlaceholder"
+                    style="text-align: center; padding: 20px; opacity: 0.3"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#c9a84c"
+                      stroke-width="1"
+                      width="32"
+                      height="32"
+                    >
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="cover-hipaa-badge">HIPAA Protected</div>
+              </div>
+              <!-- Meta Grid -->
+              <div class="cover-fields-col">
+                <div class="cover-title-main">Person-Centered Support Plan</div>
+                <div class="cover-meta-grid">
+                  <div class="cover-meta-item full">
+                    <label>Full Legal Name</label>
+                    <span id="printName">—</span>
+                  </div>
+                  <div class="cover-meta-item">
+                    <label>DMH ID Number</label>
+                    <span id="printDMH">—</span>
+                  </div>
+
+                  <div class="cover-meta-item">
+                    <label>Funding Type</label>
+                    <span id="printFunding">—</span>
+                  </div>
+                  <div class="cover-meta-item">
+                    <label>PCSP Implementation Date</label>
+                    <span id="printImplDate">—</span>
+                  </div>
+                  <div class="cover-meta-item">
+                    <label>Meeting Date</label>
+                    <span id="printMeetingDate">—</span>
+                  </div>
+                  <div class="cover-meta-item">
+                    <label>Case Manager</label>
+                    <span id="printCaseManager">—</span>
+                  </div>
+                  <div class="cover-meta-item">
+                    <label>Facility / Home</label>
+                    <span id="printHome">—</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Legal Description/Summary -->
+            <div class="cover-desc-block" style="margin-top: 30px">
+              This document constitutes the official Person-Centered Support
+              Plan for the above-named individual. All services must be provided
+              in accordance with the outcomes, strategies, and legal authorities
+              detailed within the following clinical documentation.
+            </div>
+          </div>
+          <div
+            class="cover-footer-bar"
+            style="
+              background: #0a0f1e;
+              padding: 10px 40px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <span
+              style="
+                font-size: 0.6rem;
+                color: rgba(201, 168, 76, 0.5);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              "
+              >MCSDD Official Document</span
+            >
+            <span
+              style="
+                font-size: 0.6rem;
+                color: rgba(201, 168, 76, 0.5);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              "
+              >Confidential PHI</span
+            >
+            <span
+              style="
+                font-size: 0.6rem;
+                color: rgba(201, 168, 76, 0.5);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              "
+              >Marion County, Missouri</span
+            >
+          </div>
+        </div>
+
+        <!-- Sticky Individual Info Header -->
+        <div class="individual-header" id="individualHeader">
+          <span class="ind-name" id="headerName">No Individual Selected</span>
+          <span>📅 DOB: <strong id="headerDOB">—</strong></span>
+          <span>🪪 DMH #: <strong id="headerDMH">—</strong></span>
+        </div>
+
+        <!-- App Title Bar -->
+        <div class="app-header">
+          <div class="header-left">
+            <button
+              class="menu-btn"
+              onclick="toggleSidebar()"
+              title="Toggle Resources"
+            >
+              ☰
+            </button>
+            <img src="MCSDDLogo.svg" style="height: 48px; width: auto; margin-right: 15px;" alt="Logo" />
+            <h1 class="font-serif">
+              PCSP Assistant
+              <span style="font-weight: 300; color: var(--gold)">Pro</span>
+            </h1>
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-label); margin-left: 10px; border-left: 1px solid var(--border); padding-left: 10px;">
+              Missouri DMH/DD Compliance Engine
+            </div>
+          </div>
+          <div class="btn-bar">
+            <div class="hipaa-badge" style="font-size: 10px; font-weight: 800; color: var(--success); display: flex; align-items: center; gap: 5px; margin-right: 15px; border: 1px solid var(--success); padding: 4px 8px; border-radius: 4px;">
+              <span style="width: 6px; height: 6px; background: var(--success); border-radius: 50%; display: inline-block;"></span>
+              HIPAA SECURE (LOCAL)
+            </div>
+            <button class="btn btn-danger" onclick="wipeSessionData()" title="Wipe all data from browser cache">
+              🗑️ Wipe Data
+            </button>
+            <button
+              class="btn btn-outline"
+              id="themeToggle"
+              onclick="toggleTheme()"
+              title="Toggle Dark/Light Mode"
+              aria-label="Toggle dark and light mode"
+              style="padding: 8px 12px; font-size: 18px"
+            >
+              🌓
+            </button>
+            <span
+              id="autoSaveIndicator"
+              style="
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--success);
+                opacity: 0;
+                transition: opacity 0.5s;
+                white-space: nowrap;
+                align-self: center;
+              "
+              >✓ Auto-saved</span
+            >
+            <button class="btn btn-outline" onclick="resetForm()">
+              New Plan
+            </button>
+          </div>
+        </div>
+
+        <!-- HIPAA Privacy Toggle -->
+        <div class="privacy-banner">
+          <span
+            >🔒 HIPAA PRIVACY MODE: [ON] Mask sensitive data while
+            drafting.</span
+          >
+          <label class="switch">
+            <input
+              type="checkbox"
+              id="privacyToggle"
+              checked
+              onchange="updateUI()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- ── Section 0: PCSP Cover Letter ── -->
+        <div class="form-section" id="sec-cover-letter">
+          <div class="section-title">
+            <span>1</span> PCSP Cover Letter / Face Sheet
+          </div>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label>Individual Photo (Optional)</label>
+              <div style="display: flex; gap: 20px; align-items: start">
+                <div
+                  id="photoPreview"
+                  style="
+                    width: 150px;
+                    height: 180px;
+                    border: 2px dashed var(--border);
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: var(--bg-light);
+                    overflow: hidden;
+                  "
+                >
+                  <span
+                    id="photoPlaceholder"
+                    style="
+                      font-size: 10px;
+                      color: var(--text-label);
+                      text-align: center;
+                      padding: 10px;
+                    "
+                    >No Image Uploaded</span
+                  >
+                  <img
+                    id="coverPhoto"
+                    style="
+                      display: none;
+                      width: 100%;
+                      height: 100%;
+                      object-fit: cover;
+                    "
+                  />
+                </div>
+                <div
+                  style="
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                  "
+                >
+                  <button
+                    class="btn btn-outline"
+                    onclick="document.getElementById('photoInput').click()"
+                  >
+                    📷 Upload Photo
+                  </button>
+                  <button
+                    class="btn btn-danger"
+                    id="removePhotoBtn"
+                    style="display: none; padding: 8px 16px; font-size: 12px"
+                    onclick="removePhoto()"
+                  >
+                    Remove Photo
+                  </button>
+                  <input
+                    type="file"
+                    id="photoInput"
+                    accept="image/*"
+                    style="display: none"
+                    onchange="handlePhotoUpload(event)"
+                  />
+                  <p
+                    style="
+                      font-size: 10px;
+                      color: var(--text-label);
+                      font-style: italic;
+                    "
+                  >
+                    Note: Photos are stored locally in your browser's RAM and
+                    included in .pcsp exports.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="field-group half">
+              <label>Full Legal Name</label>
+              <input
+                type="text"
+                id="coverLegalName"
+                placeholder="Full Name as it appears on DMH records"
+                oninput="updateUI()"
+              />
+            </div>
+            
+            <div class="field-group">
+              <label>DMH ID #</label>
+              <input
+                type="text"
+                id="coverDmhID"
+                placeholder="7-digit ID"
+                oninput="updateUI()"
+              />
+            </div>
+            <div class="field-group full">
+              <label>Funding Type</label>
+              <input type="hidden" id="coverFundingType" value="" />
+              <div class="funding-grid" id="fundingGrid">
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Comprehensive Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Comprehensive Waiver</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Support Waiver" onchange="syncFundingCheckboxes(); updateUI()" /> Support Waiver</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Grant Funding" onchange="syncFundingCheckboxes(); updateUI()" /> Grant Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Sarah Lopez Waiver (MOCDD)" onchange="syncFundingCheckboxes(); updateUI()" /> Sarah Lopez Wavier(MOCDD)</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="PAC Funding" onchange="syncFundingCheckboxes(); updateUI()" /> PAC Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="NEAI Funding" onchange="syncFundingCheckboxes(); updateUI()" /> NEAI Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="No Funding" onchange="syncFundingCheckboxes(); updateUI()" /> No Funding</label>
+                <label class="eth-check"><input type="checkbox" class="funding-cb" value="Partnership for Hope Waiver" onchange="syncFundingCheckboxes(); updateUI()" />Partnership for Hope Waiver</label>
+                <label class="eth-check"><input type="checkbox" id="fundingOtherCb" value="Other" onchange="toggleFundingOther(); syncFundingCheckboxes(); updateUI()" /> Other</label>
+              </div>
+              <div id="fundingOtherGroup" style="display: none; margin-top: 8px">
+                <input type="text" id="fundingOtherText" placeholder="Please specify other funding" style="width: 100%; box-sizing: border-box" oninput="syncFundingCheckboxes(); updateUI()" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label>PCSP Meeting Date</label>
+              <input type="date" id="coverMeetingDate" oninput="updateUI()" />
+            </div>
+            <div class="field-group">
+              <label>PCSP Implementation Date</label>
+              <input type="date" id="coverImplDate" oninput="updateUI()" />
+            </div>
+            <div class="field-group full">
+              <label>DMH Home / Facility Name (If Applicable)</label>
+              <input
+                type="text"
+                id="coverHomeName"
+                placeholder="e.g. Oak Street Group Home"
+                oninput="updateUI()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 1: Demographics / Contributors / Legal ── -->
+        
+
           <div
             class="section-title"
             style="color: var(--marion-blue); border-color: var(--marion-blue)"

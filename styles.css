@@ -773,8 +773,19 @@ input:checked + .slider:before {
 
 /* ── Responsive ── */
 @media (max-width: 1024px) {
+	.menu-btn {
+		display: flex !important;
+	}
+
 	.app-container {
-		grid-template-columns: 0px 1fr;
+		display: flex;
+		flex-direction: column;
+		height: auto;
+		overflow-y: auto;
+	}
+	.main-workspace {
+		height: auto;
+		overflow-y: visible;
 	}
 	.side-panel:first-child {
 		position: fixed;
@@ -791,7 +802,12 @@ input:checked + .slider:before {
 		visibility: visible;
 	}
 	.side-panel.right {
-		display: none;
+		display: block;
+		width: 100%;
+		border-left: none;
+		border-top: 2px solid var(--border, #e2e8f0);
+		height: auto;
+		padding-bottom: 40px; /* spacing for mobile footer */
 	}
 	.form-grid {
 		grid-template-columns: 1fr 1fr;
@@ -908,9 +924,7 @@ input:checked + .slider:before {
 		size: letter;
 	}
 }
-#printCoverSheet {
-	display: none;
-}
+
 
 /* ── Communication Method Grid ── */
 .comm-method-grid {
@@ -1475,7 +1489,7 @@ input:checked + .slider:before {
 	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.1);
 	max-width: 800px;
 	margin: 0 auto;
-	display: none; /* Hidden by default, shown in print or specialized preview */
+	display: block;
 }
 
 .cover-header-bar {

@@ -1310,9 +1310,12 @@ function updateUI() {
         ? `${name} ("${nick}")`
         : name
       : "[NAME]";
+  const dName = displayName || "[Individual Name]";
+  document.querySelectorAll('.auto-name-fill').forEach(el => el.textContent = dName);
+
   const displayDMH = isPrivacyOn ? "[XXXXXXX]" : dmhID || "N/A";
 
-  document.getElementById("printName").textContent = displayName.toUpperCase();
+  document.getElementById("printName").textContent = displayName;
   document.getElementById("printDMH").textContent = displayDMH;
   document.getElementById("printFunding").textContent = (
     getVal("coverFundingType") ||
@@ -1335,21 +1338,16 @@ function updateUI() {
   const line = (s) => {
     t += s + "\n";
   };
-  const head = (s) => {
-    line(s);
-    line("─".repeat(67));
+    const head = (s) => {
+    line("___HEAD___" + s + "___HEAD___");
+    line("═".repeat(67));
     line("");
   };
-  const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !== "N/A") line(`${l}: ${v}`); };
-
-  head("1. PCSP COVER LETTER / FACE SHEET");
-  line("Marion County Services for the Developmentally Disabled");
-  line("═".repeat(67));
-  line("");
-  field("INDIVIDUAL NAME", displayName.toUpperCase());
-  field("DMH ID #", displayDMH);
-  field("FUNDING", getVal("coverFundingType").toUpperCase());
-  line("\nMISSOURI PCSP OFFICIAL DOCUMENT\n" + "═".repeat(67) + "\n");
+  const subhead = (s) => {
+    line("___HEAD___" + s + "___HEAD___");
+    line("");
+  };
+const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !== "N/A") line(`${l}: ${v}`); };
 
   head("2. DEMOGRAPHICS & LEGAL AUTHORITY");
   line("Legal Representatives:");
@@ -1797,7 +1795,7 @@ function updateUI() {
     line("  2. Emergency Services (911) Protocol");
     line("     Staff will call 911 immediately during an emergency. Staff must present the original, signed ALTERNATIVE to CPR Order Form directly to the first responders upon their arrival.");
     line("  3. Staff Training Requirements");
-    line(`     All staff supporting ${getVal("dnrAltIndividualName") || "__________"} must be trained by a qualified medical professional on the specific protocols outlined in the Alternative to CPR Order prior to working independently.`);
+    line(`     All staff supporting ${displayName || "__________"} must be trained by a qualified medical professional on the specific protocols outlined in the Alternative to CPR Order prior to working independently.`);
     line("  4. Location of the Physical Form");
     line(`     The original, signed Appendix D Alternative to CPR Form is located ${getVal("dnrAltFormLocation") || "__________"}.`);
     line("  5. Review and Oversight Schedule");
@@ -1848,7 +1846,7 @@ function updateUI() {
     line("");
   }
   
-  head("11. WAYS TO SUPPORT THE INDIVIDUAL");
+  head("11. WAYS TO SUPPORT");
   field("Assessment Limitations", getVal("maasTools"));
   field("Rituals & Routines", getVal("ritualsRoutines"));
   field("Religious supports", getVal("religiousSupports"));
@@ -1926,9 +1924,6 @@ function updateUI() {
   field("General Strategies", getVal("waysToSupport"));
   line("");
 
-  line("11. [SECTION 11 NOT SPECIFIED]");
-  line("");
-
   head("12. INDEPENDENCE PERSONAL STRENGTHS AND ASSETS");
   field("Strengths/Assets", getVal("independenceStrengths"));
   line("");
@@ -1943,8 +1938,8 @@ function updateUI() {
     line("");
   }
   
-  const wName1 = getVal("wipaName1") || "[Individual]";
-  const wName2 = getVal("wipaName2") || "[Individual]";
+  const wName1 = displayName || "[Individual]";
+  const wName2 = displayName || "[Individual]";
   line("ASSET DEVELOPMENT AND FINANCIAL LITERACY:");
   line(`  To promote financial literacy, self-determination, and a successful transition into the workforce, ${wName1} will utilize the Work Incentives Planning and Assistance (WIPA) program. A certified Community Work Incentives Coordinator (CWIC) will provide the individualized benefits counseling to evaluate how the employment wages will interact with Supplemental Security Income (SSI) Social Security Disability Insurance (SSDI), Medicaid/Medicare, and other public benefits. This collaborative planning will empower ${wName2} to maximize active Social Security work incentives, mitigate the risk of overpayments, and build long-term economic independence.`);
   line("");
@@ -2080,7 +2075,7 @@ function updateUI() {
   field("  - Home Life Notes", getVal("homeLifeNotes"));
   
   line("");
-  head("15B. RIGHTS LIMITATIONS & DUE PROCESS");
+  subhead("RIGHTS, LIMITATIONS & DUE PROCESS");
   if (document.getElementById("dueProcessNA")?.checked) {
     line("  - No active limitations.");
   } else if (document.getElementById("dueProcessAttached")?.checked) {
@@ -2236,7 +2231,7 @@ function updateUI() {
   let safeHTML = esc(t);
   
   // Highlight Section Headers (starts with digit and dot, e.g. "1. PCSP COVER LETTER")
-  safeHTML = safeHTML.replace(/^(.*?\d+\.\s[A-Z0-9\s&;\/\-]+)$/gm, '<span class="print-head">$1</span>');
+  safeHTML = safeHTML.replace(/___HEAD___(.*?)___HEAD___/g, '<span class="print-head">$1</span>');
   
   // Highlight Divider Lines
   safeHTML = safeHTML.replace(/^(─{10,}|═{10,})$/gm, '<span class="print-head-line">$1</span>');
