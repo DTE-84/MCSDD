@@ -369,6 +369,86 @@
 
       <!-- ── Main Workspace ── -->
       <main class="main-workspace">
+        <!-- Sticky Individual Info Header -->
+        <div class="individual-header" id="individualHeader">
+          <span class="ind-name" id="headerName">No Individual Selected</span>
+          <span>📅 DOB: <strong id="headerDOB">—</strong></span>
+          <span>🪪 DMH #: <strong id="headerDMH">—</strong></span>
+        </div>
+
+        <!-- App Title Bar -->
+        <div class="app-header">
+          <div class="header-left">
+            <button
+              class="menu-btn"
+              onclick="toggleSidebar()"
+              title="Toggle Resources"
+            >
+              ☰
+            </button>
+            <img src="MCSDDLogo.svg" style="height: 48px; width: auto; margin-right: 15px;" alt="Logo" />
+            <h1 class="font-serif">
+              PCSP Assistant
+              <span style="font-weight: 300; color: var(--gold)">Pro</span>
+            </h1>
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-label); margin-left: 10px; border-left: 1px solid var(--border); padding-left: 10px;">
+              Missouri DMH/DD Compliance Engine
+            </div>
+          </div>
+          <div class="btn-bar">
+            <div class="hipaa-badge" style="font-size: 10px; font-weight: 800; color: var(--success); display: flex; align-items: center; gap: 5px; margin-right: 15px; border: 1px solid var(--success); padding: 4px 8px; border-radius: 4px;">
+              <span style="width: 6px; height: 6px; background: var(--success); border-radius: 50%; display: inline-block;"></span>
+              HIPAA SECURE (LOCAL)
+            </div>
+            <button class="btn btn-danger" onclick="wipeSessionData()" title="Wipe all data from browser cache">
+              🗑️ Wipe Data
+            </button>
+            <button
+              class="btn btn-outline"
+              id="themeToggle"
+              onclick="toggleTheme()"
+              title="Toggle Dark/Light Mode"
+              aria-label="Toggle dark and light mode"
+              style="padding: 8px 12px; font-size: 18px"
+            >
+              🌓
+            </button>
+            <span
+              id="autoSaveIndicator"
+              style="
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--success);
+                opacity: 0;
+                transition: opacity 0.5s;
+                white-space: nowrap;
+                align-self: center;
+              "
+              >✓ Auto-saved</span
+            >
+            <button class="btn btn-outline" onclick="resetForm()">
+              New Plan
+            </button>
+          </div>
+        </div>
+
+        <!-- HIPAA Privacy Toggle -->
+        <div class="privacy-banner">
+          <span
+            >🔒 HIPAA PRIVACY MODE: [ON] Mask sensitive data while
+            drafting.</span
+          >
+          <label class="switch">
+            <input
+              type="checkbox"
+              id="privacyToggle"
+              checked
+              onchange="updateUI()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+
 <!-- ── Section 0: PCSP Cover Letter ── -->
         <div class="form-section" id="sec-cover-letter">
           <div class="section-title">
@@ -2926,86 +3006,6 @@
           </div>
         </div>
 
-        <!-- Sticky Individual Info Header -->
-        <div class="individual-header" id="individualHeader">
-          <span class="ind-name" id="headerName">No Individual Selected</span>
-          <span>📅 DOB: <strong id="headerDOB">—</strong></span>
-          <span>🪪 DMH #: <strong id="headerDMH">—</strong></span>
-        </div>
-
-        <!-- App Title Bar -->
-        <div class="app-header">
-          <div class="header-left">
-            <button
-              class="menu-btn"
-              onclick="toggleSidebar()"
-              title="Toggle Resources"
-            >
-              ☰
-            </button>
-            <img src="MCSDDLogo.svg" style="height: 48px; width: auto; margin-right: 15px;" alt="Logo" />
-            <h1 class="font-serif">
-              PCSP Assistant
-              <span style="font-weight: 300; color: var(--gold)">Pro</span>
-            </h1>
-            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-label); margin-left: 10px; border-left: 1px solid var(--border); padding-left: 10px;">
-              Missouri DMH/DD Compliance Engine
-            </div>
-          </div>
-          <div class="btn-bar">
-            <div class="hipaa-badge" style="font-size: 10px; font-weight: 800; color: var(--success); display: flex; align-items: center; gap: 5px; margin-right: 15px; border: 1px solid var(--success); padding: 4px 8px; border-radius: 4px;">
-              <span style="width: 6px; height: 6px; background: var(--success); border-radius: 50%; display: inline-block;"></span>
-              HIPAA SECURE (LOCAL)
-            </div>
-            <button class="btn btn-danger" onclick="wipeSessionData()" title="Wipe all data from browser cache">
-              🗑️ Wipe Data
-            </button>
-            <button
-              class="btn btn-outline"
-              id="themeToggle"
-              onclick="toggleTheme()"
-              title="Toggle Dark/Light Mode"
-              aria-label="Toggle dark and light mode"
-              style="padding: 8px 12px; font-size: 18px"
-            >
-              🌓
-            </button>
-            <span
-              id="autoSaveIndicator"
-              style="
-                font-size: 11px;
-                font-weight: 600;
-                color: var(--success);
-                opacity: 0;
-                transition: opacity 0.5s;
-                white-space: nowrap;
-                align-self: center;
-              "
-              >✓ Auto-saved</span
-            >
-            <button class="btn btn-outline" onclick="resetForm()">
-              New Plan
-            </button>
-          </div>
-        </div>
-
-        <!-- HIPAA Privacy Toggle -->
-        <div class="privacy-banner">
-          <span
-            >🔒 HIPAA PRIVACY MODE: [ON] Mask sensitive data while
-            drafting.</span
-          >
-          <label class="switch">
-            <input
-              type="checkbox"
-              id="privacyToggle"
-              checked
-              onchange="updateUI()"
-            />
-            <span class="slider"></span>
-          </label>
-        </div>
-
         <div id="narrativeDisplay">
             Complete sections to generate the full Missouri PCSP summary...
           </div>
@@ -3094,7 +3094,7 @@
             <span class="resource-info">Behavioral Health/DD-related services | 573-248-1372</span>
           </div>
 
-          <div style="margin-top: 15px; font-weight: 600; font-size: 11px; color: var(--marion-blue); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Domestic Violence, Abuse & Safety</div>
+          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Domestic Violence, Abuse & Safety</div>
 
           <div class="resource-card" onclick="injectResource('988 Suicide & Crisis Lifeline')">
             <span class="resource-name">988 Suicide & Crisis Lifeline</span>
@@ -3121,7 +3121,7 @@
             <span class="resource-info">(800) 656-4673</span>
           </div>
 
-          <div style="margin-top: 15px; font-weight: 600; font-size: 11px; color: var(--marion-blue); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Employment, Vocational & Benefits</div>
+          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Employment, Vocational & Benefits</div>
 
           <div class="resource-card" onclick="injectResource('Missouri Vocational Rehabilitation')">
             <span class="resource-name">Missouri Vocational Rehabilitation</span>
@@ -3140,7 +3140,7 @@
             <span class="resource-name">Missouri SkillUP</span>
           </div>
 
-          <div style="margin-top: 15px; font-weight: 600; font-size: 11px; color: var(--marion-blue); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Transportation</div>
+          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Transportation</div>
 
           <div class="resource-card" onclick="injectResource('OATS Transit')">
             <span class="resource-name">OATS Transit</span>
@@ -3162,7 +3162,7 @@
             <span class="resource-info">(573) 470-1723</span>
           </div>
         
-          <div style="margin-top: 15px; font-weight: 600; font-size: 11px; color: var(--marion-blue); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Medical & Health Care</div>
+          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Medical & Health Care</div>
 
           <div class="resource-card" onclick="injectResource('Hannibal Regional Hospital')">
             <span class="resource-name">Hannibal Regional Hospital</span>
@@ -3174,7 +3174,7 @@
             <span class="resource-info">(800) 835-5465</span>
           </div>
 
-          <div style="margin-top: 15px; font-weight: 600; font-size: 11px; color: var(--marion-blue); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Developmental Disability & Independent Living</div>
+          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Developmental Disability & Independent Living</div>
 
           <div class="resource-card" onclick="injectResource('North East Independent Living Services (NEILS)')">
             <span class="resource-name">North East Independent Living Services (NEILS)</span>
