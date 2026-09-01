@@ -568,6 +568,9 @@ textarea:focus {
 	margin-bottom: 25px;
 	font-family: "Georgia", serif;
 	line-height: 1.6;
+    padding: 40px !important;
+    margin: 20px 0 !important;
+    border-radius: 4px;
 }
 
 /* ── Buttons ── */
@@ -895,7 +898,10 @@ input:checked + .slider:before {
 		color: black;
 		white-space: pre-wrap;
 		line-height: 1.7;
-	}
+	    padding: 40px !important;
+    margin: 20px 0 !important;
+    border-radius: 4px;
+}
 	/* Print footer */
 	@page {
 		margin: 1in;
@@ -1098,6 +1104,9 @@ input:checked + .slider:before {
 	background: #1e2130;
 	color: #dde1ec;
 	border-color: #2e3347;
+    padding: 40px !important;
+    margin: 20px 0 !important;
+    border-radius: 4px;
 }
 
 /* ── Side panels ── */
@@ -1444,7 +1453,10 @@ input:checked + .slider:before {
 	/* Page breaks between major sections */
 	#narrativeDisplay {
 		page-break-inside: auto;
-	}
+	    padding: 40px !important;
+    margin: 20px 0 !important;
+    border-radius: 4px;
+}
 
 	/* Executive Cover Sheet (Face Sheet) for Print */
 	#printCoverSheet {
@@ -1708,4 +1720,22 @@ textarea:focus-visible {
     background: #ffffff !important;
     color: #333333 !important;
     border: 1px solid #003366 !important;
+    padding: 40px !important;
+    margin: 20px 0 !important;
+    border-radius: 4px;
+}
+
+@media print {
+    .main-workspace, .app-container {
+        height: auto !important;
+        overflow: visible !important;
+        position: static !important;
+    }
+}
+
+.nav-item.last-active-nav:not(.active-nav) {
+	border: 2px dashed var(--gold, #c5a059) !important;
+	background: rgba(197, 160, 89, 0.1) !important;
+	border-radius: 4px;
+	padding-left: 10px; /* offset the 2px border so text aligns */
 }

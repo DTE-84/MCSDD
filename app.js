@@ -1340,7 +1340,7 @@ function updateUI() {
     line("─".repeat(67));
     line("");
   };
-  const field = (l, v) => line(`${l}: ${v || "N/A"}`);
+  const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !== "N/A") line(`${l}: ${v}`); };
 
   head("1. PCSP COVER LETTER / FACE SHEET");
   line("Marion County Services for the Developmentally Disabled");
@@ -4134,6 +4134,13 @@ function printPlan() {
 }
 
 function scrollToSection(id) {
+  // Track last active for quick reference
+  const currentlyActive = document.querySelector('.nav-item.active-nav');
+  if (currentlyActive) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('last-active-nav'));
+      currentlyActive.classList.add('last-active-nav');
+  }
+
   const el = document.getElementById(id);
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
