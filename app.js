@@ -473,7 +473,8 @@ const FORM_FIELDS = [
   "staffSupportNeeds",
   "needsEmergencyAssistance",
   "emergencyAssistanceDetails",
-  "leaseDateRenew",
+  "leaseLastDate",
+  "leaseRenewFreq",
   "leaseLocation",
   "hcbsRule1Choice",
   "hcbsRule2Privacy",
@@ -2072,7 +2073,8 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   }
 
   line("Lease / Agreement Info:");
-  field("  - Last date of lease / renewed", getVal("leaseDateRenew"));
+  field("  - Last date of lease", getVal("leaseLastDate"));
+  field("  - How often renewed", getVal("leaseRenewFreq"));
   field("  - Document location", getVal("leaseLocation"));
 
   line("Home Life / HCBS Compliance:");
@@ -2091,8 +2093,10 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
     line("  - No limitations documented.");
   }
   line("");
-  const fName = getVal("firstName") || "the individual";
-  line(`* Contains information regarding right to appeal. "If ${fName} wishes to file a complaint, ${fName} will be referred to the Office of Constituent Services."`);
+  const defaultName = getVal("firstName") || "the individual";
+  const aName1 = getVal("appealName1") || defaultName;
+  const aName2 = getVal("appealName2") || defaultName;
+  line(`* Contains information regarding right to appeal. "If ${aName1} wishes to file a complaint, ${aName2} will be referred to the Office of Constituent Services."`);
   line("");
 
   head("15. PREVIOUS AND CURRENT GOALS AND TASKS");

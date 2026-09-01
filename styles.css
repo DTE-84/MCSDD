@@ -1410,7 +1410,7 @@ input:checked + .slider:before {
 	.individual-header,
 	#toast,
 	.sidebar-overlay,
-	p[style*="drag"],
+	#dragDropHint,
 	.form-section,
 	.output-section > .section-title {
 		/* form sections hidden - only narrative prints */

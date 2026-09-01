@@ -2544,9 +2544,13 @@
 
           <div class="subsection-label" style="margin-top: 24px;">Lease / Agreement Info</div>
           <div class="form-grid">
-            <div class="field-group full">
-              <label>Last date of lease and how often renewed</label>
-              <input type="text" id="leaseDateRenew" oninput="updateUI()">
+            <div class="field-group half">
+              <label>Last Date</label>
+              <input type="date" id="leaseLastDate" placeholder="xx/xx/xxxx" oninput="updateUI()">
+            </div>
+            <div class="field-group half">
+              <label>How Often Renewed</label>
+              <input type="text" id="leaseRenewFreq" oninput="updateUI()">
             </div>
             <div class="field-group full">
               <label>Where can the document be found?</label>
@@ -2604,7 +2608,7 @@
           
           
           <div style="font-size: 11px; color: var(--text-label); font-style: italic; margin-top: -10px; border-top: 1px dashed var(--border); padding-top: 10px;">
-            * Contains information regarding right to appeal. "If _________ wishes to file a complaint, _________ will be referred to the Office of Constituent Services."
+            * Contains information regarding right to appeal. "If <input type="text" id="appealName1" style="width: 120px; padding: 2px 6px; font-size: 11px; background: rgba(255,255,255,0.05); border: 1px solid rgba(201,168,76,0.3); border-radius: 4px; color: var(--text-base); text-align: center;" oninput="updateUI()"> wishes to file a complaint, <input type="text" id="appealName2" style="width: 120px; padding: 2px 6px; font-size: 11px; background: rgba(255,255,255,0.05); border: 1px solid rgba(201,168,76,0.3); border-radius: 4px; color: var(--text-base); text-align: center;" oninput="updateUI()"> will be referred to the Office of Constituent Services."
           </div>
         </div>
 
@@ -2709,7 +2713,7 @@
             </div>
             <div class="field-group full" style="margin-top: 5px;">
               <label>Assessments Completed</label>
-              <div class="form-grid" style="grid-template-columns: repeat(5, 1fr); gap: 15px;">
+              <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 2fr; gap: 10px;">
                 <div style="display: flex; flex-direction: column; gap: 6px;">
                   <label class="eth-check"><input type="checkbox" id="evalVineland" onchange="updateUI()"> Vineland</label>
                   <input type="date" id="evalVinelandDate" oninput="updateUI()" style="width: 100%;">
@@ -3035,8 +3039,7 @@
               />
             </label>
           </div>
-          <p
-            style="
+          <p id="dragDropHint" style="
               font-size: 11px;
               color: var(--text-label);
               margin-top: 10px;
