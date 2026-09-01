@@ -510,7 +510,6 @@ const FORM_FIELDS = [
   "clientDidNotAttend",
   "clientDidNotAttendReason",
   "meetingFormat",
-  "supportNeeded",
   "maasTools",
   "ritualsRoutines",
   "religiousSupports",
@@ -1788,7 +1787,6 @@ function updateUI() {
   
   head("11. WAYS TO SUPPORT THE INDIVIDUAL");
   field("Assessment Limitations", getVal("maasTools"));
-  field("Support Needed", getVal("supportNeeded"));
   field("Rituals & Routines", getVal("ritualsRoutines"));
   field("Religious supports", getVal("religiousSupports"));
   field("Staff Preference", getVal("staffPreference"));
