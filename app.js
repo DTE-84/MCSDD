@@ -2236,13 +2236,13 @@ function updateUI() {
   let safeHTML = esc(t);
   
   // Highlight Section Headers (starts with digit and dot, e.g. "1. PCSP COVER LETTER")
-  safeHTML = safeHTML.replace(/^(.*?\\d+\\.\\s[A-Z0-9\\s&;\\/\\-]+)$/gm, '<span class="print-head">$1</span>');
+  safeHTML = safeHTML.replace(/^(.*?\d+\.\s[A-Z0-9\s&;\/\-]+)$/gm, '<span class="print-head">$1</span>');
   
   // Highlight Divider Lines
   safeHTML = safeHTML.replace(/^(─{10,}|═{10,})$/gm, '<span class="print-head-line">$1</span>');
   
   // Highlight Field Labels (any text ending with colon at start of line)
-  safeHTML = safeHTML.replace(/^([A-Za-z0-9\\s\\/\\-&;\\(\\)]+): (.*)$/gm, '<span class="print-label">$1:</span> <span class="print-value">$2</span>');
+  safeHTML = safeHTML.replace(/^([A-Za-z0-9\s\/\-&;\(\)]+): (.*)$/gm, '<span class="print-label">$1:</span> <span class="print-value">$2</span>');
 
   document.getElementById("narrativeDisplay").innerHTML = safeHTML;
 }
