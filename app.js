@@ -1277,10 +1277,10 @@ function toggleBehavioralAssessment() {
   if(container) container.style.display = isYes ? "block" : "none";
 }
 
-function updateUI() {
+function updateUI(forceUnmaskForPrint) {
   if(typeof toggleTransferringLocation === 'function') toggleTransferringLocation();
   updateTransitionCostTotal();
-  const isPrivacyOn = document.getElementById("privacyToggle").checked;
+  const isPrivacyOn = document.getElementById("privacyToggle").checked && !forceUnmaskForPrint;
   const getVal = (id) => {
     const el = document.getElementById(id);
     return el ? el.value : "";
@@ -1357,7 +1357,7 @@ function updateUI() {
   };
 const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !== "N/A") line(`${l}: ${v}`); };
 
-  head("2. DEMOGRAPHICS & LEGAL AUTHORITY");
+  head("1. DEMOGRAPHICS & LEGAL AUTHORITY");
   line("Legal Representatives:");
   line(getLegalRepsNarrative());
   line("");
@@ -1409,20 +1409,20 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   field("Legal Licenses", getVal("legalLicensesProbation"));
   line("");
 
-  head("3. PREFERENCES, LIKES AND SPECIAL INTERESTS");
+  head("2. PREFERENCES, LIKES AND SPECIAL INTERESTS");
   field("Likes Activities", getVal("likesActivities"));
   field("Likes Foods", getVal("likesFoods"));
   field("Likes Places", getVal("likesPlaces"));
   field("Other Likes", getVal("likesOther"));
   line("");
 
-  head("4. DISLIKES");
+  head("3. DISLIKES");
   field("Dislikes Activities", getVal("dislikesActivities"));
   field("Dislikes Foods", getVal("dislikesFoods"));
   field("Other Dislikes", getVal("dislikesOther"));
   line("");
 
-  head("5. IMPORTANT PEOPLE AND/OR PETS");
+  head("4. IMPORTANT PEOPLE AND/OR PETS");
   line(
     importantPeople.map((p) => `  - ${p.name || "[Name]"} (${p.relationship || "Relationship"})${p.activities ? "\n    Activities/Frequency: " + p.activities : ""}`).join("\n") ||
       "  None Listed",
@@ -1430,14 +1430,14 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   field("Exploratory Relationships", getVal("relationshipsExplore"));
   line("");
 
-  head("6. HOPES, DREAMS, ASPIRATIONS AND CONCERNS");
+  head("5. HOPES, DREAMS, ASPIRATIONS AND CONCERNS");
   field("Aspirations", getVal("aspirations"));
   field("Concerns", getVal("concerns"));
   line("");
 
   /* Removed duplicate section 6 output (moved to Section 8) */
 
-  head("7. COMMUNICATION");
+  head("6. COMMUNICATION");
   field("Primary Language", getVal("commPrimaryLanguage"));
   field("Evaluation Status", getVal("commEvalStatus"));
   field("Evaluation Type", getVal("commEvalType"));
@@ -1473,7 +1473,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   }
   line("");
 
-  head("8. PROGRAM OR OTHER SERVICES");
+  head("7. PROGRAM OR OTHER SERVICES");
   
   line("Employment Status:");
   const empStatus7 = getVal("employmentStatus7");
@@ -1688,7 +1688,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   }
 
 
-  head("9. HEALTH, SAFETY & RISK PLANNING (MEDICAL PROFILE)");
+  head("8. HEALTH, SAFETY & RISK PLANNING (MEDICAL PROFILE)");
   field("Diagnosis", getVal("diagnosis"));
   field("Personal Outcomes", getVal("personalOutcomes"));
   const hrstStatus = getVal("hrstStatus");
@@ -1825,7 +1825,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   field("Allergies / Sensitivities / Reactions", getVal("allergies"));
   line("");
 
-  head("10. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
+  head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
   if (document.getElementById("hasNonDivisionalWaiver")?.checked) {
     line("Non-Divisional Waiver: Yes");
   }
@@ -1854,7 +1854,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
     line("");
   }
   
-  head("11. WAYS TO SUPPORT");
+  head("10. WAYS TO SUPPORT");
   field("Assessment Limitations", getVal("maasTools"));
   field("Rituals & Routines", getVal("ritualsRoutines"));
   field("Religious supports", getVal("religiousSupports"));
@@ -1932,13 +1932,12 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   field("General Strategies", getVal("waysToSupport"));
   line("");
 
-  head("12. INDEPENDENCE PERSONAL STRENGTHS AND ASSETS");
+  head("11. INDEPENDENCE PERSONAL STRENGTHS AND ASSETS");
   field("Strengths/Assets", getVal("independenceStrengths"));
   line("");
 
-  head("13. TRANSITION YOUTH / ADULTS / COMMUNITY");
-  head("13. TRANSITION YOUTH / ADULTS / COMMUNITY");
-  
+  head("12. TRANSITION YOUTH / ADULTS / COMMUNITY");
+
   const lifeTrans = getVal("lifeTransitions");
   if (lifeTrans) {
     line("LIFE TRANSITIONS:");
@@ -2021,7 +2020,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
     line("");
   }
 
-  head("14. BEHAVIORAL");
+  head("13. BEHAVIORAL");
   field("Behavioral Status", getVal("behavioralStatus"));
   field("Goal Added in Action Plan", document.getElementById("behavioralGoalAdded")?.checked ? "Yes" : "No");
 
@@ -2048,7 +2047,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   field("Behavioral Notes", getVal("behavioralNotes"));
   line("");
 
-  head("15. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
+  head("14. SUPERVISION(HOUSING) (SAFETY AND SECURITY)");
   if (document.getElementById("alteredSupervision")?.checked) {
     line("  * Altered Levels of Supervision applied *");
   }
@@ -2096,7 +2095,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   line(`* Contains information regarding right to appeal. "If ${fName} wishes to file a complaint, ${fName} will be referred to the Office of Constituent Services."`);
   line("");
 
-  head("16. PREVIOUS AND CURRENT GOALS AND TASKS");
+  head("15. PREVIOUS AND CURRENT GOALS AND TASKS");
   line(
     clinicalGoalsTasks
       .map((g, i) => {
@@ -2113,7 +2112,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   );
   line("");
 
-  head("17. ACTION PLAN");
+  head("16. ACTION PLAN");
   line(
     goalsData
       .map(
@@ -2124,7 +2123,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   );
   line("");
 
-  head("18. COMMENTS");
+  head("17. COMMENTS");
   field("Comments", getVal("planComments"));
   
   const locList = [];
@@ -4134,6 +4133,13 @@ function copyToClipboard() {
 function printPlan() {
   window.print();
 }
+
+// The printed/PDF output is the official record and must always show real
+// identifying data (name, DMH ID, photo), even when HIPAA Privacy Mode is
+// masking that data for on-screen drafting. Force-unmask right before the
+// browser renders the print job, then restore the on-screen masked view after.
+window.addEventListener("beforeprint", () => updateUI(true));
+window.addEventListener("afterprint", () => updateUI());
 
 function scrollToSection(id) {
   // Track last active for quick reference
