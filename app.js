@@ -2236,7 +2236,9 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   }
 
   line("\n" + "═".repeat(67));
-  line(`PCSP FOR: ${displayName.toUpperCase()} | DMH ID: ${displayDMH}`);
+  const unmaskedName = name ? (nick ? `${name} ("${nick}")` : name) : "NO INDIVIDUAL SELECTED";
+  const unmaskedDMH = dmhID || "N/A";
+  line(`PCSP FOR: ${unmaskedName.toUpperCase()} | DMH ID: ${unmaskedDMH}`);
 
     // Format for display safely
   let safeHTML = esc(t);
