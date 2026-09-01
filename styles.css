@@ -1413,7 +1413,8 @@ input:checked + .slider:before {
 	p[style*="drag"],
 	.form-section,
 	.output-section > .section-title {
-		/* form sections hidden — only narrative prints */
+		/* form sections hidden - only narrative prints */
+		display: none !important;
 	}
 
 	/* Show only the narrative output */
