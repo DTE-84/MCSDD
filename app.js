@@ -488,10 +488,15 @@ const FORM_FIELDS = [
   "sdsAwareness",
   "sdsInterest",
   "dissentingOpinions",
+  "conflictInfo",
   "attachmentsIncluded",
   "attachmentsDetails",
   "rasSisScore",
   "ponScore",
+  "rightsBrochure",
+  "serviceSatisfaction",
+  "dueProcessAttached",
+  "dueProcessNA",
   "planComments",
   "locSelfCare",
   "locLearning",
@@ -556,6 +561,8 @@ const FORM_FIELDS = [
   "hp_SeizureLogs",
   "hp_BowelLogs",
   "healthRisks",
+  "riskLevel",
+  "supervisionLevel",
   "criminalBehaviorNotes",
   "evacPlan",
   "dnrStatus",
@@ -567,6 +574,7 @@ const FORM_FIELDS = [
   "seizureProtocols",
   "bowelProtocols",
   "mentalHealthSupports",
+  "allergies",
   // Misc
   "ethnicityOther",
   "legalSpecify",
@@ -2623,7 +2631,7 @@ function toggleWaiveredServices7() {
 }
 
 function toggleSDS7() {
-  const utilized = document.getElementById("sdsUtilized7").value;
+  const utilized = document.getElementById("sdsUtilized7")?.value;
   const group = document.getElementById("sdsGroup7");
   if (group) {
     group.style.display = (utilized === "Yes") ? "block" : "none";
@@ -2631,7 +2639,7 @@ function toggleSDS7() {
 }
 
 function toggleSDSPaidFamily7() {
-  const paidFam = document.getElementById("sdsPaidFamilyMember7").value;
+  const paidFam = document.getElementById("sdsPaidFamilyMember7")?.value;
   const group = document.getElementById("sdsPaidFamilyGroup7");
   if (group) {
     group.style.display = (paidFam === "Yes") ? "block" : "none";
@@ -3940,7 +3948,6 @@ function restoreFormData(fd) {
   toggleEmploymentStatus7(); // Ensure employment status visibility is correct
   toggleWaiveredServices7(); // Ensure waivered services visibility is correct
   toggleHcbsFields();
-  toggleHcbsSignatures();
   toggleSDS7();
   toggleHrstFields();
   toggleDnrAlt();

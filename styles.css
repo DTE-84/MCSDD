@@ -1776,4 +1776,13 @@ textarea:focus-visible {
         page-break-before: auto !important;
     }
 }
-\n\n/* Scrollable Sidebar Panels */\n#historyList, #resourceList {\n\tflex: 1;\n\toverflow-y: auto;\n\tmin-height: 0;\n}\n#sectionNav {\n\tflex-shrink: 0;\n}\n
+
+/* Scrollable Sidebar Panels */
+#historyList, #resourceList {
+	flex: 1;
+	overflow-y: auto;
+	min-height: 0;
+}
+#sectionNav {
+	flex-shrink: 0;
+}
