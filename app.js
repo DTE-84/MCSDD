@@ -1278,10 +1278,9 @@ function toggleBehavioralAssessment() {
   if(container) container.style.display = isYes ? "block" : "none";
 }
 
-function updateUI(forceUnmaskForPrint) {
+function updateUI() {
   if(typeof toggleTransferringLocation === 'function') toggleTransferringLocation();
   updateTransitionCostTotal();
-  const isPrivacyOn = document.getElementById("privacyToggle").checked && !forceUnmaskForPrint;
   const getVal = (id) => {
     const el = document.getElementById(id);
     return el ? el.value : "";
@@ -1303,7 +1302,7 @@ function updateUI(forceUnmaskForPrint) {
 
   // Executive Cover (Print)
   const printImg = document.getElementById("printPhotoImg");
-  if (_coverPhotoData && !isPrivacyOn) {
+  if (_coverPhotoData) {
     printImg.src = _coverPhotoData;
     printImg.style.display = "block";
     document.getElementById("printPhotoPlaceholder").style.display = "none";
@@ -1312,17 +1311,15 @@ function updateUI(forceUnmaskForPrint) {
     document.getElementById("printPhotoPlaceholder").style.display = "block";
   }
 
-  const displayName = isPrivacyOn
-    ? "[INDIVIDUAL]"
-    : name
-      ? nick
-        ? `${name} ("${nick}")`
-        : name
-      : "[NAME]";
+  const displayName = name
+    ? nick
+      ? `${name} ("${nick}")`
+      : name
+    : "[NAME]";
   const dName = displayName || "[Individual Name]";
   document.querySelectorAll('.auto-name-fill').forEach(el => el.textContent = dName);
 
-  const displayDMH = isPrivacyOn ? "[XXXXXXX]" : dmhID || "N/A";
+  const displayDMH = dmhID || "N/A";
 
   document.getElementById("printName").textContent = displayName;
   document.getElementById("printDMH").textContent = displayDMH;
@@ -4139,13 +4136,6 @@ function copyToClipboard() {
 function printPlan() {
   window.print();
 }
-
-// The printed/PDF output is the official record and must always show real
-// identifying data (name, DMH ID, photo), even when HIPAA Privacy Mode is
-// masking that data for on-screen drafting. Force-unmask right before the
-// browser renders the print job, then restore the on-screen masked view after.
-window.addEventListener("beforeprint", () => updateUI(true));
-window.addEventListener("afterprint", () => updateUI());
 
 function scrollToSection(id) {
   // Track last active for quick reference

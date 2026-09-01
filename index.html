@@ -433,21 +433,6 @@
         </div>
 
         <!-- HIPAA Privacy Toggle -->
-        <div class="privacy-banner">
-          <span
-            >🔒 HIPAA PRIVACY MODE: [ON] Mask sensitive data while
-            drafting.</span
-          >
-          <label class="switch">
-            <input
-              type="checkbox"
-              id="privacyToggle"
-              checked
-              onchange="updateUI()"
-            />
-            <span class="slider"></span>
-          </label>
-        </div>
 
 <!-- ── Section 0: PCSP Cover Letter ── -->
         <div class="form-section" id="sec-cover-letter">
@@ -2733,7 +2718,7 @@
                 <div style="display: flex; flex-direction: column; gap: 6px;">
                   <div style="display: flex; align-items: center; gap: 5px;">
                     <label class="eth-check"><input type="checkbox" id="evalOther" onchange="updateUI()"> Other:</label>
-                    <input type="text" id="evalOtherText" placeholder="Specify..." oninput="updateUI()" style="width: 100%; font-size: 11px; padding: 4px;">
+                    <input type="text" id="evalOtherText" placeholder="Specify..." oninput="updateUI()" style="flex: 1; min-width: 0; font-size: 11px; padding: 4px;">
                   </div>
                   <input type="date" id="evalOtherDate" oninput="updateUI()" style="width: 100%;">
                 </div>
