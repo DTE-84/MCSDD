@@ -345,6 +345,7 @@ const FORM_FIELDS = [
   "incomeOwnPayeeAmount", "incomeOwnPayeeSupports",
   // Section 0 — Cover
   "coverLegalName",
+  "demoLegalName",
   "clientNickname",
   "clientDOB",
   "coverDmhID",
@@ -1295,6 +1296,16 @@ function syncLegalNames(sourceId) {
 function updateUI() {
   if(typeof toggleTransferringLocation === 'function') toggleTransferringLocation();
   updateTransitionCostTotal();
+  // Keep the two "Full Legal Name" fields in sync even if syncLegalNames()
+  // didn't fire for some input path (e.g. a browser autofill quirk that skips
+  // input/change events). updateUI() runs on nearly every field's oninput, so
+  // this self-heals a divergence as soon as the user touches anything else.
+  const coverNameEl = document.getElementById("coverLegalName");
+  const demoNameEl = document.getElementById("demoLegalName");
+  if (coverNameEl && demoNameEl && coverNameEl.value !== demoNameEl.value) {
+    if (!coverNameEl.value) coverNameEl.value = demoNameEl.value;
+    else if (!demoNameEl.value) demoNameEl.value = coverNameEl.value;
+  }
   const getVal = (id) => {
     const el = document.getElementById(id);
     return el ? el.value : "";
@@ -3843,6 +3854,13 @@ function captureFormData() {
       }
     }
   });
+  // Defense-in-depth: coverLegalName and demoLegalName are meant to always
+  // mirror each other via syncLegalNames(), but if that event chain never
+  // fires for some reason (e.g. a browser autofill quirk that skips input/
+  // change events), fall back to whichever one is actually populated so a
+  // save/export never silently captures a blank name.
+  if (!fd.coverLegalName && fd.demoLegalName) fd.coverLegalName = fd.demoLegalName;
+  if (!fd.demoLegalName && fd.coverLegalName) fd.demoLegalName = fd.coverLegalName;
   return fd;
 }
 function restoreFormData(fd) {
@@ -4121,6 +4139,18 @@ function wipeSessionData() {
     localStorage.clear();
     location.reload();
   }
+}
+
+function resetForm() {
+  if (!confirm("Start a new plan? Any unsaved changes to the current draft will be lost.")) return;
+  const blankFd = {};
+  FORM_FIELDS.forEach((id) => {
+    const el = document.getElementById(id);
+    blankFd[id] = el && el.type === "checkbox" ? false : "";
+  });
+  restoreFormData(blankFd);
+  removePhoto();
+  showToast("Started a new plan", "success");
 }
 
 // ── EXPORT / IMPORT / PRINT / COPY ──
