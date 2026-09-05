@@ -1106,7 +1106,7 @@ function renderGoals() {
         </div>
         <div class="field-group"><label>Frequency</label>
           <div style="display:flex; flex-wrap:wrap; gap:5px;">
-            ${["Monthly", "Quarterly", "Annually", "As Needed", "Weekly"]
+            ${["Daily", "Weekly", "Monthly", "Quarterly", "Annually", "As Needed"]
               .map(
                 (f) => `
               <label class="eth-check" style="font-size:10px;"><input type="checkbox" ${goal.frequency.includes(f) ? "checked" : ""} onchange="toggleGoalArrayField(${goal.id},'frequency','${f}')"> ${f}</label>
