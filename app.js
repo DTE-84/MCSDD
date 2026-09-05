@@ -1278,6 +1278,20 @@ function toggleBehavioralAssessment() {
   if(container) container.style.display = isYes ? "block" : "none";
 }
 
+function syncLegalNames(sourceId) {
+  const el = document.getElementById(sourceId);
+  if (!el) return;
+  const val = el.value;
+  if (sourceId === 'coverLegalName') {
+    const demo = document.getElementById('demoLegalName');
+    if (demo && demo.value !== val) demo.value = val;
+  } else if (sourceId === 'demoLegalName') {
+    const cover = document.getElementById('coverLegalName');
+    if (cover && cover.value !== val) cover.value = val;
+  }
+  updateUI();
+}
+
 function updateUI() {
   if(typeof toggleTransferringLocation === 'function') toggleTransferringLocation();
   updateTransitionCostTotal();
@@ -3843,6 +3857,8 @@ function restoreFormData(fd) {
       }
     }
   });
+  const demoEl = document.getElementById("demoLegalName");
+  if (demoEl) demoEl.value = document.getElementById("coverLegalName").value;
   goalsData = fd._goalsData || [];
   transitionStartUpCosts = fd._transitionStartUpCosts || [];
   renderTransitionCosts();

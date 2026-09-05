@@ -525,7 +525,9 @@
                 type="text"
                 id="coverLegalName"
                 placeholder="Full Name as it appears on DMH records"
-                oninput="updateUI()"
+                oninput="syncLegalNames(this.id)"
+                onchange="syncLegalNames(this.id)"
+                onblur="syncLegalNames(this.id)"
               />
             </div>
             
@@ -597,9 +599,11 @@
               <label>Full Legal Name</label>
               <input
                 type="text"
-                id="coverLegalName"
+                id="demoLegalName"
                 placeholder="Full Name as it appears on DMH records"
-                oninput="updateUI()"
+                oninput="syncLegalNames(this.id)"
+                onchange="syncLegalNames(this.id)"
+                onblur="syncLegalNames(this.id)"
               />
             </div>
             <div class="field-group">
