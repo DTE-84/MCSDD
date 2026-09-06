@@ -2272,7 +2272,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   safeHTML = safeHTML.replace(/^(─{10,}|═{10,})$/gm, '<span class="print-head-line">$1</span>');
   
   // Highlight Field Labels (any text ending with colon at start of line)
-  safeHTML = safeHTML.replace(/^([A-Za-z0-9\s\/\-&;\(\)]+): (.*)$/gm, '<span class="print-label">$1:</span> <span class="print-value">$2</span>');
+  safeHTML = safeHTML.replace(/^([A-Za-z0-9\s\/\-&;\(\)\[\]\.,'"]+):\s*(.*)$/gm, '<span class="print-label">$1:</span> <span class="print-value">$2</span>');
 
   document.getElementById("narrativeDisplay").innerHTML = safeHTML;
 }
@@ -3994,18 +3994,35 @@ function restoreFormData(fd) {
   toggleTransferring();
 }
 
+let _currentDraftId = null;
+
 function saveToHistory() {
   const drafts = JSON.parse(localStorage.getItem("pcsp_drafts") || "[]");
   const name =
     document.getElementById("coverLegalName").value || "Unnamed Plan";
-  drafts.unshift({
-    id: Date.now(),
-    title: name,
-    date: new Date().toLocaleDateString(),
-    formData: captureFormData(),
-  });
+  const existing = _currentDraftId != null
+    ? drafts.find((d) => d.id === _currentDraftId)
+    : null;
+
+  if (existing) {
+    existing.title = name;
+    existing.date = new Date().toLocaleDateString();
+    existing.formData = captureFormData();
+  } else {
+    _currentDraftId = Date.now();
+    drafts.unshift({
+      id: _currentDraftId,
+      title: name,
+      date: new Date().toLocaleDateString(),
+      formData: captureFormData(),
+    });
+  }
   localStorage.setItem("pcsp_drafts", JSON.stringify(drafts.slice(0, 20)));
   renderHistory();
+}
+function manualSaveDraft() {
+  saveToHistory();
+  showToast("Draft saved ✓", "success");
 }
 function renderHistory() {
   const drafts = JSON.parse(localStorage.getItem("pcsp_drafts") || "[]");
@@ -4019,7 +4036,10 @@ function renderHistory() {
 function viewDraft(id) {
   const drafts = JSON.parse(localStorage.getItem("pcsp_drafts") || "[]");
   const d = drafts.find((x) => x.id === id);
-  if (d && confirm("Load draft?")) restoreFormData(d.formData);
+  if (d && confirm("Load draft?")) {
+    restoreFormData(d.formData);
+    _currentDraftId = id;
+  }
 }
 
 // ── PASSWORD
@@ -4150,6 +4170,7 @@ function resetForm() {
   });
   restoreFormData(blankFd);
   removePhoto();
+  _currentDraftId = null;
   showToast("Started a new plan", "success");
 }
 
@@ -4276,6 +4297,7 @@ async function processPcspContent(content) {
 
     if (data) {
       restoreFormData(data);
+      _currentDraftId = null;
       showToast("Loaded .pcsp successfully!", "success");
     }
   } catch (err) {

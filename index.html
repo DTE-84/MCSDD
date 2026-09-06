@@ -374,6 +374,9 @@
           <span class="ind-name" id="headerName">No Individual Selected</span>
           <span>📅 DOB: <strong id="headerDOB">—</strong></span>
           <span>🪪 DMH #: <strong id="headerDMH">—</strong></span>
+          <button class="btn btn-header-save" onclick="manualSaveDraft()" title="Save the current plan as a draft">
+            💾 Save Draft
+          </button>
         </div>
 
         <!-- App Title Bar -->
@@ -3008,7 +3011,7 @@
             <button class="btn btn-success" onclick="printPlan()">
               Print / Save PDF
             </button>
-            <button class="btn btn-outline" onclick="saveToHistory()">
+            <button class="btn btn-outline" onclick="manualSaveDraft()">
               Save Draft
             </button>
             <button class="btn btn-export" onclick="exportPCSP()">

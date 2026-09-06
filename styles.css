@@ -770,6 +770,21 @@ input:checked + .slider:before {
 	opacity: 1;
 	color: white;
 }
+.btn-header-save {
+	margin-left: auto;
+	background: transparent;
+	border: 2px solid var(--gold-light);
+	color: var(--gold-light);
+	padding: 6px 14px;
+	font-size: 12px;
+	font-weight: 700;
+	border-radius: 6px;
+	white-space: nowrap;
+}
+.btn-header-save:hover {
+	background: var(--gold-light);
+	color: var(--marion-blue);
+}
 
 /* ── Responsive ── */
 @media (max-width: 1024px) {
