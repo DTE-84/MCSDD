@@ -3517,7 +3517,7 @@ function renderHcbsServices() {
           </div>
           <div class="field-group">
             <label>Provider & Services Choice Statement Effective Signed Date</label>
-            <input type="text" value="${esc(s.signedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'signedDate', this.value)">
+            <input type="date" value="${esc(s.signedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'signedDate', this.value)">
           </div>
         </div>
         <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin-top: 15px;">
@@ -3530,7 +3530,7 @@ function renderHcbsServices() {
           ${s.isUpdate ? `
           <div style="flex: 1; min-width: 250px; margin-bottom: 5px;">
             <label>Previous Signed Date</label>
-            <input type="text" value="${esc(s.prevSignedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'prevSignedDate', this.value)">
+            <input type="date" value="${esc(s.prevSignedDate || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'prevSignedDate', this.value)">
           </div>
           ` : ""}
         </div>
@@ -3553,7 +3553,7 @@ function renderHcbsServices() {
             </div>
             <div class="field-group full">
               <label>Effective Signed Date</label>
-              <input type="text" value="${esc(s.sig2Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig2Date', this.value)">
+              <input type="date" value="${esc(s.sig2Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig2Date', this.value)">
             </div>
           </div>
           <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add 3rd Signature</button>
@@ -3575,7 +3575,7 @@ function renderHcbsServices() {
               </div>
               <div class="field-group full">
                 <label>Effective Signed Date</label>
-                <input type="text" value="${esc(s.sig3Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig3Date', this.value)">
+                <input type="date" value="${esc(s.sig3Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig3Date', this.value)">
               </div>
             </div>
           </div>
