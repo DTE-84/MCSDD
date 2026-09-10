@@ -132,6 +132,18 @@
         border-top: 1px solid rgba(201, 168, 76, 0.1);
         padding-top: 20px;
       }
+      .auth-toggle {
+        margin-top: 18px;
+        font-size: 0.78rem;
+        color: rgba(196, 201, 224, 0.65);
+      }
+      .auth-toggle a {
+        color: #c9a84c;
+        text-decoration: none;
+      }
+      .auth-toggle a:hover {
+        text-decoration: underline;
+      }
       /* App fonts */
       .font-serif {
         font-family: "Cormorant Garamond", serif;
@@ -268,14 +280,23 @@
       </div>
 
       <h1>MCSDD Employee Portal</h1>
-      <p class="subtitle" id="lockSubtitle">Marion County · Developmental Services</p>
-      
+      <p class="subtitle" id="lockSubtitle">Sign in to access your plans</p>
+
+      <div class="field-wrap">
+        <input
+          type="email"
+          id="emailInput"
+          placeholder="Work email"
+          autocomplete="username"
+        />
+      </div>
+
       <div class="field-wrap">
         <input
           type="password"
           id="passInput"
-          placeholder="Enter access code"
-          autocomplete="off"
+          placeholder="Password"
+          autocomplete="current-password"
         />
       </div>
 
@@ -285,14 +306,17 @@
             type="password"
             id="passConfirm"
             placeholder="Confirm password"
-            autocomplete="off"
+            autocomplete="new-password"
           />
         </div>
         <div id="passStrengthHint" style="font-size: 11px; margin-bottom: 12px; color: #8a8fa8; text-align: left; padding-left: 10px;"></div>
       </div>
 
       <div id="errorMsg"></div>
-      <button class="btn-primary" id="lockBtn" onclick="checkPass()">Access Portal</button>
+      <button class="btn-primary" id="lockBtn" onclick="submitAuth()">Sign In</button>
+      <div class="auth-toggle" id="authToggleText">
+        Need an account? <a href="#" onclick="toggleAuthMode(event)">Sign Up</a>
+      </div>
       <div class="lock-footer">
         Authorized personnel only &nbsp;·&nbsp; MCSDD 2024
       </div>
@@ -310,11 +334,11 @@
       <div class="guide-grid">
         <div class="guide-item">
           <h3><span>01 //</span> Data Integrity</h3>
-          <p>All drafting occurs locally in your browser's RAM. No client data is transmitted to external servers, satisfying HIPAA's Security Rule for unhosted clinical tools.</p>
+          <p>Your plan data is encrypted in your browser before it ever leaves your device, using a key derived from your account password. The server only ever stores unreadable ciphertext.</p>
         </div>
         <div class="guide-item">
           <h3><span>02 //</span> Saving Your Work</h3>
-          <p>Click <b>"New Plan"</b> to start fresh, or <b>"Export"</b> to save your draft as a <span style="color:#246bce">.pcsp</span> file. Drafts auto-expire after 30 days to ensure data hygiene.</p>
+          <p>Click <b>"Save Draft"</b> to sync your plan to your account so it's available from any computer you log in to. You can also <b>"Export"</b> to save a local <span style="color:#246bce">.pcsp</span> backup file.</p>
         </div>
         <div class="guide-item">
           <h3><span>03 //</span> Rapid Resumption</h3>
@@ -361,10 +385,6 @@
             <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>17.</span> Comments</div>
           </div>
         </div>
-
-        
-              <div class="panel-header" style="margin-top: 0;">Saved Drafts</div>
-        <div class="panel-content" id="historyList"></div>
       </aside>
 
       <!-- ── Main Workspace ── -->
@@ -3181,6 +3201,8 @@
           </div>
 
         </div>
+        <div class="panel-header" style="margin-top: 0;">Saved Drafts</div>
+        <div class="panel-content" id="historyList"></div>
       </aside>
     </div>
 
@@ -3213,6 +3235,14 @@
         }
       }
     </script>
+    <!--
+      Cloud sync requires a Supabase project (see config.js and
+      supabase_schema.sql for setup). Do not enter real client data until
+      a signed Business Associate Agreement and privacy-officer sign-off
+      are in place — see README for details.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="config.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

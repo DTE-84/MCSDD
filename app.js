@@ -230,9 +230,20 @@ let meetingAttendees = []; // Section 18: Meeting Attendees
 let dnrAltInstructions = [];
 let _coverPhotoData = null;
 
-// ── SECURITY STATE ──
-let _sessionKey = null;
-let _vaultConfig = null; // { salt: base64, challenge: base64 }
+// ── SECURITY / AUTH STATE ──
+let _sessionKey = null; // plaintext account password, kept in memory only — used as the client-side encryption key for drafts
+let _currentUserId = null;
+
+// ── CLOUD CLIENT ──
+// SUPABASE_URL / SUPABASE_ANON_KEY come from config.js.
+const supabaseClient =
+  typeof supabase !== "undefined" &&
+  SUPABASE_URL &&
+  SUPABASE_URL !== "YOUR_SUPABASE_PROJECT_URL"
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: false },
+      })
+    : null;
 
 const Security = {
   ITERATIONS: 100000,
@@ -3996,98 +4007,182 @@ function restoreFormData(fd) {
 
 let _currentDraftId = null;
 
-function saveToHistory() {
-  const drafts = JSON.parse(localStorage.getItem("pcsp_drafts") || "[]");
+// ── CLOUD DRAFT STORAGE ──
+// Drafts are stored in Supabase, tied to the signed-in user, so they follow
+// that person to any device. The server only ever sees an AES-GCM
+// ciphertext (see Security.encrypt/decrypt) — it cannot read plan content.
+// Row-level security (supabase_schema.sql) additionally restricts each row
+// to its owning user_id.
+async function saveToHistory() {
+  if (!_sessionKey || !_currentUserId) return;
   const name =
     document.getElementById("coverLegalName").value || "Unnamed Plan";
-  const existing = _currentDraftId != null
-    ? drafts.find((d) => d.id === _currentDraftId)
-    : null;
+  const encrypted = await Security.encrypt(
+    { title: name, formData: captureFormData() },
+    _sessionKey,
+  );
 
-  if (existing) {
-    existing.title = name;
-    existing.date = new Date().toLocaleDateString();
-    existing.formData = captureFormData();
+  if (_currentDraftId) {
+    const { error } = await supabaseClient
+      .from("drafts")
+      .update({ data: encrypted, updated_at: new Date().toISOString() })
+      .eq("id", _currentDraftId);
+    if (error) {
+      showToast("Save failed: " + error.message, "error");
+      return;
+    }
   } else {
-    _currentDraftId = Date.now();
-    drafts.unshift({
-      id: _currentDraftId,
-      title: name,
-      date: new Date().toLocaleDateString(),
-      formData: captureFormData(),
-    });
+    const { data, error } = await supabaseClient
+      .from("drafts")
+      .insert({ user_id: _currentUserId, data: encrypted })
+      .select("id")
+      .single();
+    if (error) {
+      showToast("Save failed: " + error.message, "error");
+      return;
+    }
+    _currentDraftId = data.id;
   }
-  localStorage.setItem("pcsp_drafts", JSON.stringify(drafts.slice(0, 20)));
-  renderHistory();
+  await renderHistory();
 }
-function manualSaveDraft() {
-  saveToHistory();
+async function manualSaveDraft() {
+  await saveToHistory();
   showToast("Draft saved ✓", "success");
 }
-function renderHistory() {
-  const drafts = JSON.parse(localStorage.getItem("pcsp_drafts") || "[]");
-  document.getElementById("historyList").innerHTML = drafts
+async function renderHistory() {
+  const listEl = document.getElementById("historyList");
+  if (!_currentUserId) {
+    listEl.innerHTML = "";
+    return;
+  }
+
+  const { data: rows, error } = await supabaseClient
+    .from("drafts")
+    .select("id, data, updated_at")
+    .eq("user_id", _currentUserId)
+    .order("updated_at", { ascending: false })
+    .limit(20);
+
+  if (error) {
+    console.error("Failed to load drafts:", error.message);
+    return;
+  }
+
+  const items = await Promise.all(
+    rows.map(async (row) => {
+      try {
+        const payload = await Security.decrypt(row.data, _sessionKey);
+        return {
+          id: row.id,
+          title: payload.title || "Unnamed Plan",
+          date: new Date(row.updated_at).toLocaleDateString(),
+        };
+      } catch (e) {
+        return {
+          id: row.id,
+          title: "(unable to decrypt)",
+          date: new Date(row.updated_at).toLocaleDateString(),
+        };
+      }
+    }),
+  );
+
+  listEl.innerHTML = items
     .map(
       (d) =>
-        `<div class="history-item" onclick="viewDraft(${d.id})">${esc(d.title)} (${d.date})</div>`,
+        `<div class="history-item" onclick="viewDraft('${d.id}')">${esc(d.title)} (${d.date})</div>`,
     )
     .join("");
 }
-function viewDraft(id) {
-  const drafts = JSON.parse(localStorage.getItem("pcsp_drafts") || "[]");
-  const d = drafts.find((x) => x.id === id);
-  if (d && confirm("Load draft?")) {
-    restoreFormData(d.formData);
+async function viewDraft(id) {
+  const { data: row, error } = await supabaseClient
+    .from("drafts")
+    .select("id, data")
+    .eq("id", id)
+    .single();
+
+  if (error || !row) {
+    showToast("Could not load draft.", "error");
+    return;
+  }
+
+  let payload;
+  try {
+    payload = await Security.decrypt(row.data, _sessionKey);
+  } catch (e) {
+    showToast("Could not decrypt draft.", "error");
+    return;
+  }
+
+  if (confirm("Load draft?")) {
+    restoreFormData(payload.formData);
     _currentDraftId = id;
   }
 }
 
-// ── PASSWORD
-async function initSecurity() {
-  const config = localStorage.getItem("pcsp_vault_config");
-  const subtitle = document.getElementById("lockSubtitle");
-  const btn = document.getElementById("lockBtn");
-  const passInput = document.getElementById("passInput");
-  const hint = document.getElementById("passStrengthHint");
+// ── AUTHENTICATION ──
+// Every page load requires a fresh email/password sign-in (no persisted
+// session token). This keeps the "re-lock on every visit" behavior of the
+// original vault, and it also means we always have the plaintext password
+// in memory (_sessionKey) right when we need it to decrypt drafts — that
+// password is never sent anywhere or written to disk.
+let _authMode = "signin";
 
-  if (!config) {
-    subtitle.textContent = "Initialize your unique security vault";
-    btn.textContent = "Initialize Vault";
-    document.getElementById("confirmPassWrap").style.display = "block";
-    passInput.placeholder = "Create master password";
-  } else {
-    _vaultConfig = JSON.parse(config);
-    subtitle.textContent = "Unlock your secure workspace";
-    btn.textContent = "Unlock Vault";
-    document.getElementById("confirmPassWrap").style.display = "none";
-    passInput.placeholder = "Enter master password";
-  }
-
-  // Strength hint listener
-  passInput.addEventListener("input", () => {
-    if (!localStorage.getItem("pcsp_vault_config")) {
-      const strength = Security.getStrength(passInput.value);
-      hint.textContent = strength.label ? `Strength: ${strength.label}` : "";
-      hint.style.color = strength.color;
-    } else {
-      hint.textContent = "";
-    }
-  });
+function initAuth() {
+  document.getElementById("lockSubtitle").textContent =
+    "Sign in to access your plans";
+  document.getElementById("lockBtn").textContent = "Sign In";
 }
 
-async function checkPass() {
+function toggleAuthMode(e) {
+  if (e) e.preventDefault();
+  _authMode = _authMode === "signin" ? "signup" : "signin";
+  document.getElementById("errorMsg").textContent = "";
+  const confirmWrap = document.getElementById("confirmPassWrap");
+  const toggleText = document.getElementById("authToggleText");
+
+  if (_authMode === "signup") {
+    document.getElementById("lockSubtitle").textContent =
+      "Create your account";
+    document.getElementById("lockBtn").textContent = "Create Account";
+    confirmWrap.style.display = "block";
+    toggleText.innerHTML =
+      'Already have an account? <a href="#" onclick="toggleAuthMode(event)">Sign In</a>';
+  } else {
+    document.getElementById("lockSubtitle").textContent =
+      "Sign in to access your plans";
+    document.getElementById("lockBtn").textContent = "Sign In";
+    confirmWrap.style.display = "none";
+    toggleText.innerHTML =
+      'Need an account? <a href="#" onclick="toggleAuthMode(event)">Sign Up</a>';
+  }
+}
+
+async function submitAuth() {
+  const email = document.getElementById("emailInput").value.trim();
   const pass = document.getElementById("passInput").value;
-  const confirm = document.getElementById("passConfirm").value;
   const err = document.getElementById("errorMsg");
+  const btn = document.getElementById("lockBtn");
   err.textContent = "";
 
-  if (!_vaultConfig) {
-    // Initialization mode
-    if (!pass || pass.length < 8) {
+  if (!email || !pass) {
+    err.textContent = "Email and password are required.";
+    return;
+  }
+
+  if (!supabaseClient) {
+    err.textContent =
+      "Cloud sync is not configured yet. See config.js for setup steps.";
+    return;
+  }
+
+  if (_authMode === "signup") {
+    const confirmPass = document.getElementById("passConfirm").value;
+    if (pass.length < 8) {
       err.textContent = "Password must be at least 8 characters.";
       return;
     }
-    if (pass !== confirm) {
+    if (pass !== confirmPass) {
       err.textContent = "Passwords do not match.";
       return;
     }
@@ -4097,35 +4192,48 @@ async function checkPass() {
       return;
     }
 
-    try {
-      // Create a challenge: encrypt a known string
-      const challengeStr = "vault_verified_2026";
-      const encryptedChallenge = await Security.encrypt({ challenge: challengeStr }, pass);
-      
-      _vaultConfig = { challenge: encryptedChallenge };
-      localStorage.setItem("pcsp_vault_config", JSON.stringify(_vaultConfig));
-      _sessionKey = pass; // Store for this session
-      
-      showToast("Vault initialized successfully!", "success");
-      enterApp();
-    } catch (e) {
-      err.textContent = "Initialization failed: " + e.message;
+    btn.disabled = true;
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password: pass,
+    });
+    btn.disabled = false;
+
+    if (error) {
+      err.textContent = error.message;
+      return;
     }
+    if (!data.session) {
+      showToast(
+        "Account created. Check your email to confirm, then sign in.",
+        "success",
+      );
+      toggleAuthMode();
+      return;
+    }
+    _sessionKey = pass;
+    _currentUserId = data.user.id;
+    showToast("Account created!", "success");
+    await renderHistory();
+    enterApp();
   } else {
-    // Unlock mode
-    try {
-      const decrypted = await Security.decrypt(_vaultConfig.challenge, pass);
-      if (decrypted && decrypted.challenge === "vault_verified_2026") {
-        _sessionKey = pass;
-        enterApp();
-      } else {
-        throw new Error("Invalid password");
-      }
-    } catch (e) {
-      err.textContent = "Incorrect password. Access denied.";
+    btn.disabled = true;
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password: pass,
+    });
+    btn.disabled = false;
+
+    if (error) {
+      err.textContent = "Incorrect email or password.";
       document.getElementById("passInput").value = "";
       document.getElementById("passInput").focus();
+      return;
     }
+    _sessionKey = pass;
+    _currentUserId = data.user.id;
+    await renderHistory();
+    enterApp();
   }
 }
 
@@ -4147,16 +4255,21 @@ function launchApp() {
   }, 500);
 }
 
-document.getElementById("passInput").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") checkPass();
-});
-document.body.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && document.getElementById("passConfirm") === document.activeElement) checkPass();
+["emailInput", "passInput", "passConfirm"].forEach((id) => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitAuth();
+    });
+  }
 });
 
 function wipeSessionData() {
-  if (confirm("HIPAA SECURITY ALERT: This will permanently wipe all local drafts and session data from this browser. This action cannot be undone. Proceed?")) {
+  if (confirm("HIPAA SECURITY ALERT: This will sign you out and clear local session data from this browser. Drafts saved to your account are not deleted. Proceed?")) {
+    _sessionKey = null;
+    _currentUserId = null;
     localStorage.clear();
+    if (supabaseClient) supabaseClient.auth.signOut();
     location.reload();
   }
 }
@@ -4352,8 +4465,7 @@ document.addEventListener("drop", async (e) => {
 
 // ── BOOT ──
 function init() {
-  initSecurity();
-  renderHistory();
+  initAuth();
   renderGoalTasks();
   renderGoals();
   renderProgramServices();
@@ -4403,6 +4515,7 @@ function restoreFundingVisuals() {
 
 // ── AUTOSAVE (every 20 minutes) ──
 setInterval(() => {
+  if (!_sessionKey || !_currentUserId) return;
   saveToHistory();
   showToast("Auto-saved draft ✓", "success");
 }, 20 * 60 * 1000);
