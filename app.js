@@ -2271,7 +2271,8 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   line("\n" + "═".repeat(67));
   const unmaskedName = name ? (nick ? `${name} ("${nick}")` : name) : "NO INDIVIDUAL SELECTED";
   const unmaskedDMH = dmhID || "N/A";
-  line(`PCSP FOR: ${unmaskedName.toUpperCase()} | DMH ID: ${unmaskedDMH}`);
+  line(`PCSP FOR: ${unmaskedName.toUpperCase()}`);
+  line(`DMH ID: ${unmaskedDMH}`);
 
     // Format for display safely
   let safeHTML = esc(t);
@@ -2283,7 +2284,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   safeHTML = safeHTML.replace(/^(─{10,}|═{10,})$/gm, '<span class="print-head-line">$1</span>');
   
   // Highlight Field Labels (any text ending with colon at start of line)
-  safeHTML = safeHTML.replace(/^([A-Za-z0-9\s\/\-&;\(\)\[\]\.,'"]+):\s*(.*)$/gm, '<span class="print-label">$1:</span> <span class="print-value">$2</span>');
+  safeHTML = safeHTML.replace(/^([A-Za-z0-9\s\/\-&;\(\)\[\]\.,'"?#]+):\s*(.*)$/gm, '<span class="print-label">$1:</span> <span class="print-value">$2</span>');
 
   document.getElementById("narrativeDisplay").innerHTML = safeHTML;
 }
@@ -4120,6 +4121,68 @@ async function viewDraft(id) {
   }
 }
 
+// ── LEGACY LOCAL DRAFT MIGRATION ──
+// Before cloud sync, drafts were saved unencrypted to this browser only,
+// under localStorage key "pcsp_drafts" (the old vault password only ever
+// gated the lock screen, not the draft data itself). Cloud accounts don't
+// see those, so on first sign-in per browser we offer to copy them into
+// the signed-in user's Supabase drafts before anything (e.g. Sign Out's
+// localStorage.clear()) can wipe them.
+async function migrateLegacyDrafts() {
+  if (localStorage.getItem("pcsp_migration_dismissed")) return;
+
+  let legacy;
+  try {
+    legacy = JSON.parse(localStorage.getItem("pcsp_drafts") || "[]");
+  } catch (e) {
+    legacy = [];
+  }
+  if (!Array.isArray(legacy) || legacy.length === 0) return;
+
+  const confirmed = confirm(
+    `Found ${legacy.length} draft(s) saved locally in this browser from before cloud sync. Import them into your account now? They'll be removed from this browser afterward.`,
+  );
+  if (!confirmed) {
+    localStorage.setItem("pcsp_migration_dismissed", "1");
+    return;
+  }
+
+  let migrated = 0;
+  let failed = 0;
+  for (const draft of legacy) {
+    try {
+      const encrypted = await Security.encrypt(
+        { title: draft.title || "Unnamed Plan", formData: draft.formData },
+        _sessionKey,
+      );
+      const { error } = await supabaseClient
+        .from("drafts")
+        .insert({ user_id: _currentUserId, data: encrypted });
+      if (error) throw error;
+      migrated++;
+    } catch (e) {
+      console.error("Failed to migrate legacy draft:", e);
+      failed++;
+    }
+  }
+
+  if (migrated > 0) {
+    showToast(
+      `Imported ${migrated} local draft${migrated === 1 ? "" : "s"} into your account.`,
+      "success",
+    );
+  }
+  if (failed > 0) {
+    showToast(
+      `${failed} local draft${failed === 1 ? "" : "s"} could not be imported — left in place.`,
+      "error",
+    );
+  } else {
+    localStorage.removeItem("pcsp_drafts");
+    localStorage.removeItem("pcsp_migration_dismissed");
+  }
+}
+
 // ── AUTHENTICATION ──
 // Every page load requires a fresh email/password sign-in (no persisted
 // session token). This keeps the "re-lock on every visit" behavior of the
@@ -4214,6 +4277,7 @@ async function submitAuth() {
     _sessionKey = pass;
     _currentUserId = data.user.id;
     showToast("Account created!", "success");
+    await migrateLegacyDrafts();
     await renderHistory();
     enterApp();
   } else {
@@ -4232,6 +4296,7 @@ async function submitAuth() {
     }
     _sessionKey = pass;
     _currentUserId = data.user.id;
+    await migrateLegacyDrafts();
     await renderHistory();
     enterApp();
   }
