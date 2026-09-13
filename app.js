@@ -4089,10 +4089,18 @@ async function renderHistory() {
     }),
   );
 
+  if (items.length === 0) {
+    listEl.innerHTML = '<p class="panel-empty">No saved drafts yet.</p>';
+    return;
+  }
+
   listEl.innerHTML = items
     .map(
       (d) =>
-        `<div class="history-item" onclick="viewDraft('${d.id}')">${esc(d.title)} (${d.date})</div>`,
+        `<div class="history-item history-item--draft" onclick="viewDraft('${d.id}')">
+          <span class="history-title">📝 ${esc(d.title)}</span>
+          <span class="history-date">${d.date}</span>
+        </div>`,
     )
     .join("");
 }
@@ -4205,10 +4213,18 @@ async function renderCompletedPlans() {
     }),
   );
 
+  if (items.length === 0) {
+    listEl.innerHTML = '<p class="panel-empty">No completed plans yet.</p>';
+    return;
+  }
+
   listEl.innerHTML = items
     .map(
       (d) =>
-        `<div class="history-item" onclick="viewCompletedPlan('${d.id}')">${esc(d.title)} (${d.date})</div>`,
+        `<div class="history-item history-item--completed" onclick="viewCompletedPlan('${d.id}')">
+          <span class="history-title">✅ ${esc(d.title)}</span>
+          <span class="history-date">${d.date}</span>
+        </div>`,
     )
     .join("");
 }
