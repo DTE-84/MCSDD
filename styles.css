@@ -234,6 +234,117 @@ body {
 	display: block;
 }
 
+/* ── Resources: toggle + overlay-over-navigation ── */
+.nav-stage {
+	position: relative;
+}
+.resource-toggle-btn {
+	flex-shrink: 0;
+	margin: 12px 15px;
+	padding: 10px 12px;
+	background: var(--marion-blue);
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	font-weight: 700;
+	font-size: 12px;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+.resource-toggle-btn:hover {
+	background: var(--marion-blue-light);
+}
+.resources-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 10;
+	display: flex;
+	flex-direction: column;
+	background: var(--header-bg);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.resources-overlay-header {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 15px;
+	background: var(--marion-blue);
+	color: #fff;
+	font-weight: bold;
+	font-size: 13px;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+}
+.resources-overlay-close {
+	background: rgba(255, 255, 255, 0.15);
+	color: #fff;
+	border: 1px solid rgba(255, 255, 255, 0.4);
+	border-radius: 4px;
+	padding: 4px 8px;
+	font-size: 11px;
+	text-transform: none;
+	letter-spacing: normal;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+.resources-overlay-close:hover {
+	background: rgba(255, 255, 255, 0.3);
+}
+.resources-overlay-body {
+	flex: 1;
+	overflow-y: auto;
+	min-height: 0;
+	padding: 12px 15px;
+}
+
+.resource-category {
+	margin-bottom: 8px;
+}
+.resource-category-header {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 12px;
+	background: var(--bg-light);
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	color: var(--marion-blue);
+	font-weight: 700;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	text-align: left;
+}
+.resource-category-header:hover {
+	border-color: var(--marion-blue);
+}
+.resource-category .chevron {
+	transition: transform 0.2s ease;
+	color: var(--gold);
+	flex-shrink: 0;
+	margin-left: 8px;
+}
+.resource-category.open .chevron {
+	transform: rotate(180deg);
+}
+.resource-category-body {
+	display: none;
+	padding: 10px 4px 0;
+}
+.resource-category.open .resource-category-body {
+	display: block;
+}
+.resource-category .resource-card:last-child {
+	margin-bottom: 0;
+}
+
 /* ── Navigation Items ── */
 .nav-item {
 	padding: 8px 12px;

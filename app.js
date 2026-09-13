@@ -4605,6 +4605,18 @@ function toggleSidebar() {
   }
 }
 
+// Resources expands over Section Navigation (not the form) since the nav
+// isn't needed while browsing resources; the toggle button stays visible
+// below it either way.
+function toggleResourcesOverlay() {
+  const overlay = document.getElementById('resourcesOverlay');
+  overlay.hidden = !overlay.hidden;
+}
+
+function toggleResourceCategory(headerBtn) {
+  headerBtn.closest('.resource-category').classList.toggle('open');
+}
+
 async function exportPCSP() {
   const data = captureFormData();
   let output;

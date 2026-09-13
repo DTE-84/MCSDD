@@ -387,153 +387,180 @@
       <!-- ── Left Sidebar ── -->
       <aside class="side-panel">
         <div class="panel-header">Section Navigation</div>
-        <div class="panel-content" id="sectionNav" style="border-bottom: 2px solid var(--border);">
-          <div class="nav-grid" style="display: grid; grid-template-columns: 1fr; gap: 4px;">
-            <div class="nav-item" onclick="scrollToSection('sec-cover-letter')">Face Sheet</div>
-            <div class="nav-item" onclick="scrollToSection('sec-demographics')"><span>1.</span> Demographics</div>
-            <div class="nav-item" onclick="scrollToSection('sec-likes')"><span>2.</span> Preferences</div>
-            <div class="nav-item" onclick="scrollToSection('sec-dislikes')"><span>3.</span> Dislikes</div>
-            <div class="nav-item" onclick="scrollToSection('sec-important-people')"><span>4.</span> People / Pets</div>
-            <div class="nav-item" onclick="scrollToSection('sec-vision')"><span>5.</span> Hopes / Concerns</div>
-            <div class="nav-item" onclick="scrollToSection('sec-communication')"><span>6.</span> Communication</div>
-            <div class="nav-item" onclick="scrollToSection('sec-program-services')"><span>7.</span> Programs</div>
-            <div class="nav-item" onclick="scrollToSection('sec-health')"><span>8.</span> Health/Risk</div>
-            <div class="nav-item" onclick="scrollToSection('sec-community-support')"><span>9.</span> Community Support</div>
-            <div class="nav-item" onclick="scrollToSection('sec-support-ways')"><span>10.</span> Ways To Support</div>
-            <div class="nav-item" onclick="scrollToSection('sec-strengths')"><span>11.</span> Strengths</div>
-            <div class="nav-item" onclick="scrollToSection('sec-transition')"><span>12.</span> Transition</div>
-            <div class="nav-item" onclick="scrollToSection('sec-behavioral')"><span>13.</span> Behavioral</div>
-            <div class="nav-item" onclick="scrollToSection('sec-supervision')"><span>14.</span> Supervision</div>
-            <div class="nav-item" onclick="scrollToSection('sec-prev-goals')"><span>15.</span> Past/Current Goals</div>
-            <div class="nav-item" onclick="scrollToSection('sec-outcomes')"><span>16.</span> Action Plan</div>
-            <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>17.</span> Comments</div>
+        <div class="nav-stage">
+          <div class="panel-content" id="sectionNav" style="border-bottom: 2px solid var(--border);">
+            <div class="nav-grid" style="display: grid; grid-template-columns: 1fr; gap: 4px;">
+              <div class="nav-item" onclick="scrollToSection('sec-cover-letter')">Face Sheet</div>
+              <div class="nav-item" onclick="scrollToSection('sec-demographics')"><span>1.</span> Demographics</div>
+              <div class="nav-item" onclick="scrollToSection('sec-likes')"><span>2.</span> Preferences</div>
+              <div class="nav-item" onclick="scrollToSection('sec-dislikes')"><span>3.</span> Dislikes</div>
+              <div class="nav-item" onclick="scrollToSection('sec-important-people')"><span>4.</span> People / Pets</div>
+              <div class="nav-item" onclick="scrollToSection('sec-vision')"><span>5.</span> Hopes / Concerns</div>
+              <div class="nav-item" onclick="scrollToSection('sec-communication')"><span>6.</span> Communication</div>
+              <div class="nav-item" onclick="scrollToSection('sec-program-services')"><span>7.</span> Programs</div>
+              <div class="nav-item" onclick="scrollToSection('sec-health')"><span>8.</span> Health/Risk</div>
+              <div class="nav-item" onclick="scrollToSection('sec-community-support')"><span>9.</span> Community Support</div>
+              <div class="nav-item" onclick="scrollToSection('sec-support-ways')"><span>10.</span> Ways To Support</div>
+              <div class="nav-item" onclick="scrollToSection('sec-strengths')"><span>11.</span> Strengths</div>
+              <div class="nav-item" onclick="scrollToSection('sec-transition')"><span>12.</span> Transition</div>
+              <div class="nav-item" onclick="scrollToSection('sec-behavioral')"><span>13.</span> Behavioral</div>
+              <div class="nav-item" onclick="scrollToSection('sec-supervision')"><span>14.</span> Supervision</div>
+              <div class="nav-item" onclick="scrollToSection('sec-prev-goals')"><span>15.</span> Past/Current Goals</div>
+              <div class="nav-item" onclick="scrollToSection('sec-outcomes')"><span>16.</span> Action Plan</div>
+              <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>17.</span> Comments</div>
+            </div>
+          </div>
+
+          <!-- Expands over Section Navigation above; the trigger button below stays put. -->
+          <div class="resources-overlay" id="resourcesOverlay" hidden>
+            <div class="resources-overlay-header">
+              <span>📚 Marion County Resources</span>
+              <button class="resources-overlay-close" onclick="toggleResourcesOverlay()" title="Back to Section Navigation">✕ Close</button>
+            </div>
+            <div class="resources-overlay-body" id="resourceList">
+              <div class="resource-category">
+                <button class="resource-category-header" onclick="toggleResourceCategory(this)">
+                  Local Providers &amp; Basic Needs <span class="chevron">▾</span>
+                </button>
+                <div class="resource-category-body">
+                  <div class="resource-card" onclick="injectResource('Mark Twain Behavior Health')">
+                    <span class="resource-name">Mark Twain Behavior Health</span>
+                    <span class="resource-info">Crisis: (800) 356-5395 | Hannibal Office (573) 221-2120</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Hannibal Satellite Office')">
+                    <span class="resource-name">Hannibal Satellite Office</span>
+                    <span class="resource-info">805 Clinic Rd Hannibal, Missouri | (573) 248-2400</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Preferred Family Health Care')">
+                    <span class="resource-name">Preferred Family Health Care</span>
+                    <span class="resource-info">4355 Paris Gravel RD Hannibal, Missouri | (573) 248-3811</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Harvest Outreach: Loaves & Fishes')">
+                    <span class="resource-name">Harvest Outreach: Loaves & Fishes</span>
+                    <span class="resource-info">Meals and Food Asst. | 413 Broadway, 573-822-5858</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Salvation Army-Hannibal')">
+                    <span class="resource-name">Salvation Army-Hannibal</span>
+                    <span class="resource-info">Basic-needs Asst | 573-221-7072</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Comprehensive Health Systems New London')">
+                    <span class="resource-name">Comprehensive Health Systems New London</span>
+                    <span class="resource-info">Behavioral Health/DD-related services | 573-248-1372</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="resource-category">
+                <button class="resource-category-header" onclick="toggleResourceCategory(this)">
+                  Domestic Violence, Abuse &amp; Safety <span class="chevron">▾</span>
+                </button>
+                <div class="resource-category-body">
+                  <div class="resource-card" onclick="injectResource('988 Suicide & Crisis Lifeline')">
+                    <span class="resource-name">988 Suicide & Crisis Lifeline</span>
+                    <span class="resource-info">Call or Text 988</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Missouri Adult Abuse & Neglect Hotline')">
+                    <span class="resource-name">Missouri Adult Abuse & Neglect Hotline</span>
+                    <span class="resource-info">(800) 392-0210</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Child Abuse/Neglect Hotline')">
+                    <span class="resource-name">Child Abuse/Neglect Hotline</span>
+                    <span class="resource-info">(800) 392-3738</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('National Human Trafficking Hotline')">
+                    <span class="resource-name">National Human Trafficking Hotline</span>
+                    <span class="resource-info">(888) 373-7888</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('National Sexual Assault Hotline')">
+                    <span class="resource-name">National Sexual Assault Hotline</span>
+                    <span class="resource-info">(800) 656-4673</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="resource-category">
+                <button class="resource-category-header" onclick="toggleResourceCategory(this)">
+                  Employment, Vocational &amp; Benefits <span class="chevron">▾</span>
+                </button>
+                <div class="resource-category-body">
+                  <div class="resource-card" onclick="injectResource('Missouri Vocational Rehabilitation')">
+                    <span class="resource-name">Missouri Vocational Rehabilitation</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Missouri Job Center / Hannibal Employment Services')">
+                    <span class="resource-name">Missouri Job Center</span>
+                    <span class="resource-info">Hannibal Employment Services</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Social Security Administration')">
+                    <span class="resource-name">Social Security Administration</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Missouri SkillUP')">
+                    <span class="resource-name">Missouri SkillUP</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="resource-category">
+                <button class="resource-category-header" onclick="toggleResourceCategory(this)">
+                  Transportation <span class="chevron">▾</span>
+                </button>
+                <div class="resource-category-body">
+                  <div class="resource-card" onclick="injectResource('OATS Transit')">
+                    <span class="resource-name">OATS Transit</span>
+                    <span class="resource-info">(800) 654-6287</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('MO HealthNet transportation/MTM')">
+                    <span class="resource-name">MO HealthNet transportation/MTM</span>
+                    <span class="resource-info">(866) 269-5927</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('NEILS')">
+                    <span class="resource-name">NEILS</span>
+                    <span class="resource-info">(573) 221-8282</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Tut’s Taxi')">
+                    <span class="resource-name">Tut’s Taxi</span>
+                    <span class="resource-info">(573) 470-1723</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="resource-category">
+                <button class="resource-category-header" onclick="toggleResourceCategory(this)">
+                  Medical &amp; Health Care <span class="chevron">▾</span>
+                </button>
+                <div class="resource-category-body">
+                  <div class="resource-card" onclick="injectResource('Hannibal Regional Hospital')">
+                    <span class="resource-name">Hannibal Regional Hospital</span>
+                    <span class="resource-info">(573) 248-1300</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('TEL-LINK Missouri')">
+                    <span class="resource-name">TEL-LINK Missouri</span>
+                    <span class="resource-info">(800) 835-5465</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="resource-category">
+                <button class="resource-category-header" onclick="toggleResourceCategory(this)">
+                  Developmental Disability &amp; Independent Living <span class="chevron">▾</span>
+                </button>
+                <div class="resource-category-body">
+                  <div class="resource-card" onclick="injectResource('North East Independent Living Services (NEILS)')">
+                    <span class="resource-name">North East Independent Living Services (NEILS)</span>
+                    <span class="resource-info">4500 Paris Gravel Rd. | (573) 221-8282</span>
+                  </div>
+                  <div class="resource-card" onclick="injectResource('Challenge Unlimited')">
+                    <span class="resource-name">Challenge Unlimited</span>
+                    <span class="resource-info">Employment/Disability Support | (573) 213-4466</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="panel-header">Marion County Resources</div>
-        <div class="panel-content" id="resourceList">
-          <div class="resource-card" onclick="injectResource('Mark Twain Behavior Health')">
-            <span class="resource-name">Mark Twain Behavior Health</span>
-            <span class="resource-info">Crisis: (800) 356-5395 | Hannibal Office (573) 221-2120</span>
-          </div>
 
-          <div class="resource-card" onclick="injectResource('Hannibal Satellite Office')">
-            <span class="resource-name">Hannibal Satellite Office</span>
-            <span class="resource-info">805 Clinic Rd Hannibal, Missouri | (573) 248-2400</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Preferred Family Health Care')">
-            <span class="resource-name">Preferred Family Health Care</span>
-            <span class="resource-info">4355 Paris Gravel RD Hannibal, Missouri | (573) 248-3811</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Harvest Outreach: Loaves & Fishes')">
-            <span class="resource-name">Harvest Outreach: Loaves & Fishes</span>
-            <span class="resource-info">Meals and Food Asst. | 413 Broadway, 573-822-5858</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Salvation Army-Hannibal')">
-            <span class="resource-name">Salvation Army-Hannibal</span>
-            <span class="resource-info">Basic-needs Asst | 573-221-7072</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Comprehensive Health Systems New London')">
-            <span class="resource-name">Comprehensive Health Systems New London</span>
-            <span class="resource-info">Behavioral Health/DD-related services | 573-248-1372</span>
-          </div>
-
-          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Domestic Violence, Abuse & Safety</div>
-
-          <div class="resource-card" onclick="injectResource('988 Suicide & Crisis Lifeline')">
-            <span class="resource-name">988 Suicide & Crisis Lifeline</span>
-            <span class="resource-info">Call or Text 988</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Missouri Adult Abuse & Neglect Hotline')">
-            <span class="resource-name">Missouri Adult Abuse & Neglect Hotline</span>
-            <span class="resource-info">(800) 392-0210</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Child Abuse/Neglect Hotline')">
-            <span class="resource-name">Child Abuse/Neglect Hotline</span>
-            <span class="resource-info">(800) 392-3738</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('National Human Trafficking Hotline')">
-            <span class="resource-name">National Human Trafficking Hotline</span>
-            <span class="resource-info">(888) 373-7888</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('National Sexual Assault Hotline')">
-            <span class="resource-name">National Sexual Assault Hotline</span>
-            <span class="resource-info">(800) 656-4673</span>
-          </div>
-
-          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Employment, Vocational & Benefits</div>
-
-          <div class="resource-card" onclick="injectResource('Missouri Vocational Rehabilitation')">
-            <span class="resource-name">Missouri Vocational Rehabilitation</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Missouri Job Center / Hannibal Employment Services')">
-            <span class="resource-name">Missouri Job Center</span>
-            <span class="resource-info">Hannibal Employment Services</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Social Security Administration')">
-            <span class="resource-name">Social Security Administration</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Missouri SkillUP')">
-            <span class="resource-name">Missouri SkillUP</span>
-          </div>
-
-          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Transportation</div>
-
-          <div class="resource-card" onclick="injectResource('OATS Transit')">
-            <span class="resource-name">OATS Transit</span>
-            <span class="resource-info">(800) 654-6287</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('MO HealthNet transportation/MTM')">
-            <span class="resource-name">MO HealthNet transportation/MTM</span>
-            <span class="resource-info">(866) 269-5927</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('NEILS')">
-            <span class="resource-name">NEILS</span>
-            <span class="resource-info">(573) 221-8282</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Tut’s Taxi')">
-            <span class="resource-name">Tut’s Taxi</span>
-            <span class="resource-info">(573) 470-1723</span>
-          </div>
-
-          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Medical & Health Care</div>
-
-          <div class="resource-card" onclick="injectResource('Hannibal Regional Hospital')">
-            <span class="resource-name">Hannibal Regional Hospital</span>
-            <span class="resource-info">(573) 248-1300</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('TEL-LINK Missouri')">
-            <span class="resource-name">TEL-LINK Missouri</span>
-            <span class="resource-info">(800) 835-5465</span>
-          </div>
-
-          <div style="margin-top: 15px; font-weight: 800; font-size: 11px; color: var(--gold); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;">Developmental Disability & Independent Living</div>
-
-          <div class="resource-card" onclick="injectResource('North East Independent Living Services (NEILS)')">
-            <span class="resource-name">North East Independent Living Services (NEILS)</span>
-            <span class="resource-info">4500 Paris Gravel Rd. | (573) 221-8282</span>
-          </div>
-
-          <div class="resource-card" onclick="injectResource('Challenge Unlimited')">
-            <span class="resource-name">Challenge Unlimited</span>
-            <span class="resource-info">Employment/Disability Support | (573) 213-4466</span>
-          </div>
-
-        </div>
+        <button class="resource-toggle-btn" id="resourceToggleBtn" onclick="toggleResourcesOverlay()">
+          📚 Marion County Resources
+        </button>
       </aside>
 
       <!-- ── Main Workspace ── -->
