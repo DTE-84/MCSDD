@@ -272,6 +272,24 @@
         gap: 12px;
         align-items: center;
       }
+      .btn-show-pass {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #8a8fa8;
+        font-size: 0.85rem;
+        cursor: pointer;
+        padding: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+        transition: color 0.2s ease;
+      }
+      .btn-show-pass:hover {
+        color: #ffd700;
+      }
 </style>
   </head>
   <!-- ═══════════════════════════════════════ LOCK SCREEN -->
@@ -293,23 +311,27 @@
         />
       </div>
 
-      <div class="field-wrap">
+      <div class="field-wrap" style="position: relative;">
         <input
           type="password"
           id="passInput"
           placeholder="Password"
           autocomplete="current-password"
+          style="padding-right: 60px;"
         />
+        <button type="button" class="btn-show-pass" onclick="togglePasswordVisibility('passInput', this)">Show</button>
       </div>
 
       <div id="confirmPassWrap" style="display: none;">
-        <div class="field-wrap">
+        <div class="field-wrap" style="position: relative;">
           <input
             type="password"
             id="passConfirm"
             placeholder="Confirm password"
             autocomplete="new-password"
+            style="padding-right: 60px;"
           />
+          <button type="button" class="btn-show-pass" onclick="togglePasswordVisibility('passConfirm', this)">Show</button>
         </div>
         <div id="passStrengthHint" style="font-size: 11px; margin-bottom: 12px; color: #8a8fa8; text-align: left; padding-left: 10px;"></div>
       </div>

@@ -4340,6 +4340,17 @@ function toggleAuthMode(e) {
   }
 }
 
+function togglePasswordVisibility(inputId, btnElement) {
+  const input = document.getElementById(inputId);
+  if (input.type === "password") {
+    input.type = "text";
+    btnElement.textContent = "Hide";
+  } else {
+    input.type = "password";
+    btnElement.textContent = "Show";
+  }
+}
+
 async function submitAuth() {
   const email = document.getElementById("emailInput").value.trim();
   const pass = document.getElementById("passInput").value;
