@@ -399,6 +399,9 @@
           <button class="btn btn-header-save" onclick="manualSaveDraft()" title="Save the current plan as a draft">
             💾 Save Draft
           </button>
+          <button class="btn btn-header-save" onclick="finalizePlan()" title="Save a permanent copy that won't expire, for as long as this Individual is an active client">
+            ✅ Save as Completed Plan
+          </button>
         </div>
 
         <!-- App Title Bar -->
@@ -3036,6 +3039,9 @@
             <button class="btn btn-outline" onclick="manualSaveDraft()">
               Save Draft
             </button>
+            <button class="btn btn-outline" onclick="finalizePlan()" title="Save a permanent copy that won't expire, for as long as this Individual is an active client">
+              Save as Completed Plan
+            </button>
             <button class="btn btn-export" onclick="exportPCSP()">
               ⬇️ Export .pcsp File
             </button>
@@ -3205,6 +3211,9 @@
         </div>
         <div class="panel-header" style="margin-top: 0;">Saved Drafts</div>
         <div class="panel-content" id="historyList"></div>
+
+        <div class="panel-header">Completed Plans</div>
+        <div class="panel-content" id="completedPlansList"></div>
       </aside>
     </div>
 

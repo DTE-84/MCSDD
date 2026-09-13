@@ -4007,6 +4007,7 @@ function restoreFormData(fd) {
 }
 
 let _currentDraftId = null;
+let _currentCompletedId = null;
 
 // ── CLOUD DRAFT STORAGE ──
 // Drafts are stored in Supabase, tied to the signed-in user, so they follow
@@ -4118,6 +4119,124 @@ async function viewDraft(id) {
   if (confirm("Load draft?")) {
     restoreFormData(payload.formData);
     _currentDraftId = id;
+  }
+}
+
+// ── COMPLETED PLAN STORAGE ──
+// A finished, signed-off plan moves out of the expiring/capped `drafts`
+// table into `completed_plans`, which has no expiry — case managers need to
+// pull it back up for as long as the Individual remains an active client.
+async function finalizePlan() {
+  if (!_sessionKey || !_currentUserId) return;
+  if (
+    !confirm(
+      "Save this plan as a completed record? Unlike drafts, it will not expire and will stay accessible as long as this Individual is an active client.",
+    )
+  )
+    return;
+
+  const name = document.getElementById("coverLegalName").value || "Unnamed Plan";
+  const encrypted = await Security.encrypt(
+    { title: name, formData: captureFormData() },
+    _sessionKey,
+  );
+
+  if (_currentCompletedId) {
+    const { error } = await supabaseClient
+      .from("completed_plans")
+      .update({ data: encrypted, updated_at: new Date().toISOString() })
+      .eq("id", _currentCompletedId);
+    if (error) {
+      showToast("Save failed: " + error.message, "error");
+      return;
+    }
+  } else {
+    const { data, error } = await supabaseClient
+      .from("completed_plans")
+      .insert({ user_id: _currentUserId, data: encrypted })
+      .select("id")
+      .single();
+    if (error) {
+      showToast("Save failed: " + error.message, "error");
+      return;
+    }
+    _currentCompletedId = data.id;
+  }
+
+  showToast("Saved as a completed plan ✓", "success");
+  await renderCompletedPlans();
+}
+
+async function renderCompletedPlans() {
+  const listEl = document.getElementById("completedPlansList");
+  if (!listEl) return;
+  if (!_currentUserId) {
+    listEl.innerHTML = "";
+    return;
+  }
+
+  const { data: rows, error } = await supabaseClient
+    .from("completed_plans")
+    .select("id, data, updated_at")
+    .eq("user_id", _currentUserId)
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to load completed plans:", error.message);
+    return;
+  }
+
+  const items = await Promise.all(
+    rows.map(async (row) => {
+      try {
+        const payload = await Security.decrypt(row.data, _sessionKey);
+        return {
+          id: row.id,
+          title: payload.title || "Unnamed Plan",
+          date: new Date(row.updated_at).toLocaleDateString(),
+        };
+      } catch (e) {
+        return {
+          id: row.id,
+          title: "(unable to decrypt)",
+          date: new Date(row.updated_at).toLocaleDateString(),
+        };
+      }
+    }),
+  );
+
+  listEl.innerHTML = items
+    .map(
+      (d) =>
+        `<div class="history-item" onclick="viewCompletedPlan('${d.id}')">${esc(d.title)} (${d.date})</div>`,
+    )
+    .join("");
+}
+
+async function viewCompletedPlan(id) {
+  const { data: row, error } = await supabaseClient
+    .from("completed_plans")
+    .select("id, data")
+    .eq("id", id)
+    .single();
+
+  if (error || !row) {
+    showToast("Could not load completed plan.", "error");
+    return;
+  }
+
+  let payload;
+  try {
+    payload = await Security.decrypt(row.data, _sessionKey);
+  } catch (e) {
+    showToast("Could not decrypt completed plan.", "error");
+    return;
+  }
+
+  if (confirm("Load this completed plan?")) {
+    restoreFormData(payload.formData);
+    _currentCompletedId = id;
+    _currentDraftId = null;
   }
 }
 
@@ -4279,6 +4398,7 @@ async function submitAuth() {
     showToast("Account created!", "success");
     await migrateLegacyDrafts();
     await renderHistory();
+    await renderCompletedPlans();
     enterApp();
   } else {
     btn.disabled = true;
@@ -4298,6 +4418,7 @@ async function submitAuth() {
     _currentUserId = data.user.id;
     await migrateLegacyDrafts();
     await renderHistory();
+    await renderCompletedPlans();
     enterApp();
   }
 }
@@ -4349,6 +4470,7 @@ function resetForm() {
   restoreFormData(blankFd);
   removePhoto();
   _currentDraftId = null;
+  _currentCompletedId = null;
   showToast("Started a new plan", "success");
 }
 
