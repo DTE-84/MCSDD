@@ -1822,10 +1822,35 @@ textarea:focus-visible {
 }
 
 /* Scrollable Sidebar Panels */
-#resourceList {
+#historyList, #completedPlansList, #resourceList {
 	flex: 1;
 	overflow-y: auto;
 	min-height: 0;
+}
+
+/* ── Panel Search ── */
+.panel-search {
+	padding: 10px 15px 0;
+	background: var(--header-bg);
+	flex-shrink: 0;
+}
+.search-input {
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	background: var(--bg-light);
+	color: var(--text-main);
+	font-size: 12px;
+	box-sizing: border-box;
+}
+.search-input:focus {
+	outline: none;
+	border-color: var(--marion-blue);
+	box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.15);
+}
+.search-input::placeholder {
+	color: var(--text-label);
 }
 #sectionNav {
 	flex-shrink: 0;

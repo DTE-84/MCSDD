@@ -4008,6 +4008,8 @@ function restoreFormData(fd) {
 
 let _currentDraftId = null;
 let _currentCompletedId = null;
+let _allDraftItems = [];
+let _allCompletedItems = [];
 
 // ── CLOUD DRAFT STORAGE ──
 // Drafts are stored in Supabase, tied to the signed-in user, so they follow
@@ -4052,9 +4054,9 @@ async function manualSaveDraft() {
   showToast("Draft saved ✓", "success");
 }
 async function renderHistory() {
-  const listEl = document.getElementById("historyList");
   if (!_currentUserId) {
-    listEl.innerHTML = "";
+    _allDraftItems = [];
+    renderDraftList();
     return;
   }
 
@@ -4070,7 +4072,7 @@ async function renderHistory() {
     return;
   }
 
-  const items = await Promise.all(
+  _allDraftItems = await Promise.all(
     rows.map(async (row) => {
       try {
         const payload = await Security.decrypt(row.data, _sessionKey);
@@ -4089,8 +4091,28 @@ async function renderHistory() {
     }),
   );
 
-  if (items.length === 0) {
+  renderDraftList();
+}
+
+// Renders (and re-renders on search input) from the already-fetched,
+// already-decrypted _allDraftItems — no re-query needed to filter.
+function renderDraftList() {
+  const listEl = document.getElementById("historyList");
+  if (!listEl) return;
+
+  if (_allDraftItems.length === 0) {
     listEl.innerHTML = '<p class="panel-empty">No saved drafts yet.</p>';
+    return;
+  }
+
+  const searchInput = document.getElementById("draftSearchInput");
+  const query = (searchInput ? searchInput.value : "").trim().toLowerCase();
+  const items = query
+    ? _allDraftItems.filter((d) => d.title.toLowerCase().includes(query))
+    : _allDraftItems;
+
+  if (items.length === 0) {
+    listEl.innerHTML = `<p class="panel-empty">No drafts match "${esc(query)}".</p>`;
     return;
   }
 
@@ -4176,10 +4198,9 @@ async function finalizePlan() {
 }
 
 async function renderCompletedPlans() {
-  const listEl = document.getElementById("completedPlansList");
-  if (!listEl) return;
   if (!_currentUserId) {
-    listEl.innerHTML = "";
+    _allCompletedItems = [];
+    renderCompletedList();
     return;
   }
 
@@ -4194,7 +4215,7 @@ async function renderCompletedPlans() {
     return;
   }
 
-  const items = await Promise.all(
+  _allCompletedItems = await Promise.all(
     rows.map(async (row) => {
       try {
         const payload = await Security.decrypt(row.data, _sessionKey);
@@ -4213,8 +4234,28 @@ async function renderCompletedPlans() {
     }),
   );
 
-  if (items.length === 0) {
+  renderCompletedList();
+}
+
+// Renders (and re-renders on search input) from the already-fetched,
+// already-decrypted _allCompletedItems — no re-query needed to filter.
+function renderCompletedList() {
+  const listEl = document.getElementById("completedPlansList");
+  if (!listEl) return;
+
+  if (_allCompletedItems.length === 0) {
     listEl.innerHTML = '<p class="panel-empty">No completed plans yet.</p>';
+    return;
+  }
+
+  const searchInput = document.getElementById("completedSearchInput");
+  const query = (searchInput ? searchInput.value : "").trim().toLowerCase();
+  const items = query
+    ? _allCompletedItems.filter((d) => d.title.toLowerCase().includes(query))
+    : _allCompletedItems;
+
+  if (items.length === 0) {
+    listEl.innerHTML = `<p class="panel-empty">No completed plans match "${esc(query)}".</p>`;
     return;
   }
 
