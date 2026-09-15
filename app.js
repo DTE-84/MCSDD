@@ -1377,7 +1377,7 @@ function updateUI() {
     ? nick
       ? `${name} ("${nick}")`
       : name
-    : "[NAME]";
+    : "";
   const dName = displayName || "[Individual Name]";
   document.querySelectorAll('.auto-name-fill').forEach(el => el.textContent = dName);
 

@@ -475,7 +475,7 @@ body {
 
 .main-workspace {
 	padding: 40px;
-	background: white;
+	background: var(--marion-blue);
 }
 
 .app-header {
@@ -483,8 +483,10 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 30px;
-	padding-bottom: 20px;
-	border-bottom: 2px solid var(--bg-light);
+	padding: 20px;
+	background: #fff;
+	border: 1px solid var(--border);
+	border-radius: 12px;
 	gap: 15px;
 }
 .header-left {
@@ -712,7 +714,7 @@ textarea:focus {
 	background: #f8f9fa;
 	padding: 30px;
 	border-radius: 12px;
-	border: 2px solid var(--marion-blue);
+	border: 2px solid var(--gold);
 	margin-top: 30px;
 }
 #narrativeDisplay {
@@ -1242,6 +1244,11 @@ input:checked + .slider:before {
 	border-color: #2e3347;
 }
 
+[data-theme="dark"] .funding-grid,
+[data-theme="dark"] .bordered-group {
+	border-color: var(--gold);
+}
+
 /* ── ALL field labels (the uppercase topics above every input) ── */
 [data-theme="dark"] label {
 	color: #a0a8c0;
@@ -1298,7 +1305,8 @@ input:checked + .slider:before {
 	background: #1a1d27;
 	border-color: #2e3347;
 }
-[data-theme="dark"] .panel-content {
+[data-theme="dark"] .panel-content,
+[data-theme="dark"] .panel-search {
 	background: #1a1d27;
 }
 [data-theme="dark"] .resource-card {
@@ -1847,6 +1855,13 @@ textarea:focus-visible {
 	border-radius: 8px;
 	border: 1px solid var(--border);
 	box-sizing: border-box;
+}
+
+.bordered-group {
+	background: rgba(0, 0, 0, 0.02);
+	padding: 15px;
+	border-radius: 8px;
+	border: 1px solid var(--border);
 }
 
 .eth-check {
