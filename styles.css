@@ -5,17 +5,17 @@
 	--gold-light: #d4b47a;
 	--success: #2b4593;
 	--danger: #dc3545;
-	--bg-light: #f4f7f9;
+	--bg-light: #ffffff;
 	--border: #003366; /* Navy Blue for Light Mode */
 	--text-main: #2c3e50;
 	--shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-	--header-bg: #fff;
+	--header-bg: #f4f7f9;
 	--text-label: #555;
 }
 
 [data-theme="dark"] {
 	/* Backgrounds */
-	--bg-light: #001529; /* Deep Navy Background */
+	--bg-light: #000c18; /* Deep Navy Background */
 	--header-bg: #002244;
 	/* Borders */
 	--border: #003366;
@@ -92,6 +92,26 @@
 	text-transform: uppercase;
 	color: #8a8fa8;
 	margin-bottom: 36px;
+}
+.btn-lock {
+	width: 100%;
+	padding: 14px;
+	margin-top: 15px;
+	background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+	color: #000c18;
+	font-weight: 800;
+	font-size: 14px;
+	border: none;
+	border-radius: 8px;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+	transition: all 0.3s ease;
+}
+.btn-lock:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(255, 215, 0, 0.35);
+	background: linear-gradient(135deg, #ffe033 0%, var(--gold) 100%);
 }
 
 /* ── Welcome Screen Styles ── */
@@ -208,7 +228,7 @@ body {
 
 .resource-card {
 	background: var(--bg-light);
-	border: 1px solid var(--border);
+	border: 1px solid var(--gold);
 	padding: 12px;
 	border-radius: 8px;
 	margin-bottom: 12px;
@@ -422,7 +442,7 @@ body {
 	padding: 10px 12px;
 	margin-bottom: 8px;
 	background: var(--bg-light);
-	border: 1px solid var(--border);
+	border: 1px solid var(--gold);
 	border-left: 3px solid var(--marion-blue);
 	border-radius: 6px;
 	cursor: pointer;
@@ -485,8 +505,9 @@ body {
 	margin-bottom: 30px;
 	padding: 20px;
 	background: #fff;
-	border: 1px solid var(--border);
+	border: 1px solid var(--gold);
 	border-radius: 12px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 	gap: 15px;
 }
 .header-left {
@@ -561,9 +582,10 @@ body {
 .form-section {
 	margin-bottom: 40px;
 	padding: 25px;
-	border: 1px solid var(--border);
+	border: 1px solid var(--gold);
 	border-radius: 12px;
 	background: #fff;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 .section-title {
 	font-size: 14px;
@@ -647,7 +669,7 @@ body {
 .legal-rep-card {
 	margin-bottom: 25px;
 	background: white;
-	border: 1px solid #e0e0e0;
+	border: 1px solid var(--gold);
 	border-radius: 12px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
@@ -1134,7 +1156,7 @@ input:checked + .slider:before {
 /* ── Important Person & Legal Rep shared card style ── */
 .legal-rep-card {
 	background: var(--bg-light);
-	border: 1px solid var(--border);
+	border: 1px solid var(--gold);
 	border-radius: 10px;
 	padding: 16px;
 	margin-bottom: 12px;
@@ -1227,7 +1249,7 @@ input:checked + .slider:before {
 /* ════════════════════════════════════════════════════════════
    DARK MODE — Consolidated component overrides
    Color system:
-     Backgrounds:  #0f1117 → #1a1d27 → #1e2130 → #252838
+     Backgrounds:  #0f1117 → #001a33 → #00264d → #252838
      Text:         #e8eaf0 (body) · #c5cce0 (headings) · #a0a8c0 (labels) · #5c6378 (muted)
      Accent blue:  #5b8dee · Gold: #c9a84c
    ════════════════════════════════════════════════════════════ */
@@ -1240,8 +1262,8 @@ input:checked + .slider:before {
 
 /* ── Form cards ── */
 [data-theme="dark"] .form-section {
-	background: #1a1d27;
-	border-color: #2e3347;
+	background: #001a33;
+	border-color: #004080;
 }
 
 [data-theme="dark"] .funding-grid,
@@ -1262,7 +1284,7 @@ input:checked + .slider:before {
 
 /* ── Subsection banner bars ── */
 [data-theme="dark"] .subsection-label {
-	background: #1e2130;
+	background: #00264d;
 	color: #c9a84c;
 	border-left-color: #c9a84c;
 }
@@ -1271,9 +1293,9 @@ input:checked + .slider:before {
 [data-theme="dark"] input,
 [data-theme="dark"] select,
 [data-theme="dark"] textarea {
-	background: #1e2130;
+	background: #00264d;
 	color: #e8eaf0;
-	border-color: #2e3347;
+	border-color: #004080;
 }
 [data-theme="dark"] input:focus,
 [data-theme="dark"] select:focus,
@@ -1288,13 +1310,13 @@ input:checked + .slider:before {
 
 /* ── Output / narrative area ── */
 [data-theme="dark"] .output-section {
-	background: #1a1d27;
+	background: #001a33;
 	border-color: #5b8dee;
 }
 [data-theme="dark"] #narrativeDisplay {
-	background: #1e2130;
+	background: #00264d;
 	color: #dde1ec;
-	border-color: #2e3347;
+	border-color: #004080;
     padding: 40px !important;
     margin: 20px 0 !important;
     border-radius: 4px;
@@ -1302,16 +1324,16 @@ input:checked + .slider:before {
 
 /* ── Side panels ── */
 [data-theme="dark"] .side-panel {
-	background: #1a1d27;
-	border-color: #2e3347;
+	background: #001a33;
+	border-color: #004080;
 }
 [data-theme="dark"] .panel-content,
 [data-theme="dark"] .panel-search {
-	background: #1a1d27;
+	background: #001a33;
 }
 [data-theme="dark"] .resource-card {
-	background: #1e2130;
-	border-color: #2e3347;
+	background: #00264d;
+	border-color: #004080;
 }
 [data-theme="dark"] .resource-card:hover {
 	border-color: #5b8dee;
@@ -1326,10 +1348,10 @@ input:checked + .slider:before {
 
 /* ── History items ── */
 [data-theme="dark"] .history-item {
-	background: #1e2130;
-	border-top-color: #2e3347;
-	border-right-color: #2e3347;
-	border-bottom-color: #2e3347;
+	background: #00264d;
+	border-top-color: #004080;
+	border-right-color: #004080;
+	border-bottom-color: #004080;
 	color: #c5cce0;
 }
 [data-theme="dark"] .history-item:hover {
@@ -1351,7 +1373,7 @@ input:checked + .slider:before {
 
 /* ── Tabs ── */
 [data-theme="dark"] .tab-btn {
-	background: #1e2130;
+	background: #00264d;
 	color: #a0a8c0;
 }
 [data-theme="dark"] .tab-btn.active {
@@ -1363,20 +1385,20 @@ input:checked + .slider:before {
 [data-theme="dark"] .privacy-banner {
 	background: #141b2d;
 	color: #7aa3f5;
-	border: 1px solid #2e3347;
+	border: 1px solid #004080;
 }
 
 /* ── Individual sticky header ── */
 [data-theme="dark"] .individual-header {
-	background: #1a1d27;
+	background: #001a33;
 	border-bottom-color: #c9a84c;
-	border-color: #2e3347;
+	border-color: #004080;
 }
 
 /* ── Legal / rep cards ── */
 [data-theme="dark"] .legal-rep-card {
-	background: #1e2130;
-	border-color: #2e3347;
+	background: #00264d;
+	border-color: #004080;
 }
 [data-theme="dark"] .rep-title {
 	color: #7aa3f5;
@@ -1384,7 +1406,7 @@ input:checked + .slider:before {
 
 /* ── Outline button ── */
 [data-theme="dark"] .btn-outline {
-	border-color: #2e3347;
+	border-color: #004080;
 	color: #a0a8c0;
 }
 [data-theme="dark"] .btn-outline:hover {
@@ -1394,7 +1416,8 @@ input:checked + .slider:before {
 
 /* ── App header border ── */
 [data-theme="dark"] .app-header {
-	border-bottom-color: #2e3347;
+	background: #001a33;
+	border-color: var(--gold);
 }
 
 /* ── Menu / hamburger ── */
@@ -1402,7 +1425,7 @@ input:checked + .slider:before {
 	color: #7aa3f5;
 }
 [data-theme="dark"] .menu-btn:hover {
-	background: #1e2130;
+	background: #00264d;
 }
 
 /* ── Checkbox labels (eth-check, multi-option) ── */
@@ -1509,12 +1532,12 @@ input:checked + .slider:before {
 }
 
 [data-theme="dark"] .multi-select-display {
-	border-color: #2e3347;
-	background: #1e2130;
+	border-color: #004080;
+	background: #00264d;
 }
 [data-theme="dark"] .multi-select-dropdown {
-	background: #1a1d27;
-	border-color: #2e3347;
+	background: #001a33;
+	border-color: #004080;
 }
 [data-theme="dark"] .multi-select-dropdown .multi-option {
 	color: #c5cce0;
@@ -1853,7 +1876,7 @@ textarea:focus-visible {
 	background: rgba(0, 0, 0, 0.02);
 	padding: 15px;
 	border-radius: 8px;
-	border: 1px solid var(--border);
+	border: 1px solid var(--gold);
 	box-sizing: border-box;
 }
 
@@ -1861,7 +1884,7 @@ textarea:focus-visible {
 	background: rgba(0, 0, 0, 0.02);
 	padding: 15px;
 	border-radius: 8px;
-	border: 1px solid var(--border);
+	border: 1px solid var(--gold);
 }
 
 .eth-check {
@@ -2010,4 +2033,47 @@ textarea:focus-visible {
 }
 #sectionNav {
 	flex-shrink: 0;
+}
+[data-theme="dark"] {
+	--bg-light: #003366; 
+	--header-bg: #003366;
+	--border: var(--gold);
+	--text-main: #ffffff;
+	--text-label: #cccccc;
+	--text-heading: #ffffff;
+	--text-muted: #999999;
+}
+[data-theme="dark"] .main-workspace {
+	background: #f4f7f9 !important;
+}
+[data-theme="dark"] .side-panel,
+[data-theme="dark"] .panel-content,
+[data-theme="dark"] .panel-search {
+	background: #003366 !important;
+	border-color: var(--gold) !important;
+}
+[data-theme="dark"] .form-section,
+[data-theme="dark"] .app-header {
+	background: #003366 !important;
+	border: 1px solid var(--gold) !important;
+}
+[data-theme="dark"] .app-header h1 {
+	color: #ffffff !important;
+}
+[data-theme="dark"] .resource-card,
+[data-theme="dark"] .legal-rep-card,
+[data-theme="dark"] .history-item {
+	background: #004d99 !important;
+	border: 1px solid var(--gold) !important;
+}
+[data-theme="dark"] .output-section {
+	background: #ffffff !important;
+	border: 2px solid var(--gold) !important;
+}
+[data-theme="dark"] #narrativeDisplay {
+	background: #ffffff !important;
+	color: #000000 !important;
+}
+[data-theme="dark"] .individual-header {
+	background: #003366 !important;
 }

@@ -1,0 +1,43 @@
+[data-theme="dark"] {
+	--bg-light: #003366; 
+	--header-bg: #003366;
+	--border: var(--gold);
+	--text-main: #ffffff;
+	--text-label: #cccccc;
+	--text-heading: #ffffff;
+	--text-muted: #999999;
+}
+[data-theme="dark"] .main-workspace {
+	background: #f4f7f9 !important;
+}
+[data-theme="dark"] .side-panel,
+[data-theme="dark"] .panel-content,
+[data-theme="dark"] .panel-search {
+	background: #003366 !important;
+	border-color: var(--gold) !important;
+}
+[data-theme="dark"] .form-section,
+[data-theme="dark"] .app-header {
+	background: #003366 !important;
+	border: 1px solid var(--gold) !important;
+}
+[data-theme="dark"] .app-header h1 {
+	color: #ffffff !important;
+}
+[data-theme="dark"] .resource-card,
+[data-theme="dark"] .legal-rep-card,
+[data-theme="dark"] .history-item {
+	background: #004d99 !important;
+	border: 1px solid var(--gold) !important;
+}
+[data-theme="dark"] .output-section {
+	background: #ffffff !important;
+	border: 2px solid var(--gold) !important;
+}
+[data-theme="dark"] #narrativeDisplay {
+	background: #ffffff !important;
+	color: #000000 !important;
+}
+[data-theme="dark"] .individual-header {
+	background: #003366 !important;
+}
