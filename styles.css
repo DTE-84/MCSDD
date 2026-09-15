@@ -328,6 +328,9 @@ body {
 .resource-category-header:hover {
 	border-color: var(--marion-blue);
 }
+[data-theme="dark"] .resource-category-header {
+	color: #ffffff;
+}
 .resource-category .chevron {
 	transition: transform 0.2s ease;
 	color: var(--gold);
