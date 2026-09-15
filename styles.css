@@ -14,25 +14,33 @@
 }
 
 [data-theme="dark"] {
-	/* Backgrounds */
-	--bg-light: #000c18; /* Deep Navy Background */
-	--header-bg: #002244;
-	/* Borders */
-	--border: #003366;
-	/* Brand */
-	--marion-blue: #336699;
-	--marion-blue-light: #6699cc;
-	--gold: #ffd700;
-	--gold-light: #ffeb3b;
-	/* Text hierarchy */
-	--text-main: #ffffff;
-	--text-label: #cccccc;
-	--text-heading: #ffffff;
-	--text-muted: #999999;
-	/* States */
-	--success: #FFD700; /* Gold */
-	--danger: #ff4d4d;
-	--shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+	/* Backgrounds — a graduated elevation ladder (page → panel → nested
+	   card) instead of one flat tone, so depth actually reads */
+	--bg-light: #0f1117;
+	--header-bg: #001a33;
+	/* Borders — lightened enough to actually show against the panels
+	   above, instead of nearly matching them */
+	--border: #004080;
+	/* Brand — deepened rather than washed out, so it still reads as the
+	   same civic navy identity as light mode, just adapted */
+	--marion-blue: #1f4a73;
+	--marion-blue-light: #3a6ea5;
+	/* Gold desaturated to match light mode's antique tone — the old
+	   #ffd700 was a much more saturated hue than light mode's #c5a059,
+	   which is why gold accents read as gaudy instead of elegant */
+	--gold: #c9a84c;
+	--gold-light: #ddc17a;
+	/* Text hierarchy — softened off-whites instead of pure #fff, which
+	   is harsher than it needs to be on a near-black background */
+	--text-main: #e8eaf0;
+	--text-label: #a0a8c0;
+	--text-heading: #f2f4f8;
+	--text-muted: #8b92a8;
+	/* States — success gets its own hue instead of reusing gold, so a
+	   confirmation toast doesn't look like a decorative accent */
+	--success: #3ecf8e;
+	--danger: #ff5c5c;
+	--shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
 /* ── Lock Screen Styles ── */
@@ -1308,18 +1316,14 @@ input:checked + .slider:before {
 	color: #5c6378;
 }
 
-/* ── Output / narrative area ── */
+/* ── Output / narrative area ──
+   The wrapping section goes dark like everything else, but the narrative
+   text itself deliberately stays paper-white in both themes (see the
+   "Force Document Preview to always be White background" rule below) —
+   it's a preview of a physical printed page, not app chrome. */
 [data-theme="dark"] .output-section {
 	background: #001a33;
 	border-color: #5b8dee;
-}
-[data-theme="dark"] #narrativeDisplay {
-	background: #00264d;
-	color: #dde1ec;
-	border-color: #004080;
-    padding: 40px !important;
-    margin: 20px 0 !important;
-    border-radius: 4px;
 }
 
 /* ── Side panels ── */
@@ -1418,6 +1422,23 @@ input:checked + .slider:before {
 [data-theme="dark"] .app-header {
 	background: #001a33;
 	border-color: var(--gold);
+}
+/* The wordmark uses var(--marion-blue) for text, which reads fine on
+   light mode's white header card but nearly vanishes against a dark one —
+   give it the same light-blue treatment as the other marion-blue text
+   swaps on this page (resource-name, history-title, menu-btn, rep-title). */
+[data-theme="dark"] .app-header h1 {
+	color: #7aa3f5;
+}
+[data-theme="dark"] .nav-item:hover {
+	background: #00264d;
+	color: #7aa3f5;
+}
+[data-theme="dark"] .comm-check-label {
+	color: #7aa3f5;
+}
+[data-theme="dark"] .multi-select-dropdown .multi-option:hover {
+	color: #7aa3f5;
 }
 
 /* ── Menu / hamburger ── */
@@ -2033,47 +2054,4 @@ textarea:focus-visible {
 }
 #sectionNav {
 	flex-shrink: 0;
-}
-[data-theme="dark"] {
-	--bg-light: #003366; 
-	--header-bg: #003366;
-	--border: var(--gold);
-	--text-main: #ffffff;
-	--text-label: #cccccc;
-	--text-heading: #ffffff;
-	--text-muted: #999999;
-}
-[data-theme="dark"] .main-workspace {
-	background: #f4f7f9 !important;
-}
-[data-theme="dark"] .side-panel,
-[data-theme="dark"] .panel-content,
-[data-theme="dark"] .panel-search {
-	background: #003366 !important;
-	border-color: var(--gold) !important;
-}
-[data-theme="dark"] .form-section,
-[data-theme="dark"] .app-header {
-	background: #003366 !important;
-	border: 1px solid var(--gold) !important;
-}
-[data-theme="dark"] .app-header h1 {
-	color: #ffffff !important;
-}
-[data-theme="dark"] .resource-card,
-[data-theme="dark"] .legal-rep-card,
-[data-theme="dark"] .history-item {
-	background: #004d99 !important;
-	border: 1px solid var(--gold) !important;
-}
-[data-theme="dark"] .output-section {
-	background: #ffffff !important;
-	border: 2px solid var(--gold) !important;
-}
-[data-theme="dark"] #narrativeDisplay {
-	background: #ffffff !important;
-	color: #000000 !important;
-}
-[data-theme="dark"] .individual-header {
-	background: #003366 !important;
 }
