@@ -1426,6 +1426,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   }
   
   field("Residency", getVal("residencyType"));
+  field("Residence Address / Location Notes", getVal("residenceNotes"));
   field("Education", getVal("educationStatus"));
   field("School", getVal("schoolName"));
   

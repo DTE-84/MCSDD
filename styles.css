@@ -265,6 +265,9 @@ body {
 	background: var(--header-bg);
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
+.resources-overlay[hidden] {
+	display: none;
+}
 .resources-overlay-header {
 	flex-shrink: 0;
 	display: flex;
