@@ -390,24 +390,25 @@
         <div class="nav-stage">
           <div class="panel-content" id="sectionNav" style="border-bottom: 2px solid var(--border);">
             <div class="nav-grid" style="display: grid; grid-template-columns: 1fr; gap: 4px;">
-              <div class="nav-item" onclick="scrollToSection('sec-cover-letter')">Face Sheet</div>
-              <div class="nav-item" onclick="scrollToSection('sec-demographics')"><span>1.</span> Demographics</div>
-              <div class="nav-item" onclick="scrollToSection('sec-likes')"><span>2.</span> Preferences</div>
-              <div class="nav-item" onclick="scrollToSection('sec-dislikes')"><span>3.</span> Dislikes</div>
-              <div class="nav-item" onclick="scrollToSection('sec-important-people')"><span>4.</span> People / Pets</div>
-              <div class="nav-item" onclick="scrollToSection('sec-vision')"><span>5.</span> Hopes / Concerns</div>
-              <div class="nav-item" onclick="scrollToSection('sec-communication')"><span>6.</span> Communication</div>
-              <div class="nav-item" onclick="scrollToSection('sec-program-services')"><span>7.</span> Programs</div>
-              <div class="nav-item" onclick="scrollToSection('sec-health')"><span>8.</span> Health/Risk</div>
-              <div class="nav-item" onclick="scrollToSection('sec-community-support')"><span>9.</span> Community Support</div>
-              <div class="nav-item" onclick="scrollToSection('sec-support-ways')"><span>10.</span> Ways To Support</div>
-              <div class="nav-item" onclick="scrollToSection('sec-strengths')"><span>11.</span> Strengths</div>
-              <div class="nav-item" onclick="scrollToSection('sec-transition')"><span>12.</span> Transition</div>
-              <div class="nav-item" onclick="scrollToSection('sec-behavioral')"><span>13.</span> Behavioral</div>
-              <div class="nav-item" onclick="scrollToSection('sec-supervision')"><span>14.</span> Supervision</div>
-              <div class="nav-item" onclick="scrollToSection('sec-prev-goals')"><span>15.</span> Past/Current Goals</div>
-              <div class="nav-item" onclick="scrollToSection('sec-outcomes')"><span>16.</span> Action Plan</div>
-              <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>17.</span> Comments</div>
+              <div class="nav-item" onclick="scrollToSection('sec-cover-letter')">Face Sheet<span class="amend-badge" id="amendBadge-sec-cover-letter" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-demographics')"><span>1.</span> Demographics<span class="amend-badge" id="amendBadge-sec-demographics" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-likes')"><span>2.</span> Preferences<span class="amend-badge" id="amendBadge-sec-likes" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-dislikes')"><span>3.</span> Dislikes<span class="amend-badge" id="amendBadge-sec-dislikes" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-important-people')"><span>4.</span> People / Pets<span class="amend-badge" id="amendBadge-sec-important-people" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-vision')"><span>5.</span> Hopes / Concerns<span class="amend-badge" id="amendBadge-sec-vision" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-communication')"><span>6.</span> Communication<span class="amend-badge" id="amendBadge-sec-communication" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-program-services')"><span>7.</span> Programs<span class="amend-badge" id="amendBadge-sec-program-services" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-health')"><span>8.</span> Health/Risk<span class="amend-badge" id="amendBadge-sec-health" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-community-support')"><span>9.</span> Community Support<span class="amend-badge" id="amendBadge-sec-community-support" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-support-ways')"><span>10.</span> Ways To Support<span class="amend-badge" id="amendBadge-sec-support-ways" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-strengths')"><span>11.</span> Strengths<span class="amend-badge" id="amendBadge-sec-strengths" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-transition')"><span>12.</span> Transition<span class="amend-badge" id="amendBadge-sec-transition" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-behavioral')"><span>13.</span> Behavioral<span class="amend-badge" id="amendBadge-sec-behavioral" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-supervision')"><span>14.</span> Supervision<span class="amend-badge" id="amendBadge-sec-supervision" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-prev-goals')"><span>15.</span> Past/Current Goals<span class="amend-badge" id="amendBadge-sec-prev-goals" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-outcomes')"><span>16.</span> Action Plan<span class="amend-badge" id="amendBadge-sec-outcomes" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>17.</span> Comments<span class="amend-badge" id="amendBadge-sec-comments" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-amendments')"><span>18.</span> Amendment Log</div>
             </div>
           </div>
 
@@ -1776,7 +1777,7 @@
               <label>Personal Outcomes (Discovered during assessment)</label>
               <textarea id="personalOutcomes" placeholder="What medical supports does the individual want/need?" oninput="updateUI()"></textarea>
             </div>
-            <div class="field-group">
+            <div class="field-group" id="hrstFieldGroupWrap">
               <label>HRST Status (If Waivered)</label>
               <select id="hrstStatus" onchange="toggleHrstFields(); updateUI()">
                 <option value="">Select...</option>
@@ -1785,14 +1786,17 @@
                 <option value="N/A">Not Applicable</option>
               </select>
             </div>
-            <div class="field-group">
+            <div class="field-group" id="telehealthFieldGroupWrap">
               <label>Telehealth Used? (Waivered Only)</label>
               <select id="telehealth" onchange="updateUI()">
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
               </select>
             </div>
-            
+            <div class="field-group full" id="waiverOnlyHealthNote" style="display: none; margin-top: -8px; margin-bottom: 4px;">
+              <div style="font-size: 12px; color: var(--text-label); font-style: italic;">HRST scoring and telehealth tracking are hidden because this individual is not receiving HCBS Waiver services (see Section 7). Change that answer to bring them back.</div>
+            </div>
+
             <!-- Dynamic HRST Fields -->
             <div class="field-group full" id="hrstDetailsContainer" style="display: none; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; border: 1px dashed var(--border); margin-top: 10px; margin-bottom: 10px;">
               <div class="form-grid">
@@ -1866,6 +1870,23 @@
             </div>
           </div>
 
+          <div class="subsection-label" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <span>Detailed Medical &amp; Health Tracking</span>
+            <span style="display: flex; align-items: center; gap: 8px; text-transform: none; letter-spacing: normal; font-weight: 500; font-size: 12px; color: var(--text-main);">
+              Ongoing / complex medical needs?
+              <select id="hasOngoingMedicalNeeds" onchange="toggleDetailedMedicalTracking(); updateUI()" style="font-size: 12px; padding: 4px 8px;">
+                <option value="">Select...</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </span>
+          </div>
+          <div id="detailedMedicalNote" style="display: none; font-size: 12px; color: var(--text-label); font-style: italic; margin: -6px 0 12px;">
+            Providers, prevention routines, immunizations, medications, and related protocols are collapsed below since this individual doesn't have ongoing or complex medical needs. Expand any time if that changes.
+          </div>
+          <button type="button" class="btn btn-outline" id="detailedMedicalToggleBtn" onclick="toggleDetailedMedicalVisible()" style="display: none; margin-bottom: 16px;">+ Show detailed medical tracking</button>
+
+          <div id="detailedMedicalTracking">
           <!-- 8B: Providers & Specialists -->
           <div class="subsection-label">Providers & Specialists</div>
           <div id="medicalProfessionalsContainer">
@@ -1998,6 +2019,8 @@
               </div>
             </div>
           </div>
+          </div>
+          <!-- /#detailedMedicalTracking -->
 
           <!-- 8D: Known Risks -->
           <div class="subsection-label">Known Suspected Health Risks(If Applicable)</div>
@@ -3030,6 +3053,25 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- ── Section 18: Amendment Log ── -->
+        <div class="form-section" id="sec-amendments">
+          <div class="section-title">
+            <span>18</span> Amendment Log
+          </div>
+          <div style="font-size: 13px; color: var(--text-label); margin-bottom: 16px; line-height: 1.5;">
+            Record a change after this plan has been approved and sent &mdash; a move, a service change, a new
+            provider &mdash; without reopening or re-editing the sections above. Each entry tags which sections it
+            relates to, so those sections show a small "Amended" badge in the navigation, and the full log prints
+            as an addendum at the end of the plan.
+          </div>
+          <div id="amendmentsContainer">
+            <p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px;">
+              No amendments logged yet.
+            </p>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="addAmendment()">+ Log an Amendment</button>
         </div>
 
         <!-- ── PCSP Document Preview & Export ── -->

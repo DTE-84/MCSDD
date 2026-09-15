@@ -219,6 +219,7 @@ let medicalProfessionals = [];
 let preventions = [];
 let immunizations = [];
 let medications = [];
+let amendments = []; // Post-approval amendment log (Section 18)
 let hcbsServices = []; // Section 7: HCBS Services
 let currentSupports = []; // Section 9: Current Services
 let linkingSupports = []; // Section 9: Linking Services
@@ -592,6 +593,31 @@ const FORM_FIELDS = [
   "ethnicityOther",
   "legalSpecify",
   "legalLicensesProbation",
+  "hasOngoingMedicalNeeds",
+];
+
+// Canonical section list for the Amendment Log (Section 18) — ids match the
+// nav's scrollToSection targets so "sections affected" can link straight to
+// the section it describes, both in the checkbox list and the nav badges.
+const AMENDMENT_SECTIONS = [
+  { id: "sec-cover-letter", label: "Face Sheet" },
+  { id: "sec-demographics", label: "1. Demographics" },
+  { id: "sec-likes", label: "2. Preferences" },
+  { id: "sec-dislikes", label: "3. Dislikes" },
+  { id: "sec-important-people", label: "4. People / Pets" },
+  { id: "sec-vision", label: "5. Hopes / Concerns" },
+  { id: "sec-communication", label: "6. Communication" },
+  { id: "sec-program-services", label: "7. Programs" },
+  { id: "sec-health", label: "8. Health/Risk" },
+  { id: "sec-community-support", label: "9. Community Support" },
+  { id: "sec-support-ways", label: "10. Ways To Support" },
+  { id: "sec-strengths", label: "11. Strengths" },
+  { id: "sec-transition", label: "12. Transition" },
+  { id: "sec-behavioral", label: "13. Behavioral" },
+  { id: "sec-supervision", label: "14. Supervision" },
+  { id: "sec-prev-goals", label: "15. Past/Current Goals" },
+  { id: "sec-outcomes", label: "16. Action Plan" },
+  { id: "sec-comments", label: "17. Comments" },
 ];
 
 function esc(str) {
@@ -2273,6 +2299,27 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   line(`PCSP FOR: ${unmaskedName.toUpperCase()}`);
   line(`DMH ID: ${unmaskedDMH}`);
 
+  // ── AMENDMENT LOG (Section 18) ──
+  // Appended after signatures, as an addendum to the approved plan rather
+  // than a change to any section above — the sections list just says
+  // which parts of the plan above this line an entry relates to.
+  if (amendments.length > 0) {
+    line("");
+    head("AMENDMENT LOG");
+    [...amendments]
+      .sort((a, b) => (a.date || "").localeCompare(b.date || ""))
+      .forEach((a, idx) => {
+        line(`[${idx + 1}] ${a.type || "Amendment"} — Effective ${a.date || "(no date)"}`);
+        const secLabels = (a.sections || []).map((id) => {
+          const s = AMENDMENT_SECTIONS.find((x) => x.id === id);
+          return s ? s.label : id;
+        });
+        if (secLabels.length) field("    Sections Affected", secLabels.join(", "));
+        if (a.note) field("    What Changed", a.note);
+        line("");
+      });
+  }
+
     // Format for display safely
   let safeHTML = esc(t);
   
@@ -2544,15 +2591,70 @@ function toggleHcbsFields() {
   const val = document.getElementById("isHcbsWaivered").value;
   const container = document.getElementById("hcbsFieldsContainer");
   const fundingContainer = document.getElementById("hcbsAdditionalFundingContainer");
-  
+
   if (container) {
     container.style.display = (val === "Yes" || val === "No") ? "block" : "none";
   }
   if (fundingContainer) {
     fundingContainer.style.display = (val === "No") ? "block" : "none";
   }
+  updateWaiverOnlyHealthFields();
   renderHcbsServices();
   updateUI();
+}
+
+// HRST scoring and telehealth are explicitly waiver-only per their own
+// labels, so they add nothing but clutter for an individual answered "No"
+// to HCBS Waiver services in Section 7 — hide them there instead of asking
+// case managers to skip past fields that can't apply.
+function updateWaiverOnlyHealthFields() {
+  const isWaivered = document.getElementById("isHcbsWaivered")?.value;
+  const hideForNonWaiver = isWaivered === "No";
+  const hrstWrap = document.getElementById("hrstFieldGroupWrap");
+  const telehealthWrap = document.getElementById("telehealthFieldGroupWrap");
+  const note = document.getElementById("waiverOnlyHealthNote");
+  if (hrstWrap) hrstWrap.style.display = hideForNonWaiver ? "none" : "";
+  if (telehealthWrap) telehealthWrap.style.display = hideForNonWaiver ? "none" : "";
+  if (note) note.style.display = hideForNonWaiver ? "block" : "none";
+  if (hideForNonWaiver) {
+    const hrstDetails = document.getElementById("hrstDetailsContainer");
+    const hrstOptOut = document.getElementById("hrstOptOutContainer");
+    if (hrstDetails) hrstDetails.style.display = "none";
+    if (hrstOptOut) hrstOptOut.style.display = "none";
+  }
+}
+
+// Collapses the heavier clinical tracking (providers, prevention,
+// immunizations, medications, self-admin, health parameters) for an
+// individual without ongoing/complex medical needs. Nothing is deleted —
+// this only declutters the live editing view, and always stays reachable
+// via the "Show detailed medical tracking" button.
+function toggleDetailedMedicalTracking() {
+  const val = document.getElementById("hasOngoingMedicalNeeds")?.value;
+  const container = document.getElementById("detailedMedicalTracking");
+  const note = document.getElementById("detailedMedicalNote");
+  const btn = document.getElementById("detailedMedicalToggleBtn");
+  if (!container) return;
+  if (val === "No") {
+    container.style.display = "none";
+    if (note) note.style.display = "block";
+    if (btn) {
+      btn.style.display = "inline-block";
+      btn.textContent = "+ Show detailed medical tracking";
+    }
+  } else {
+    container.style.display = "";
+    if (note) note.style.display = "none";
+    if (btn) btn.style.display = "none";
+  }
+}
+function toggleDetailedMedicalVisible() {
+  const container = document.getElementById("detailedMedicalTracking");
+  const btn = document.getElementById("detailedMedicalToggleBtn");
+  if (!container || !btn) return;
+  const showing = container.style.display !== "none";
+  container.style.display = showing ? "none" : "";
+  btn.textContent = showing ? "+ Show detailed medical tracking" : "- Hide detailed medical tracking";
 }
 function toggleSelfAdmin8() {
   const val = document.getElementById("selfAdmin").value;
@@ -3050,6 +3152,91 @@ function renderMedications() {
       </div>`
     )
     .join("");
+}
+
+// 5. Amendment Log (Section 18) — records a post-approval change (a move,
+// a service change, a new provider) without reopening or re-editing the
+// sections it affects. Each entry tags which sections it touches so a
+// small "Amended" badge can surface in the nav without altering the
+// original section content.
+function addAmendment() {
+  amendments.push({ type: "Residential Move", date: "", sections: [], note: "" });
+  renderAmendments();
+  updateUI();
+}
+function removeAmendment(i) {
+  amendments.splice(i, 1);
+  renderAmendments();
+  updateUI();
+}
+function updateAmendment(i, f, v) {
+  amendments[i][f] = v;
+  const container = document.getElementById("amendmentsContainer");
+  if (container) {
+    const titles = container.querySelectorAll(".rep-title");
+    if (titles[i]) titles[i].textContent = `Amendment #${i + 1}${amendments[i].date ? " — " + amendments[i].date : ""}`;
+  }
+  updateUI();
+}
+function toggleAmendmentSection(i, secId, checked) {
+  const current = new Set(amendments[i].sections || []);
+  if (checked) current.add(secId);
+  else current.delete(secId);
+  amendments[i].sections = Array.from(current);
+  updateAmendmentBadges();
+  updateUI();
+}
+function renderAmendments() {
+  const c = document.getElementById("amendmentsContainer");
+  if (!c) return;
+  const typeOptions = ["Residential Move", "Service Change", "Provider Change", "Other"];
+  c.innerHTML = amendments
+    .map(
+      (a, i) => `<div class="legal-rep-card" style="margin-bottom:15px; border-left: 4px solid var(--gold);">
+        <div class="rep-header">
+          <span class="rep-title">Amendment #${i + 1}${a.date ? " — " + esc(a.date) : ""}</span>
+          <button class="remove-rep-btn" onclick="removeAmendment(${i})">×</button>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Type of Change</label>
+            <select onchange="updateAmendment(${i},'type',this.value)">
+              ${typeOptions.map((t) => `<option value="${t}" ${a.type === t ? "selected" : ""}>${t}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Effective Date</label>
+            <input type="date" value="${esc(a.date)}" oninput="updateAmendment(${i},'date',this.value)">
+          </div>
+          <div class="field-group full">
+            <label>Sections Affected</label>
+            <div class="ethnicity-grid">
+              ${AMENDMENT_SECTIONS.map(
+                (s) =>
+                  `<label class="eth-check"><input type="checkbox" ${(a.sections || []).includes(s.id) ? "checked" : ""} onchange="toggleAmendmentSection(${i},'${s.id}',this.checked)"> ${s.label}</label>`
+              ).join("")}
+            </div>
+          </div>
+          <div class="field-group full">
+            <label>What Changed</label>
+            <textarea placeholder="A sentence or two — what changed, and why." oninput="updateAmendment(${i},'note',this.value)">${esc(a.note)}</textarea>
+          </div>
+        </div>
+      </div>`
+    )
+    .join("");
+  updateAmendmentBadges();
+}
+// Surfaces a small "Amended" badge on the nav item for any section named in
+// at least one amendment, so the plan carries a visible sign of what
+// changed after approval without touching that section's own content.
+function updateAmendmentBadges() {
+  const affected = new Set();
+  amendments.forEach((a) => (a.sections || []).forEach((id) => affected.add(id)));
+  AMENDMENT_SECTIONS.forEach((s) => {
+    const badge = document.getElementById("amendBadge-" + s.id);
+    if (badge) badge.hidden = !affected.has(s.id);
+  });
 }
 
 function addImportantPerson() {
@@ -3844,6 +4031,7 @@ function captureFormData() {
     _preventions: preventions,
     _immunizations: immunizations,
     _medications: medications,
+    _amendments: amendments,
     _dnrAltInstructions: dnrAltInstructions,
     _commChartRows: commChartRows,
     _importantPeople: importantPeople,
@@ -3923,6 +4111,7 @@ function restoreFormData(fd) {
   immunizations = fd._immunizations || [];
   medications = fd._medications || [];
   dnrAltInstructions = fd._dnrAltInstructions || [];
+  amendments = fd._amendments || [];
 
   // Migration from temporary medicalItems array
   if (fd._medicalItems && fd._medicalItems.length > 0) {
@@ -3956,6 +4145,7 @@ function restoreFormData(fd) {
   renderPreventions();
   renderImmunizations();
   renderMedications();
+  renderAmendments();
   renderEmploymentEntries();
   renderCommChart();
   renderImportantPeople();
@@ -4003,6 +4193,7 @@ function restoreFormData(fd) {
   toggleSelfAdmin8();
   toggleDmhLocation();
   toggleTransferring();
+  toggleDetailedMedicalTracking();
 }
 
 let _currentDraftId = null;
