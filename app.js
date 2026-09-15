@@ -1790,7 +1790,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
     medications.forEach((m, idx) => {
       line(`  [${idx + 1}] ${m.name}`);
       if (m.frequency) field("      Dosage/Frequency", m.frequency);
-      if (m.results) field("      Results/Notes", m.results);
+      if (m.results) field("      Side Effects/Notes", m.results);
     });
   }
 
@@ -1893,6 +1893,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   field("Rituals & Routines", getVal("ritualsRoutines"));
   field("Religious supports", getVal("religiousSupports"));
   field("Staff Preference", getVal("staffPreference"));
+  field("Support in All Aspects (School, Work, Home)", getVal("otherSupport"));
 
   const learnS = [];
   document.querySelectorAll('#learningStyleContainer input[type="checkbox"]:checked').forEach(cb => learnS.push(cb.value));
@@ -2251,9 +2252,6 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   // ── SIGNATURE SECTION ──
   line("\n" + "═".repeat(67));
   line("SIGNATURES & APPROVAL");
-  line("");
-  line(`Individual: ${displayName.toUpperCase()}`);
-  line("Signature: _____________________________________ Date: __________");
   line("");
   
   const cont = getVal("contributors");
@@ -3044,7 +3042,7 @@ function renderMedications() {
             <input type="text" placeholder="e.g. 50mg daily" value="${esc(m.frequency)}" oninput="updateMedication(${i},'frequency',this.value)">
           </div>
           <div class="field-group full">
-            <label>Results / Details</label>
+            <label>Side Effects / Details</label>
             <textarea placeholder="Side effects, efficacy, notes" oninput="updateMedication(${i},'results',this.value)">${esc(m.results)}</textarea>
           </div>
         </div>

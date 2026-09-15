@@ -1613,8 +1613,13 @@ input:checked + .slider:before {
 	/* HIPAA confidentiality footer on every printed page */
 	@page {
 		margin: 1in 0.75in;
-		@bottom-center {
-			content: "CONFIDENTIAL — HIPAA Protected Health Information (45 CFR Parts 160 & 164) | Marion County DMH | Unauthorized disclosure is prohibited";
+		@bottom-left {
+			content: "CONFIDENTIAL — HIPAA Protected Health Info | Marion County DMH";
+			font-size: 8pt;
+			color: #555;
+		}
+		@bottom-right {
+			content: "Page " counter(page);
 			font-size: 8pt;
 			color: #555;
 		}
