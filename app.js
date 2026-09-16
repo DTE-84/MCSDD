@@ -4803,6 +4803,14 @@ function toggleResourcesOverlay() {
   overlay.hidden = !overlay.hidden;
 }
 
+// Same expand-over-the-list pattern as the resources overlay above, so
+// Completed Plans doesn't have to permanently share the right sidebar
+// with Saved Drafts.
+function toggleCompletedPlansOverlay() {
+  const overlay = document.getElementById('completedPlansOverlay');
+  overlay.hidden = !overlay.hidden;
+}
+
 function toggleResourceCategory(headerBtn) {
   headerBtn.closest('.resource-category').classList.toggle('open');
 }

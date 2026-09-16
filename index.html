@@ -579,6 +579,12 @@
           </button>
         </div>
 
+        <!-- Everything else keeps main-workspace's old 40px padding; the
+             sticky individual header above lives outside it so it can sit
+             flush at the top without fighting position: sticky via
+             negative margins. -->
+        <div class="workspace-content">
+
         <!-- App Title Bar -->
         <div class="app-header">
           <div class="header-left">
@@ -3267,33 +3273,49 @@
             <p style="margin-top: 10px;">This tool is designed to assist in the drafting of Missouri DMH/DDD Person-Centered Service Plans. Users are responsible for verifying accuracy against current state regulations.</p>
           </div>
         </footer>
+        </div>
       </main>
 
       <!-- ── Right Sidebar: Saved Drafts / Completed Plans ── -->
       <aside class="side-panel right">
         <div class="panel-header" style="margin-top: 0;">Saved Drafts</div>
-        <div class="panel-search">
-          <input
-            type="text"
-            id="draftSearchInput"
-            class="search-input"
-            placeholder="🔍 Search drafts by name..."
-            oninput="renderDraftList()"
-          />
-        </div>
-        <div class="panel-content" id="historyList"></div>
+        <div class="nav-stage">
+          <div>
+            <div class="panel-search">
+              <input
+                type="text"
+                id="draftSearchInput"
+                class="search-input"
+                placeholder="🔍 Search drafts by name..."
+                oninput="renderDraftList()"
+              />
+            </div>
+            <div class="panel-content" id="historyList"></div>
+          </div>
 
-        <div class="panel-header">Completed Plans</div>
-        <div class="panel-search">
-          <input
-            type="text"
-            id="completedSearchInput"
-            class="search-input"
-            placeholder="🔍 Search completed plans by name..."
-            oninput="renderCompletedList()"
-          />
+          <!-- Expands over Saved Drafts above, same pattern as the
+               Marion County Resources overlay on the left sidebar. -->
+          <div class="resources-overlay" id="completedPlansOverlay" hidden>
+            <div class="resources-overlay-header">
+              <span>✅ Completed Plans</span>
+              <button class="resources-overlay-close" onclick="toggleCompletedPlansOverlay()" title="Back to Saved Drafts">✕ Close</button>
+            </div>
+            <div class="panel-search" style="padding: 12px 15px 8px;">
+              <input
+                type="text"
+                id="completedSearchInput"
+                class="search-input"
+                placeholder="🔍 Search completed plans by name..."
+                oninput="renderCompletedList()"
+              />
+            </div>
+            <div class="resources-overlay-body" id="completedPlansList" style="padding-top: 0;"></div>
+          </div>
         </div>
-        <div class="panel-content" id="completedPlansList"></div>
+
+        <button class="resource-toggle-btn" id="completedPlansToggleBtn" onclick="toggleCompletedPlansOverlay()">
+          ✅ Completed Plans
+        </button>
       </aside>
     </div>
 
