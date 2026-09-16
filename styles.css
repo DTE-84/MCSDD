@@ -968,9 +968,12 @@ input:checked + .slider:before {
 	border-bottom: 3px solid var(--gold);
 	flex-wrap: wrap;
 	/* Pulled flush against .main-workspace's own 40px padding so it sits
-	   right at the top with no gap, and scrolls away with the rest of the
-	   plan instead of staying pinned (was position: sticky). */
+	   right at the top with no gap instead of floating as a detached
+	   card — sticky is what keeps it visible while the plan scrolls. */
 	margin: -40px -40px 30px -40px;
+	position: sticky;
+	top: 0;
+	z-index: 500;
 }
 .individual-header span {
 	display: flex;
