@@ -765,6 +765,40 @@ textarea:focus {
 	display: flex;
 	gap: 12px;
 	flex-wrap: wrap;
+	align-items: center;
+}
+/* Header control quartet — HIPAA badge, Wipe Data, theme toggle, New Plan —
+   as one evenly-spaced, uniformly-sized 2x2 grid instead of a loose wrap
+   where the badge and icon-only toggle read as different sizes. */
+.header-controls {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(150px, 1fr));
+	gap: 10px;
+}
+.btn-bar .header-control {
+	height: 34px;
+	padding: 0 14px;
+	margin: 0;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	font-size: 11px;
+	white-space: nowrap;
+}
+.hipaa-badge {
+	font-weight: 800;
+	color: var(--success);
+	border: 1px solid var(--success);
+	border-radius: 6px;
+}
+.hipaa-dot {
+	width: 6px;
+	height: 6px;
+	background: var(--success);
+	border-radius: 50%;
+	flex-shrink: 0;
 }
 .btn {
 	padding: 12px 24px;
@@ -929,7 +963,7 @@ input:checked + .slider:before {
 .individual-header {
 	background: var(--marion-blue);
 	color: white;
-	padding: 10px 20px;
+	padding: 10px 40px;
 	display: flex;
 	align-items: center;
 	gap: 30px;
@@ -937,9 +971,10 @@ input:checked + .slider:before {
 	font-weight: 600;
 	border-bottom: 3px solid var(--gold);
 	flex-wrap: wrap;
-	position: sticky;
-	top: 0;
-	z-index: 500;
+	/* Pulled flush against .main-workspace's own 40px padding so it sits
+	   right at the top with no gap, and scrolls away with the rest of the
+	   plan instead of staying pinned (was position: sticky). */
+	margin: -40px -40px 30px -40px;
 }
 .individual-header span {
 	display: flex;
@@ -1025,6 +1060,10 @@ input:checked + .slider:before {
 	}
 	.main-workspace {
 		padding: 20px;
+	}
+	.individual-header {
+		padding: 10px 20px;
+		margin: -20px -20px 20px -20px;
 	}
 	.field-box {
 		display: flex;
