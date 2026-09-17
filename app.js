@@ -234,6 +234,11 @@ let _coverPhotoData = null;
 // ── SECURITY / AUTH STATE ──
 let _sessionKey = null; // plaintext account password, kept in memory only — used as the client-side encryption key for drafts
 let _currentUserId = null;
+// True when the case manager chose "Continue without an account" — no
+// Supabase call is ever made in this mode, cloud or auth, so it also
+// works with no internet connection. Saving falls back to an encrypted
+// local .pcsp export instead of the cloud drafts/completed_plans tables.
+let _offlineMode = false;
 
 // ── CLOUD CLIENT ──
 // SUPABASE_URL / SUPABASE_ANON_KEY come from config.js.
@@ -4248,6 +4253,10 @@ async function saveToHistory() {
   return true;
 }
 async function manualSaveDraft() {
+  if (_offlineMode) {
+    await exportPCSP();
+    return;
+  }
   const saved = await saveToHistory();
   if (saved) showToast("Draft saved ✓", "success");
 }
@@ -4298,6 +4307,11 @@ async function renderHistory() {
 function renderDraftList() {
   const listEl = document.getElementById("historyList");
   if (!listEl) return;
+
+  if (_offlineMode) {
+    listEl.innerHTML = '<p class="panel-empty">Working offline — Save Draft downloads an encrypted file instead of listing it here.</p>';
+    return;
+  }
 
   if (_allDraftItems.length === 0) {
     listEl.innerHTML = '<p class="panel-empty">No saved drafts yet.</p>';
@@ -4356,6 +4370,16 @@ async function viewDraft(id) {
 // table into `completed_plans`, which has no expiry — case managers need to
 // pull it back up for as long as the Individual remains an active client.
 async function finalizePlan() {
+  if (_offlineMode) {
+    if (
+      !confirm(
+        "Export this plan as a completed record? It will download as an encrypted .pcsp file — store it wherever your agency keeps completed plans.",
+      )
+    )
+      return;
+    await exportPCSP();
+    return;
+  }
   if (!_sessionKey || !_currentUserId) {
     showToast("Not signed in — sign in again, then save.", "error");
     return;
@@ -4445,6 +4469,11 @@ async function renderCompletedPlans() {
 function renderCompletedList() {
   const listEl = document.getElementById("completedPlansList");
   if (!listEl) return;
+
+  if (_offlineMode) {
+    listEl.innerHTML = '<p class="panel-empty">Working offline — Save as Completed Plan downloads an encrypted file instead of listing it here.</p>';
+    return;
+  }
 
   if (_allCompletedItems.length === 0) {
     listEl.innerHTML = '<p class="panel-empty">No completed plans yet.</p>';
@@ -4700,6 +4729,19 @@ function enterApp() {
     document.getElementById("lockScreen").style.display = "none";
     document.getElementById("welcomeScreen").style.display = "flex";
   }, 700);
+}
+
+// Skips Supabase entirely — no auth, no cloud storage — for working
+// without an internet connection, or before a Business Associate
+// Agreement is in place. Save Draft / Save as Completed Plan fall back to
+// an encrypted local .pcsp export (see manualSaveDraft/finalizePlan),
+// which is where real Individual data should live until then.
+function continueOffline(e) {
+  if (e) e.preventDefault();
+  _offlineMode = true;
+  renderDraftList();
+  renderCompletedList();
+  enterApp();
 }
 
 function launchApp() {
