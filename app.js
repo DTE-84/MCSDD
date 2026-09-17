@@ -4831,17 +4831,44 @@ function toggleResourceCategory(headerBtn) {
 async function exportPCSP() {
   const data = captureFormData();
   let output;
-  
+
   if (_sessionKey) {
+    // Signed in: reuse the account password so this same person (or
+    // anyone who later signs into this account) can re-import it without
+    // being asked again.
     try {
       showToast("Encrypting data...", "success");
       output = await Security.encrypt(data, _sessionKey);
     } catch (e) {
       console.error("Encryption failed:", e);
-      output = JSON.stringify(data, null, 2);
+      showToast("Export cancelled — encryption failed, so no unencrypted file was written.", "error");
+      return;
     }
   } else {
-    output = JSON.stringify(data, null, 2);
+    // Not signed in — e.g. working offline to avoid cloud hosting costs.
+    // There is no account password to reuse here, so ask for one
+    // explicitly. This must never silently fall back to a plaintext
+    // export: a lost or shared flash drive with an unencrypted .pcsp
+    // file is a real PHI breach, not a hypothetical one.
+    const pass = prompt(
+      "This plan isn't signed in, so set a password to encrypt this file.\n\n" +
+      "Share this password only with whoever is meant to open it (e.g. a supervisor or the same case manager later) — anyone with the file AND the password can read it, so don't send them together.",
+    );
+    if (!pass) {
+      showToast("Export cancelled — a password is required to encrypt this file.", "error");
+      return;
+    }
+    if (pass.length < 8) {
+      showToast("Export cancelled — use a password of at least 8 characters.", "error");
+      return;
+    }
+    try {
+      output = await Security.encrypt(data, pass);
+    } catch (e) {
+      console.error("Encryption failed:", e);
+      showToast("Export cancelled — encryption failed, so no unencrypted file was written.", "error");
+      return;
+    }
   }
 
   const blob = new Blob([output], { type: "text/plain" });
