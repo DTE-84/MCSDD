@@ -4207,8 +4207,15 @@ let _allCompletedItems = [];
 // ciphertext (see Security.encrypt/decrypt) — it cannot read plan content.
 // Row-level security (supabase_schema.sql) additionally restricts each row
 // to its owning user_id.
+// Returns true/false so callers can tell a real save from a silent no-op —
+// manualSaveDraft() used to show "Draft saved" regardless, even when this
+// returned early for being signed out, which is how a case manager lost a
+// night's work without any indication something had gone wrong.
 async function saveToHistory() {
-  if (!_sessionKey || !_currentUserId) return;
+  if (!_sessionKey || !_currentUserId) {
+    showToast("Not signed in — sign in again, then save.", "error");
+    return false;
+  }
   const name =
     document.getElementById("coverLegalName").value || "Unnamed Plan";
   const encrypted = await Security.encrypt(
@@ -4223,7 +4230,7 @@ async function saveToHistory() {
       .eq("id", _currentDraftId);
     if (error) {
       showToast("Save failed: " + error.message, "error");
-      return;
+      return false;
     }
   } else {
     const { data, error } = await supabaseClient
@@ -4233,15 +4240,16 @@ async function saveToHistory() {
       .single();
     if (error) {
       showToast("Save failed: " + error.message, "error");
-      return;
+      return false;
     }
     _currentDraftId = data.id;
   }
   await renderHistory();
+  return true;
 }
 async function manualSaveDraft() {
-  await saveToHistory();
-  showToast("Draft saved ✓", "success");
+  const saved = await saveToHistory();
+  if (saved) showToast("Draft saved ✓", "success");
 }
 async function renderHistory() {
   if (!_currentUserId) {
@@ -4259,6 +4267,7 @@ async function renderHistory() {
 
   if (error) {
     console.error("Failed to load drafts:", error.message);
+    showToast("Couldn't load your saved drafts: " + error.message, "error");
     return;
   }
 
@@ -4347,7 +4356,10 @@ async function viewDraft(id) {
 // table into `completed_plans`, which has no expiry — case managers need to
 // pull it back up for as long as the Individual remains an active client.
 async function finalizePlan() {
-  if (!_sessionKey || !_currentUserId) return;
+  if (!_sessionKey || !_currentUserId) {
+    showToast("Not signed in — sign in again, then save.", "error");
+    return;
+  }
   if (
     !confirm(
       "Save this plan as a completed record? Unlike drafts, it will not expire and will stay accessible as long as this Individual is an active client.",
@@ -4402,6 +4414,7 @@ async function renderCompletedPlans() {
 
   if (error) {
     console.error("Failed to load completed plans:", error.message);
+    showToast("Couldn't load your completed plans: " + error.message, "error");
     return;
   }
 
