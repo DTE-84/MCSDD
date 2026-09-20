@@ -635,18 +635,38 @@ function esc(str) {
 }
 
 // ── PHOTO HANDLING ──
+// Photos are stored inline in the encrypted plan payload (see
+// supabase_schema.sql), so an uncompressed camera photo would bloat every
+// row by several MB. Downscale to a face-sheet-appropriate size and
+// re-encode as JPEG before it ever touches _coverPhotoData.
+const PHOTO_MAX_DIMENSION = 400;
+const PHOTO_JPEG_QUALITY = 0.75;
+
 function handlePhotoUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function (e) {
-    _coverPhotoData = e.target.result;
-    const img = document.getElementById("coverPhoto");
-    img.src = _coverPhotoData;
-    img.style.display = "block";
-    document.getElementById("photoPlaceholder").style.display = "none";
-    document.getElementById("removePhotoBtn").style.display = "block";
-    updateUI();
+    const img = new Image();
+    img.onload = function () {
+      const scale = Math.min(
+        1,
+        PHOTO_MAX_DIMENSION / Math.max(img.width, img.height),
+      );
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      _coverPhotoData = canvas.toDataURL("image/jpeg", PHOTO_JPEG_QUALITY);
+
+      const coverImg = document.getElementById("coverPhoto");
+      coverImg.src = _coverPhotoData;
+      coverImg.style.display = "block";
+      document.getElementById("photoPlaceholder").style.display = "none";
+      document.getElementById("removePhotoBtn").style.display = "block";
+      updateUI();
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
