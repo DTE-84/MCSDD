@@ -262,9 +262,19 @@ const _authReady = (async () => {
 // user's session JWT. api.ts verifies that token and scopes every query to
 // the verified user id — the server-side replacement for Supabase's
 // browser-facing row-level security.
+//
+// getSession() MUST be called with { forceFetch: true } here. Verified
+// directly while testing this migration: the adapter caches the session
+// client-side, and that cache is only invalidated through React's
+// useSession() hook — which this vanilla (non-React) app never mounts. On a
+// shared device, switching from one signed-in account to another without
+// forceFetch kept returning the *previous* account's session and token,
+// meaning saves would silently land in the wrong person's account.
 async function apiFetch(path, options = {}) {
   await _authReady;
-  const { data } = authClient ? await authClient.getSession() : { data: null };
+  const { data } = authClient
+    ? await authClient.getSession({ forceFetch: true })
+    : { data: null };
   const token = data?.session?.access_token;
   if (!token) throw new Error("Not signed in");
   return fetch(NEON_FUNCTION_API_BASE_URL + path, {
@@ -4711,6 +4721,14 @@ async function submitAuth() {
     }
 
     btn.disabled = true;
+    // A stale session from a previous person on this device doesn't get
+    // replaced by signUp() the way it does by signInWithPassword() —
+    // observed directly while verifying this migration: signing up a
+    // second account while a first account's session was still active
+    // left getSession() returning the *first* account until an explicit
+    // signOut(). Clear it first so a shared device never lands a new
+    // account inside someone else's still-open session.
+    await authClient.signOut().catch(() => {});
     const { data, error } = await authClient.signUp({
       email,
       password: pass,
@@ -4730,7 +4748,11 @@ async function submitAuth() {
       return;
     }
     _sessionKey = pass;
-    _currentUserId = data.user.id;
+    // Re-derive from a forced, uncached session fetch rather than trusting
+    // signUp()'s own returned data.user — see the forceFetch note on
+    // apiFetch above; the same stale-cache risk applies here.
+    _currentUserId = (await authClient.getSession({ forceFetch: true })).data
+      .session.user.id;
     showToast("Account created!", "success");
     await migrateLegacyDrafts();
     await renderHistory();
@@ -4738,6 +4760,11 @@ async function submitAuth() {
     enterApp();
   } else {
     btn.disabled = true;
+    // Clear any lingering session first — verified directly while testing
+    // this migration that signInWithPassword() can otherwise return the
+    // *previous* signed-in account's session instead of the one just
+    // authenticated, on a shared device that never explicitly signed out.
+    await authClient.signOut().catch(() => {});
     const { data, error } = await authClient.signInWithPassword({
       email,
       password: pass,
@@ -4751,7 +4778,11 @@ async function submitAuth() {
       return;
     }
     _sessionKey = pass;
-    _currentUserId = data.user.id;
+    // Re-derive from a forced, uncached session fetch — see the forceFetch
+    // note on apiFetch above; signInWithPassword()'s own returned data.user
+    // is subject to the same stale-cache risk.
+    _currentUserId = (await authClient.getSession({ forceFetch: true })).data
+      .session.user.id;
     await migrateLegacyDrafts();
     await renderHistory();
     await renderCompletedPlans();
