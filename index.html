@@ -3272,7 +3272,7 @@
           <div style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
             <p style="font-weight: 800; color: var(--text-base); margin-bottom: 8px;">PCSP ASSISTANT PRO | VERSION 3.0</p>
             <p>© 2024-2026 DTE Solutions. All Rights Reserved. Trade Secret & Intellectual Property of Drew.</p>
-            <p style="margin-top: 15px; color: #e07070;"><b>HIPAA NOTICE:</b> Working offline ("Continue without an account"), no plan data is transmitted anywhere — it stays in this browser until you export an encrypted .pcsp file yourself. If signed in with cloud sync, encrypted plan data is stored via Supabase pending a signed Business Associate Agreement — do not enter real Individual data that way until BAA execution is confirmed. Ensure browser history and cache are cleared when using shared workstations.</p>
+            <p style="margin-top: 15px; color: #e07070;"><b>HIPAA NOTICE:</b> Working offline ("Continue without an account"), no plan data is transmitted anywhere — it stays in this browser until you export an encrypted .pcsp file yourself. If signed in with cloud sync, encrypted plan data is stored via Neon pending a signed Business Associate Agreement — do not enter real Individual data that way until BAA execution is confirmed. Ensure browser history and cache are cleared when using shared workstations.</p>
             <p style="margin-top: 10px;">This tool is designed to assist in the drafting of Missouri DMH/DDD Person-Centered Service Plans. Users are responsible for verifying accuracy against current state regulations.</p>
           </div>
         </footer>
@@ -3352,12 +3352,11 @@
       }
     </script>
     <!--
-      Cloud sync requires a Supabase project (see config.js and
-      supabase_schema.sql for setup). Do not enter real client data until
-      a signed Business Associate Agreement and privacy-officer sign-off
-      are in place — see README for details.
+      Cloud sync requires a Neon project with Auth + a deployed Function
+      (see config.js and neon_schema.sql for setup). Do not enter real
+      client data until a signed Business Associate Agreement and
+      privacy-officer sign-off are in place — see README for details.
     -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="config.js"></script>
     <script src="app.js"></script>
   </body>

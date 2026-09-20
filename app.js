@@ -235,21 +235,47 @@ let _coverPhotoData = null;
 let _sessionKey = null; // plaintext account password, kept in memory only — used as the client-side encryption key for drafts
 let _currentUserId = null;
 // True when the case manager chose "Continue without an account" — no
-// Supabase call is ever made in this mode, cloud or auth, so it also
+// cloud call is ever made in this mode, cloud or auth, so it also
 // works with no internet connection. Saving falls back to an encrypted
 // local .pcsp export instead of the cloud drafts/completed_plans tables.
 let _offlineMode = false;
 
 // ── CLOUD CLIENT ──
-// SUPABASE_URL / SUPABASE_ANON_KEY come from config.js.
-const supabaseClient =
-  typeof supabase !== "undefined" &&
-  SUPABASE_URL &&
-  SUPABASE_URL !== "YOUR_SUPABASE_PROJECT_URL"
-    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        auth: { persistSession: false },
-      })
-    : null;
+// NEON_AUTH_BASE_URL / NEON_FUNCTION_API_BASE_URL come from config.js.
+// Loaded via dynamic import (not a static <script type="module">) because
+// app.js has to stay a classic script — index.html relies on its top-level
+// functions being real `window` globals for onclick="..." handlers, which
+// module scripts don't provide.
+let authClient = null;
+const _authReady = (async () => {
+  if (typeof NEON_AUTH_BASE_URL === "undefined" || !NEON_AUTH_BASE_URL) return;
+  const [{ createAuthClient }, { SupabaseAuthAdapter }] = await Promise.all([
+    import("https://esm.sh/@neondatabase/auth@0.5.0-beta"),
+    import("https://esm.sh/@neondatabase/auth@0.5.0-beta/vanilla/adapters"),
+  ]);
+  authClient = createAuthClient(NEON_AUTH_BASE_URL, {
+    adapter: SupabaseAuthAdapter(),
+  });
+})();
+
+// Calls the deployed Neon Function (api.ts), attaching the signed-in
+// user's session JWT. api.ts verifies that token and scopes every query to
+// the verified user id — the server-side replacement for Supabase's
+// browser-facing row-level security.
+async function apiFetch(path, options = {}) {
+  await _authReady;
+  const { data } = authClient ? await authClient.getSession() : { data: null };
+  const token = data?.session?.access_token;
+  if (!token) throw new Error("Not signed in");
+  return fetch(NEON_FUNCTION_API_BASE_URL + path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+      ...(options.headers || {}),
+    },
+  });
+}
 
 const Security = {
   ITERATIONS: 100000,
@@ -636,7 +662,7 @@ function esc(str) {
 
 // ── PHOTO HANDLING ──
 // Photos are stored inline in the encrypted plan payload (see
-// supabase_schema.sql), so an uncompressed camera photo would bloat every
+// neon_schema.sql), so an uncompressed camera photo would bloat every
 // row by several MB. Downscale to a face-sheet-appropriate size and
 // re-encode as JPEG before it ever touches _coverPhotoData.
 const PHOTO_MAX_DIMENSION = 400;
@@ -4227,11 +4253,11 @@ let _allDraftItems = [];
 let _allCompletedItems = [];
 
 // ── CLOUD DRAFT STORAGE ──
-// Drafts are stored in Supabase, tied to the signed-in user, so they follow
-// that person to any device. The server only ever sees an AES-GCM
+// Drafts are stored in Neon Postgres, tied to the signed-in user, so they
+// follow that person to any device. The server only ever sees an AES-GCM
 // ciphertext (see Security.encrypt/decrypt) — it cannot read plan content.
-// Row-level security (supabase_schema.sql) additionally restricts each row
-// to its owning user_id.
+// The api.ts Function additionally restricts each row to its owning
+// user_id, verified from the caller's Neon Auth session (see neon_schema.sql).
 // Returns true/false so callers can tell a real save from a silent no-op —
 // manualSaveDraft() used to show "Draft saved" regardless, even when this
 // returned early for being signed out, which is how a case manager lost a
@@ -4249,25 +4275,24 @@ async function saveToHistory() {
   );
 
   if (_currentDraftId) {
-    const { error } = await supabaseClient
-      .from("drafts")
-      .update({ data: encrypted, updated_at: new Date().toISOString() })
-      .eq("id", _currentDraftId);
-    if (error) {
-      showToast("Save failed: " + error.message, "error");
+    const res = await apiFetch(`/drafts/${_currentDraftId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ data: encrypted }),
+    });
+    if (!res.ok) {
+      showToast("Save failed: " + (await res.text()), "error");
       return false;
     }
   } else {
-    const { data, error } = await supabaseClient
-      .from("drafts")
-      .insert({ user_id: _currentUserId, data: encrypted })
-      .select("id")
-      .single();
-    if (error) {
-      showToast("Save failed: " + error.message, "error");
+    const res = await apiFetch("/drafts", {
+      method: "POST",
+      body: JSON.stringify({ data: encrypted }),
+    });
+    if (!res.ok) {
+      showToast("Save failed: " + (await res.text()), "error");
       return false;
     }
-    _currentDraftId = data.id;
+    _currentDraftId = (await res.json()).id;
   }
   await renderHistory();
   return true;
@@ -4287,18 +4312,14 @@ async function renderHistory() {
     return;
   }
 
-  const { data: rows, error } = await supabaseClient
-    .from("drafts")
-    .select("id, data, updated_at")
-    .eq("user_id", _currentUserId)
-    .order("updated_at", { ascending: false })
-    .limit(20);
-
-  if (error) {
-    console.error("Failed to load drafts:", error.message);
-    showToast("Couldn't load your saved drafts: " + error.message, "error");
+  const res = await apiFetch("/drafts");
+  if (!res.ok) {
+    const msg = await res.text();
+    console.error("Failed to load drafts:", msg);
+    showToast("Couldn't load your saved drafts: " + msg, "error");
     return;
   }
+  const rows = await res.json();
 
   _allDraftItems = await Promise.all(
     rows.map(async (row) => {
@@ -4360,16 +4381,12 @@ function renderDraftList() {
     .join("");
 }
 async function viewDraft(id) {
-  const { data: row, error } = await supabaseClient
-    .from("drafts")
-    .select("id, data")
-    .eq("id", id)
-    .single();
-
-  if (error || !row) {
+  const res = await apiFetch(`/drafts/${id}`);
+  if (!res.ok) {
     showToast("Could not load draft.", "error");
     return;
   }
+  const row = await res.json();
 
   let payload;
   try {
@@ -4418,25 +4435,24 @@ async function finalizePlan() {
   );
 
   if (_currentCompletedId) {
-    const { error } = await supabaseClient
-      .from("completed_plans")
-      .update({ data: encrypted, updated_at: new Date().toISOString() })
-      .eq("id", _currentCompletedId);
-    if (error) {
-      showToast("Save failed: " + error.message, "error");
+    const res = await apiFetch(`/completed-plans/${_currentCompletedId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ data: encrypted }),
+    });
+    if (!res.ok) {
+      showToast("Save failed: " + (await res.text()), "error");
       return;
     }
   } else {
-    const { data, error } = await supabaseClient
-      .from("completed_plans")
-      .insert({ user_id: _currentUserId, data: encrypted })
-      .select("id")
-      .single();
-    if (error) {
-      showToast("Save failed: " + error.message, "error");
+    const res = await apiFetch("/completed-plans", {
+      method: "POST",
+      body: JSON.stringify({ data: encrypted }),
+    });
+    if (!res.ok) {
+      showToast("Save failed: " + (await res.text()), "error");
       return;
     }
-    _currentCompletedId = data.id;
+    _currentCompletedId = (await res.json()).id;
   }
 
   showToast("Saved as a completed plan ✓", "success");
@@ -4450,17 +4466,14 @@ async function renderCompletedPlans() {
     return;
   }
 
-  const { data: rows, error } = await supabaseClient
-    .from("completed_plans")
-    .select("id, data, updated_at")
-    .eq("user_id", _currentUserId)
-    .order("updated_at", { ascending: false });
-
-  if (error) {
-    console.error("Failed to load completed plans:", error.message);
-    showToast("Couldn't load your completed plans: " + error.message, "error");
+  const res = await apiFetch("/completed-plans");
+  if (!res.ok) {
+    const msg = await res.text();
+    console.error("Failed to load completed plans:", msg);
+    showToast("Couldn't load your completed plans: " + msg, "error");
     return;
   }
+  const rows = await res.json();
 
   _allCompletedItems = await Promise.all(
     rows.map(async (row) => {
@@ -4523,16 +4536,12 @@ function renderCompletedList() {
 }
 
 async function viewCompletedPlan(id) {
-  const { data: row, error } = await supabaseClient
-    .from("completed_plans")
-    .select("id, data")
-    .eq("id", id)
-    .single();
-
-  if (error || !row) {
+  const res = await apiFetch(`/completed-plans/${id}`);
+  if (!res.ok) {
     showToast("Could not load completed plan.", "error");
     return;
   }
+  const row = await res.json();
 
   let payload;
   try {
@@ -4554,7 +4563,7 @@ async function viewCompletedPlan(id) {
 // under localStorage key "pcsp_drafts" (the old vault password only ever
 // gated the lock screen, not the draft data itself). Cloud accounts don't
 // see those, so on first sign-in per browser we offer to copy them into
-// the signed-in user's Supabase drafts before anything (e.g. Sign Out's
+// the signed-in user's cloud drafts before anything (e.g. Sign Out's
 // localStorage.clear()) can wipe them.
 async function migrateLegacyDrafts() {
   if (localStorage.getItem("pcsp_migration_dismissed")) return;
@@ -4583,10 +4592,11 @@ async function migrateLegacyDrafts() {
         { title: draft.title || "Unnamed Plan", formData: draft.formData },
         _sessionKey,
       );
-      const { error } = await supabaseClient
-        .from("drafts")
-        .insert({ user_id: _currentUserId, data: encrypted });
-      if (error) throw error;
+      const res = await apiFetch("/drafts", {
+        method: "POST",
+        body: JSON.stringify({ data: encrypted }),
+      });
+      if (!res.ok) throw new Error(await res.text());
       migrated++;
     } catch (e) {
       console.error("Failed to migrate legacy draft:", e);
@@ -4612,11 +4622,16 @@ async function migrateLegacyDrafts() {
 }
 
 // ── AUTHENTICATION ──
-// Every page load requires a fresh email/password sign-in (no persisted
-// session token). This keeps the "re-lock on every visit" behavior of the
-// original vault, and it also means we always have the plaintext password
-// in memory (_sessionKey) right when we need it to decrypt drafts — that
-// password is never sent anywhere or written to disk.
+// Every page load shows the lock screen and requires re-entering the
+// password through submitAuth() — nothing here reads an existing Neon Auth
+// session on load to skip it, even if the browser still holds one. This
+// keeps the "re-lock on every visit" behavior of the original vault, and
+// it also means we always have the plaintext password in memory
+// (_sessionKey) right when we need it to decrypt drafts — that password is
+// never sent anywhere or written to disk. (Unlike the old Supabase client,
+// which had persistSession explicitly disabled, Neon Auth's session may
+// outlive a reload in the browser; wipeSessionData()'s signOut() is what
+// actually ends it.)
 let _authMode = "signin";
 
 function initAuth() {
@@ -4672,7 +4687,8 @@ async function submitAuth() {
     return;
   }
 
-  if (!supabaseClient) {
+  await _authReady;
+  if (!authClient) {
     err.textContent =
       "Cloud sync is not configured yet. See config.js for setup steps.";
     return;
@@ -4695,7 +4711,7 @@ async function submitAuth() {
     }
 
     btn.disabled = true;
-    const { data, error } = await supabaseClient.auth.signUp({
+    const { data, error } = await authClient.signUp({
       email,
       password: pass,
     });
@@ -4722,7 +4738,7 @@ async function submitAuth() {
     enterApp();
   } else {
     btn.disabled = true;
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
+    const { data, error } = await authClient.signInWithPassword({
       email,
       password: pass,
     });
@@ -4751,7 +4767,7 @@ function enterApp() {
   }, 700);
 }
 
-// Skips Supabase entirely — no auth, no cloud storage — for working
+// Skips the cloud entirely — no auth, no cloud storage — for working
 // without an internet connection, or before a Business Associate
 // Agreement is in place. Save Draft / Save as Completed Plan fall back to
 // an encrypted local .pcsp export (see manualSaveDraft/finalizePlan),
@@ -4788,7 +4804,7 @@ function wipeSessionData() {
     _sessionKey = null;
     _currentUserId = null;
     localStorage.clear();
-    if (supabaseClient) supabaseClient.auth.signOut();
+    if (authClient) authClient.signOut();
     location.reload();
   }
 }

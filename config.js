@@ -1,10 +1,12 @@
 // ── CLOUD SYNC CONFIGURATION ──
-// Fill these in after creating your Supabase project (https://supabase.com):
-//   1. Create a new project.
-//   2. In the SQL Editor, run supabase_schema.sql (in this folder) once.
-//   3. In Project Settings → API, copy the "Project URL" and "anon public" key below.
-// The anon key is safe to publish in client-side code — access is enforced
-// server-side by the row-level security policies in supabase_schema.sql, not
-// by keeping this key secret.
-const SUPABASE_URL = "https://tipugatpngihbtmazhmf.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_fk7jNSmsCTF31doLPw2nMA_DCoplhk2";
+// Fill these in after linking a Neon project (see neon_schema.sql for the
+// one-time schema setup, and api.ts for the deployed Function that serves
+// drafts/completed plans):
+//   1. `neon link --project-id <id> --branch <branch>`, then `neon deploy`.
+//   2. Copy NEON_AUTH_BASE_URL and NEON_FUNCTION_API_BASE_URL from the
+//      pulled .env.local into the values below.
+// Both values are safe to publish in client-side code — they're just
+// endpoint URLs. Access control is enforced server-side: Neon Auth issues
+// the session, and api.ts verifies that session's JWT on every request.
+const NEON_AUTH_BASE_URL = "https://ep-nameless-tree-b5ij027m.neonauth.c-7.us-east-2.aws.neon.tech/neondb/auth";
+const NEON_FUNCTION_API_BASE_URL = "https://br-green-river-b5k7rttb-api.compute.c-7.us-east-2.aws.neon.tech";
