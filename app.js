@@ -1446,7 +1446,7 @@ function updateUI() {
 
   document.getElementById("printName").textContent = displayName;
   document.getElementById("printDMH").textContent = displayDMH;
-  setPrintPageDMH(displayDMH);
+  setPrintPageMargins(dName, displayDMH);
   document.getElementById("printFunding").textContent = (
     getVal("coverFundingType") ||
     getVal("waiverType") ||
@@ -4885,18 +4885,22 @@ function printPlan() {
   window.print();
 }
 
-// Prints "DMH ID: ..." in the bottom-left page margin of every printed page,
-// opposite the page number. @page margin boxes can't read document content,
-// so the rule is regenerated whenever the DMH ID changes.
-function setPrintPageDMH(dmh) {
-  let el = document.getElementById("printPageDMHStyle");
+// Prints the Individual's name at the top of every printed page and
+// "DMH ID: ..." in the bottom-left margin, opposite the page number.
+// @page margin boxes can't read document content, so the rule is
+// regenerated whenever the name or DMH ID changes.
+function setPrintPageMargins(name, dmh) {
+  let el = document.getElementById("printPageMarginStyle");
   if (!el) {
     el = document.createElement("style");
-    el.id = "printPageDMHStyle";
+    el.id = "printPageMarginStyle";
     document.head.appendChild(el);
   }
-  const text = ("DMH ID: " + dmh).replace(/[\\"]/g, "\\$&").replace(/\s+/g, " ");
-  el.textContent = `@media print { @page { @bottom-left { content: "${text}"; font-size: 8pt; font-weight: 700; color: #555; } } }`;
+  const cssText = (s) => s.replace(/[\\"]/g, "\\$&").replace(/\s+/g, " ");
+  el.textContent = `@media print { @page {
+    @top-center { content: "${cssText(name)}"; font-size: 9pt; font-weight: 700; color: #333; }
+    @bottom-left { content: "${cssText("DMH ID: " + dmh)}"; font-size: 8pt; font-weight: 700; color: #555; }
+  } }`;
 }
 
 function scrollToSection(id) {
