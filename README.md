@@ -2,7 +2,7 @@
 **Tagline:** Deterministic Documentation Engine for Healthcare Compliance.
 
 ## Executive Summary
-PCSP Assistant Pro is a HIPAA-compliant documentation system engineered for Missouri DMH agencies. It automates the generation of Person-Centered Support Plans with clinical precision and audit-ready output.
+PCSP Assistant Pro is a HIPAA-compliant documentation system engineered for Missouri DMH agencies. It automates the generation of Person Centered Service Plans with clinical precision and audit-ready output.
 
 ## Core Architecture
 - **Frontend:** Next.js 14, React 18

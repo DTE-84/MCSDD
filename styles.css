@@ -1742,7 +1742,7 @@ input:checked + .slider:before {
 	/* HIPAA confidentiality footer on every printed page */
 	@page {
 		margin: 1in 0.75in;
-		@bottom-left {
+		@bottom-center {
 			content: "CONFIDENTIAL — HIPAA Protected Health Info | Marion County DMH";
 			font-size: 8pt;
 			color: #555;

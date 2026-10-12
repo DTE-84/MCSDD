@@ -1446,6 +1446,7 @@ function updateUI() {
 
   document.getElementById("printName").textContent = displayName;
   document.getElementById("printDMH").textContent = displayDMH;
+  setPrintPageDMH(displayDMH);
   document.getElementById("printFunding").textContent = (
     getVal("coverFundingType") ||
     getVal("waiverType") ||
@@ -4882,6 +4883,20 @@ function copyToClipboard() {
 
 function printPlan() {
   window.print();
+}
+
+// Prints "DMH ID: ..." in the bottom-left page margin of every printed page,
+// opposite the page number. @page margin boxes can't read document content,
+// so the rule is regenerated whenever the DMH ID changes.
+function setPrintPageDMH(dmh) {
+  let el = document.getElementById("printPageDMHStyle");
+  if (!el) {
+    el = document.createElement("style");
+    el.id = "printPageDMHStyle";
+    document.head.appendChild(el);
+  }
+  const text = ("DMH ID: " + dmh).replace(/[\\"]/g, "\\$&").replace(/\s+/g, " ");
+  el.textContent = `@media print { @page { @bottom-left { content: "${text}"; font-size: 8pt; font-weight: 700; color: #555; } } }`;
 }
 
 function scrollToSection(id) {
