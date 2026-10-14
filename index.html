@@ -1088,7 +1088,7 @@
               ><input
                 type="checkbox"
                 value="Other Ethnicity"
-                onchange="toggleEthnicityOther(this)"
+                onchange="toggleEthnicityOther(this); updateUI()"
               />
               Other</label
             >
@@ -1169,7 +1169,7 @@
           <div class="form-grid">
             <div class="field-group">
               <label>Primary Medical Insurance</label>
-              <select id="insurance" onchange="toggleInsuranceFields()">
+              <select id="insurance" onchange="toggleInsuranceFields(); updateUI()">
                 <option value="Medicaid (MO HealthNet)">
                   Medicaid (MO HealthNet)
                 </option>
@@ -1211,7 +1211,7 @@
             </div>
             <div class="field-group">
               <label>Dental Insurance</label>
-              <select id="dentalInsurance" onchange="toggleDentalOther()">
+              <select id="dentalInsurance" onchange="toggleDentalOther(); updateUI()">
                 <option value="MO HealthNet Dental (Medicaid)">
                   MO HealthNet Dental (Medicaid)
                 </option>
@@ -1240,7 +1240,7 @@
           
             <div class="field-group">
               <label>Secondary Medical Insurance</label>
-              <select id="insuranceSec" onchange="toggleInsuranceFieldsSec()">
+              <select id="insuranceSec" onchange="toggleInsuranceFieldsSec(); updateUI()">
                 <option value="None / Pending">None / Pending</option>
                 <option value="Medicaid (MO HealthNet)">
                   Medicaid (MO HealthNet)

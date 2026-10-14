@@ -1480,6 +1480,36 @@ function updateUI() {
 const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !== "N/A") line(`${l}: ${v}`); };
 
   head("1. DEMOGRAPHICS & LEGAL AUTHORITY");
+  field("Full Legal Name", name);
+  field("Nickname", nick);
+  field("Date of Birth", dob ? new Date(dob + "T00:00:00").toLocaleDateString() : "");
+  const ethnicities = [];
+  document.querySelectorAll('#ethnicityGrid input[type="checkbox"]:checked').forEach((cb) => {
+    if (cb.value === "Other Ethnicity") {
+      ethnicities.push(getVal("ethnicityOther").trim() || "Other");
+    } else {
+      ethnicities.push(cb.value);
+    }
+  });
+  field("Race / Ethnicity", ethnicities.join(", "));
+  field("Native / Primary Language", getVal("nativeLanguage"));
+  field("Additional Languages (Fluent)", getVal("otherLanguages"));
+  const commOther = getVal("comm-other").trim();
+  field("Primary Communication Method", [getVal("commMethod"), commOther].filter(Boolean).join(" — Other: "));
+  const insuranceLine = (planId, spenddownId, privateId) => {
+    const plan = getVal(planId);
+    if (!plan || plan === "None / Pending") return plan;
+    if (plan.includes("Spend Down") && getVal(spenddownId)) return `${plan} (Monthly Spend Down: ${getVal(spenddownId)})`;
+    if (plan.includes("Private") && getVal(privateId)) return `${plan} — ${getVal(privateId)}`;
+    return plan;
+  };
+  field("Primary Medical Insurance", insuranceLine("insurance", "spenddownAmount", "privateInsuranceProvider"));
+  const secIns = insuranceLine("insuranceSec", "spenddownAmountSec", "privateInsuranceProviderSec");
+  if (secIns !== "None / Pending") field("Secondary Medical Insurance", secIns);
+  const dental = getVal("dentalInsurance");
+  field("Dental Insurance", /Other|Private/.test(dental) && getVal("dentalOther") ? `${dental} — ${getVal("dentalOther")}` : dental);
+  field("Voter Registration", getVal("voterStatus"));
+  line("");
   line("Legal Representatives:");
   line(getLegalRepsNarrative());
   line("");
@@ -3632,14 +3662,14 @@ function renderHcbsServices() {
           </div>
         ` : ''}
         ${s.serviceName && !s.sdsUtilized ? `
-          <div style="display: flex; gap: 15px; margin-top: 15px; padding: 0 5px;">
-            <div class="field-group" style="flex: 1;">
+          <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 15px; margin-top: 15px; padding: 0 5px;">
+            <div class="field-group">
               <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Service/Program Details</label>
-              <textarea oninput="updateHcbsService(${i}, 'serviceDetails', this.value)" style="min-height: 80px;">${esc(s.serviceDetails || "")}</textarea>
+              <textarea oninput="updateHcbsService(${i}, 'serviceDetails', this.value)" style="width: 100%; box-sizing: border-box; min-height: 200px; resize: vertical;">${esc(s.serviceDetails || "")}</textarea>
             </div>
-            <div class="field-group" style="flex: 1;">
+            <div class="field-group">
               <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Provided hours</label>
-              <textarea oninput="updateHcbsService(${i}, 'serviceHours', this.value)" style="min-height: 80px;">${esc(s.serviceHours || "")}</textarea>
+              <textarea oninput="updateHcbsService(${i}, 'serviceHours', this.value)" style="width: 100%; box-sizing: border-box; min-height: 120px; resize: vertical;">${esc(s.serviceHours || "")}</textarea>
             </div>
           </div>
         ` : ''}
@@ -4104,6 +4134,7 @@ function captureFormData() {
     _learningStyles: Array.from(document.querySelectorAll('#learningStyleContainer input[type="checkbox"]:checked')).map(cb => cb.value),
     _healthParams: Array.from(document.querySelectorAll('#healthParamsContainer input[type="checkbox"]:checked')).map(cb => cb.value),
     _communityReferrals: Array.from(document.querySelectorAll('.referral-cb:checked')).map(cb => cb.value),
+    _ethnicities: Array.from(document.querySelectorAll('#ethnicityGrid input[type="checkbox"]:checked')).map(cb => cb.value),
   };
   FORM_FIELDS.forEach((id) => {
     const el = document.getElementById(id);
@@ -4239,6 +4270,12 @@ function restoreFormData(fd) {
       cb.checked = fd._communityReferrals.includes(cb.value);
     });
     if (typeof updateReferralUI === "function") updateReferralUI();
+  }
+  if (Array.isArray(fd._ethnicities)) {
+    document.querySelectorAll('#ethnicityGrid input[type="checkbox"]').forEach(cb => {
+      cb.checked = fd._ethnicities.includes(cb.value);
+      if (cb.value === "Other Ethnicity") toggleEthnicityOther(cb);
+    });
   }
 
   renderDnrAltLists();
