@@ -489,7 +489,8 @@ const FORM_FIELDS = [
   "diagnosis",
   "medHistory",
   // Section 9 - Community Support
-  "hasNonDivisionalWaiver",
+  "nonDivisionalWaiver",
+  "nonDivisionalWaiverDetail",
   // Section 10 - Ways to Support
   "waysToSupport",
   // Section 12 - Independence/Strengths
@@ -810,15 +811,27 @@ function removeProgramService(id) {
 }
 
 // ── SECTION 9: COMMUNITY NATURAL AND NON-DIVISION SUPPORT ──
+// Each entry is a Provider holding one or more supports in `items`.
+function newSupportItem() {
+  return { description: "", purpose: "", frequency: "" };
+}
+
+// Older drafts stored one support per entry with no provider; fold those
+// fields into a single item so they keep showing up.
+function migrateSupportProvider(s) {
+  if (Array.isArray(s.items)) return s;
+  const { description = "", purpose = "", frequency = "", ...rest } = s;
+  return { provider: "", ...rest, items: [{ description, purpose, frequency }] };
+}
+
 function addSupport(type) {
   const list = type === 'current' ? currentSupports : linkingSupports;
   list.push({
     id: Date.now(),
+    provider: "",
     type: "Community",
-    description: "",
-    purpose: "",
-    frequency: "",
-    enrollmentInfo: ""
+    enrollmentInfo: "",
+    items: [newSupportItem()]
   });
   renderSupports(type);
   updateUI();
@@ -834,6 +847,32 @@ function updateSupportField(id, type, field, val) {
   updateUI();
 }
 
+function updateSupportItemField(id, type, idx, field, val) {
+  const list = type === 'current' ? currentSupports : linkingSupports;
+  const s = list.find(x => x.id === id);
+  if (s && s.items[idx]) s.items[idx][field] = val;
+  updateUI();
+}
+
+function addSupportItem(id, type) {
+  const list = type === 'current' ? currentSupports : linkingSupports;
+  const s = list.find(x => x.id === id);
+  if (s) s.items.push(newSupportItem());
+  renderSupports(type);
+  updateUI();
+}
+
+function removeSupportItem(id, type, idx) {
+  const list = type === 'current' ? currentSupports : linkingSupports;
+  const s = list.find(x => x.id === id);
+  if (s) {
+    s.items.splice(idx, 1);
+    if (!s.items.length) s.items.push(newSupportItem());
+  }
+  renderSupports(type);
+  updateUI();
+}
+
 function removeSupport(id, type) {
   if (type === 'current') {
     currentSupports = currentSupports.filter(x => x.id !== id);
@@ -842,6 +881,25 @@ function removeSupport(id, type) {
   }
   renderSupports(type);
   updateUI();
+}
+
+function renderSupportItems(s, type) {
+  const isCurrent = type === 'current';
+  const noun = isCurrent ? 'Support' : 'Service';
+  const rows = s.items.map((it, i) => `
+        <div style="border-top: 1px dashed var(--border, #ddd); padding-top: 10px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-label);">${noun} ${i + 1}</span>
+            ${s.items.length > 1 ? `<button class="remove-rep-btn" type="button" title="Remove ${noun.toLowerCase()}" onclick="removeSupportItem(${s.id}, '${type}', ${i})">×</button>` : ''}
+          </div>
+          <div class="form-grid">
+            <div class="field-group"><label>${isCurrent ? 'Define Support' : 'Service'}</label><input type="text" value="${esc(it.description)}" oninput="updateSupportItemField(${s.id}, '${type}', ${i}, 'description', this.value)"></div>
+            <div class="field-group"><label>Purpose</label><input type="text" value="${esc(it.purpose)}" oninput="updateSupportItemField(${s.id}, '${type}', ${i}, 'purpose', this.value)"></div>
+            ${isCurrent ? `<div class="field-group"><label>Frequency</label><input type="text" value="${esc(it.frequency)}" oninput="updateSupportItemField(${s.id}, '${type}', ${i}, 'frequency', this.value)"></div>` : ''}
+          </div>
+        </div>`).join("");
+  return `${rows}
+        <button class="btn btn-outline" type="button" onclick="addSupportItem(${s.id}, '${type}')" style="margin-top: 10px; font-size: 12px; padding: 6px 12px;">+ Add ${noun} for this Provider</button>`;
 }
 
 function renderSupports(type) {
@@ -860,10 +918,11 @@ function renderSupports(type) {
       return `
       <div class="legal-rep-card" style="border-left: 3px solid var(--marion-blue); margin-bottom:15px;">
         <div class="rep-header">
-          <span class="rep-title">Current Support #${idx + 1}</span>
+          <span class="rep-title">Provider #${idx + 1}</span>
           <button class="remove-rep-btn" onclick="removeSupport(${s.id}, '${type}')">×</button>
         </div>
         <div class="form-grid">
+          <div class="field-group"><label>Provider</label><input type="text" value="${esc(s.provider)}" placeholder="Agency, church, family member, etc." oninput="updateSupportField(${s.id}, '${type}', 'provider', this.value)"></div>
           <div class="field-group">
             <label>Support Type</label>
             <select onchange="updateSupportField(${s.id}, '${type}', 'type', this.value)">
@@ -876,21 +935,18 @@ function renderSupports(type) {
               <option value="Other" ${s.type === 'Other' ? 'selected' : ''}>Other</option>
             </select>
           </div>
-          <div class="field-group"><label>Define Support</label><input type="text" value="${esc(s.description)}" oninput="updateSupportField(${s.id}, '${type}', 'description', this.value)"></div>
-          <div class="field-group"><label>Purpose</label><input type="text" value="${esc(s.purpose)}" oninput="updateSupportField(${s.id}, '${type}', 'purpose', this.value)"></div>
-          <div class="field-group"><label>Frequency</label><input type="text" value="${esc(s.frequency)}" oninput="updateSupportField(${s.id}, '${type}', 'frequency', this.value)"></div>
         </div>
+        ${renderSupportItems(s, type)}
       </div>`;
     } else {
       return `
       <div class="legal-rep-card" style="border-left: 3px solid var(--marion-blue); margin-bottom:15px;">
         <div class="rep-header">
-          <span class="rep-title">Linking Support #${idx + 1}</span>
+          <span class="rep-title">Provider #${idx + 1}</span>
           <button class="remove-rep-btn" onclick="removeSupport(${s.id}, '${type}')">×</button>
         </div>
         <div class="form-grid">
-          <div class="field-group"><label>Service</label><input type="text" value="${esc(s.description)}" oninput="updateSupportField(${s.id}, '${type}', 'description', this.value)"></div>
-          <div class="field-group"><label>Purpose</label><input type="text" value="${esc(s.purpose)}" oninput="updateSupportField(${s.id}, '${type}', 'purpose', this.value)"></div>
+          <div class="field-group full"><label>Provider</label><input type="text" value="${esc(s.provider)}" placeholder="Agency or organization" oninput="updateSupportField(${s.id}, '${type}', 'provider', this.value)"></div>
           <div class="field-group full">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
               <label style="margin-bottom: 0;">Enrollment Info</label>
@@ -901,6 +957,7 @@ function renderSupports(type) {
             <input type="text" value="${esc(s.enrollmentInfo)}" placeholder="Location address, contact phone / e-mail" oninput="updateSupportField(${s.id}, '${type}', 'enrollmentInfo', this.value)">
           </div>
         </div>
+        ${renderSupportItems(s, type)}
       </div>`;
     }
   }).join("");
@@ -1979,17 +2036,19 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   line("");
 
   head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
-  if (document.getElementById("hasNonDivisionalWaiver")?.checked) {
-    line("Non-Divisional Waiver: Yes");
-  }
+  field("Non-Divisional Waiver", getVal("nonDivisionalWaiver") || "—");
+  field("Non-Divisional Waiver Details", getVal("nonDivisionalWaiverDetail"));
   line("");
-  
+
   if (currentSupports.length > 0) {
     line("Current Services:");
     currentSupports.forEach((s, idx) => {
-      line(`  [${idx + 1}] Support: ${s.description || "—"} (${s.type})`);
-      line(`      Purpose: ${s.purpose || "—"}`);
-      line(`      Freq: ${s.frequency || "—"}`);
+      line(`  [${idx + 1}] Provider: ${s.provider || "—"} (${s.type})`);
+      s.items.forEach((it) => {
+        line(`      - Support: ${it.description || "—"}`);
+        line(`        Purpose: ${it.purpose || "—"}`);
+        line(`        Freq: ${it.frequency || "—"}`);
+      });
     });
     line("");
   }
@@ -1997,12 +2056,15 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   if (linkingSupports.length > 0) {
     line("Linking Services:");
     linkingSupports.forEach((s, idx) => {
-      line(`  [${idx + 1}] Service: ${s.description || "—"}`);
-      line(`      Purpose: ${s.purpose || "—"}`);
+      line(`  [${idx + 1}] Provider: ${s.provider || "—"}`);
       const utilizingStr = s.notUtilizing ? " [DMH Service-Not Currently Utilizing]" : "";
       if (s.enrollmentInfo || s.notUtilizing) {
         line(`      Enrollment Info: ${s.enrollmentInfo || "—"}${utilizingStr}`);
       }
+      s.items.forEach((it) => {
+        line(`      - Service: ${it.description || "—"}`);
+        line(`        Purpose: ${it.purpose || "—"}`);
+      });
     });
     line("");
   }
@@ -4196,8 +4258,13 @@ function restoreFormData(fd) {
       s.backupPlanDetailsArray = [""];
     }
   });
-  currentSupports = fd._currentSupports || [];
-  linkingSupports = fd._linkingSupports || [];
+  currentSupports = (fd._currentSupports || []).map(migrateSupportProvider);
+  linkingSupports = (fd._linkingSupports || []).map(migrateSupportProvider);
+  // Older drafts stored the Non-Divisional Waiver as a checkbox that was only
+  // ever printed when checked.
+  if (fd.nonDivisionalWaiver === undefined && fd.hasNonDivisionalWaiver) {
+    document.getElementById("nonDivisionalWaiver").value = "Yes";
+  }
   legalReps = fd._legalReps || [];
   medicalProfessionals = fd._medicalProfessionals || [];
   preventions = fd._preventions || [];

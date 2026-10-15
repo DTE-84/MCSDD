@@ -2174,23 +2174,32 @@
             <span>9</span> Community, Natural and Non-Division Supports
           </div>
           
+          <div class="subsection-label">Non-Divisional Waiver</div>
+          <div class="form-grid" style="margin-bottom: 20px;">
+            <div class="field-group">
+              <label>Is the Individual in a Non-Divisional Waiver?</label>
+              <select id="nonDivisionalWaiver" onchange="updateUI()">
+                <option value="">Select...</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Waiver Name / Details</label>
+              <input type="text" id="nonDivisionalWaiverDetail" placeholder="e.g. ADW, AIDS Waiver, Medically Fragile Adult Waiver" oninput="updateUI()">
+            </div>
+          </div>
+
           <div class="subsection-label">Current Services</div>
           <div id="currentSupportsContainer"></div>
-          
-          <div class="field-group full" style="margin-bottom: 15px;">
-            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; text-transform: none; color: var(--text-main);">
-              <input type="checkbox" id="hasNonDivisionalWaiver" onchange="updateUI()"> Non-Divisional Waiver
-            </label>
-          </div>
-          
           <button class="btn btn-outline" type="button" onclick="addSupport('current')" style="margin-bottom: 20px;">
-            + Add Current Support
+            + Add Provider
           </button>
 
           <div class="subsection-label">Linking Services</div>
           <div id="linkingSupportsContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addSupport('linking')" style="margin-bottom: 20px;">
-            + Add Linking Support
+            + Add Provider
           </button>
         </div>
 
