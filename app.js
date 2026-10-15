@@ -2170,7 +2170,11 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   const transCat = getVal("transitionCategory");
   field("Category / Life Stage", transCat);
   
-  if (transCat === "School Age (Under 16)") {
+  // Mirror toggleTransitionFields(): each later life stage also shows the
+  // earlier stages' fields, so print every stage that's visible on the form.
+  const showUnder16 = ["School Age (Under 16)", "Adult / Employment Age", "Retirement Age (65+)"].includes(transCat);
+  const showAdult = ["Adult / Employment Age", "Retirement Age (65+)"].includes(transCat);
+  if (showUnder16) {
     line("  EARLY TRANSITION & SOFT SKILL DEVELOPMENT (TEAM DISCUSSION):");
     field("  Self-Determination/Soft Skills", getVal("u16SoftSkills"));
     field("  Interest/Aptitude Exploration", getVal("u16Aptitude"));
@@ -2178,7 +2182,8 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
     field("  Social Capital", getVal("u16SocialCapital"));
     field("  Early Work Experience", getVal("u16WorkExperience"));
     field("  Independent Living Skills", getVal("u16IndependentLiving"));
-  } else if (transCat === "Adult / Employment Age") {
+  }
+  if (showAdult) {
     line("  ADULT TRANSITION & EMPLOYMENT (16+):");
     field("  Match Career Interest with Real Work", getVal("adultMatchCareer"));
     field("  Improve Job/Interview Skills", getVal("adultImproveSkills"));
@@ -2192,7 +2197,8 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
     field("  Community Support Programs", referralCbs.length > 0 ? referralCbs.join(", ") : "None");
     const rNotes = getVal("referralNotes");
     if (rNotes) line("    " + rNotes);
-  } else if (transCat === "Retirement Age (65+)") {
+  }
+  if (transCat === "Retirement Age (65+)") {
     field("  Retirement Status & Context", getVal("retirementNotes"));
   }
   line("");
