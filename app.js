@@ -2161,8 +2161,8 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
     line("");
   }
   
-  const wName1 = displayName || "[Individual]";
-  const wName2 = displayName || "[Individual]";
+  const wName1 = getVal("wipaName1") || displayName || "[Individual]";
+  const wName2 = getVal("wipaName2") || displayName || "[Individual]";
   line("ASSET DEVELOPMENT AND FINANCIAL LITERACY:");
   line(`  To promote financial literacy, self-determination, and a successful transition into the workforce, ${wName1} will utilize the Work Incentives Planning and Assistance (WIPA) program. A certified Community Work Incentives Coordinator (CWIC) will provide the individualized benefits counseling to evaluate how the employment wages will interact with Supplemental Security Income (SSI) Social Security Disability Insurance (SSDI), Medicaid/Medicare, and other public benefits. This collaborative planning will empower ${wName2} to maximize active Social Security work incentives, mitigate the risk of overpayments, and build long-term economic independence.`);
   line("");
@@ -2286,6 +2286,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   });
   
   field("Criminal and other Behavior / Probation / Parole", getVal("criminalBehaviorNotes"));
+  field("Evacuation / 911 Plan", getVal("evacPlan"));
   field("Staff Support Needs", getVal("staffSupportNeeds"));
 
   if (document.getElementById("needsEmergencyAssistance")?.checked) {
@@ -2395,6 +2396,8 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   line("If there are concerns with services or support provided by the support coordinator, they may contact the TCM assistant supervisor, Barb Van Abbema, at 573-248-1077 ext. 111, the TCM supervisor, Mahogany Wallis, at 573-248-1077 ext 102 or the SB40 executive director, Cathy Arrowsmith, at 573-248-1077 ext. 104.");
   line("");
   field("Last Assessment", getVal("lastAssessment"));
+  field("Rights Brochure Addressed", getVal("rightsBrochure"));
+  field("Satisfaction with Services", getVal("serviceSatisfaction"));
   field("RAS Score", getVal("rasSisScore"));
   field("PON Score", getVal("ponScore"));
 
