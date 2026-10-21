@@ -2107,3 +2107,42 @@ textarea:focus-visible {
 #sectionNav {
 	flex-shrink: 0;
 }
+
+/* Action Plan dropdown checklists (Responsible Party / Frequency) */
+.goal-dropdown {
+	position: relative;
+}
+.goal-dropdown > summary {
+	list-style: none;
+	cursor: pointer;
+	padding: 12px 32px 12px 12px;
+	border: 2px solid var(--border);
+	border-radius: 8px;
+	font-size: 14px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	position: relative;
+}
+.goal-dropdown > summary::-webkit-details-marker {
+	display: none;
+}
+.goal-dropdown > summary::after {
+	content: "▾";
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+.goal-dropdown[open] > summary {
+	border-color: var(--marion-blue);
+}
+.goal-dropdown-menu {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-top: 4px;
+	padding: 8px;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+}

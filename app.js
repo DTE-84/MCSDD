@@ -1196,7 +1196,9 @@ function addGoal() {
     goal: "",
     task: "",
     responsible: [],
+    responsibleOther: "",
     frequency: [],
+    frequencyOther: "",
     throughDate: "",
   });
   renderGoals();
@@ -1219,8 +1221,47 @@ function toggleGoalArrayField(id, field, val) {
     const idx = g[field].indexOf(val);
     if (idx > -1) g[field].splice(idx, 1);
     else g[field].push(val);
+    refreshGoalDropdownSummary(g, field);
   }
   updateUI();
+}
+function updateGoalOtherField(id, field, val) {
+  const g = goalsData.find((x) => x.id === id);
+  if (g) {
+    g[field + "Other"] = val;
+    refreshGoalDropdownSummary(g, field);
+  }
+  updateUI();
+}
+
+const GOAL_RESPONSIBLE_OPTIONS = ["Individual", "Guardian", "SC", "Provider", "Family"];
+const GOAL_FREQUENCY_OPTIONS = ["Daily", "Weekly", "Bi-Weekly", "Monthly", "Quarterly", "Semi-Annually", "Annually", "As Needed"];
+
+// Checked options plus the free-text "Other" entry, e.g. ["SC", "Job coach"].
+function goalListValues(g, field) {
+  const other = (g[field + "Other"] || "").trim();
+  return [...(g[field] || []), ...(other ? [other] : [])];
+}
+
+// Dropdown checklist; edits update the summary in place so it stays open.
+function renderGoalDropdown(goal, field, options, otherPlaceholder) {
+  const selected = goal[field] || [];
+  return `
+    <details class="goal-dropdown">
+      <summary id="goalDd-${goal.id}-${field}">${esc(goalListValues(goal, field).join(", ")) || "Select..."}</summary>
+      <div class="goal-dropdown-menu">
+        ${options
+          .map(
+            (o) => `<label class="eth-check"><input type="checkbox" ${selected.includes(o) ? "checked" : ""} onchange="toggleGoalArrayField(${goal.id},'${field}','${o}')"> ${o}</label>`,
+          )
+          .join("")}
+        <input type="text" placeholder="${otherPlaceholder}" value="${esc(goal[field + "Other"] || "")}" oninput="updateGoalOtherField(${goal.id},'${field}',this.value)">
+      </div>
+    </details>`;
+}
+function refreshGoalDropdownSummary(g, field) {
+  const el = document.getElementById(`goalDd-${g.id}-${field}`);
+  if (el) el.textContent = goalListValues(g, field).join(", ") || "Select...";
 }
 function renderGoals() {
   const container = document.getElementById("goalsContainer");
@@ -1249,27 +1290,11 @@ function renderGoals() {
         </div>
         <div class="field-group full"><label>Goal (Outcome)</label><textarea oninput="updateGoalField(${goal.id},'goal',this.value)">${esc(goal.goal)}</textarea></div>
         <div class="field-group full"><label>Task</label><input type="text" value="${esc(goal.task)}" oninput="updateGoalField(${goal.id},'task',this.value)"></div>
-        <div class="field-group"><label>Responsible Person(s)</label>
-          <div style="display:flex; flex-wrap:wrap; gap:5px;">
-            ${["Individual", "Guardian", "SC", "Provider", "Family"]
-              .map(
-                (p) => `
-              <label class="eth-check" style="font-size:10px;"><input type="checkbox" ${goal.responsible.includes(p) ? "checked" : ""} onchange="toggleGoalArrayField(${goal.id},'responsible','${p}')"> ${p}</label>
-            `,
-              )
-              .join("")}
-          </div>
+        <div class="field-group"><label>Responsible Party(s)</label>
+          ${renderGoalDropdown(goal, "responsible", GOAL_RESPONSIBLE_OPTIONS, "Other party (name/role)")}
         </div>
         <div class="field-group"><label>Frequency</label>
-          <div style="display:flex; flex-wrap:wrap; gap:5px;">
-            ${["Daily", "Weekly", "Monthly", "Quarterly", "Annually", "As Needed"]
-              .map(
-                (f) => `
-              <label class="eth-check" style="font-size:10px;"><input type="checkbox" ${goal.frequency.includes(f) ? "checked" : ""} onchange="toggleGoalArrayField(${goal.id},'frequency','${f}')"> ${f}</label>
-            `,
-              )
-              .join("")}
-          </div>
+          ${renderGoalDropdown(goal, "frequency", GOAL_FREQUENCY_OPTIONS, "Other frequency (e.g. 2x per week)")}
         </div>
         <div class="field-group"><label>Through Date</label><input type="date" value="${esc(goal.throughDate || '')}" oninput="updateGoalField(${goal.id},'throughDate',this.value)"></div>
       </div>
@@ -2325,13 +2350,18 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   line(
     clinicalGoalsTasks
       .map((g, i) => {
-        let entry = `Goal Entry #${i + 1}: ${g.goal} | Task: ${g.task} | Progress: ${g.progress}`;
-        if (g.continued) {
-          entry += `\n  - Status: ${g.continued}`;
-          if (g.continuedWhy) {
-            entry += ` (Reason: ${g.continuedWhy})`;
-          }
-        }
+        let entry = `Goal Entry #${i + 1}: ${g.goal || ""}`;
+        const sub = (label, v) => {
+          if (v && String(v).trim()) entry += `\n  - ${label}: ${v}`;
+        };
+        sub("Task", g.task);
+        sub("Progress", g.progress);
+        sub("Status", g.continued && (g.continuedWhy ? `${g.continued} (Reason: ${g.continuedWhy})` : g.continued));
+        sub("Meaning", g.meaning);
+        sub("Strengths/Assets", g.strengths);
+        sub("Tech", g.tech);
+        sub("Relationships", g.relationships);
+        sub("Resources", g.resources);
         return entry;
       })
       .join("\n\n"),
@@ -2343,7 +2373,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
     goalsData
       .map(
         (g) =>
-          `[${g.domain}] Goal: ${g.goal} | Task: ${g.task} | Responsible: ${g.responsible.join(", ")} | Frequency: ${g.frequency.join(", ")}${g.throughDate ? " | Through Date: " + g.throughDate : ""}`,
+          `[${g.domain}] Goal: ${g.goal} | Task: ${g.task} | Responsible: ${goalListValues(g, "responsible").join(", ")} | Frequency: ${goalListValues(g, "frequency").join(", ")}${g.throughDate ? " | Through Date: " + g.throughDate : ""}`,
       )
       .join("\n"),
   );
@@ -2377,9 +2407,12 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
 
   field("Last LOC Date", getVal("lastLOC"));
   
-  const hasChoices = document.getElementById("hasChoices")?.checked ? "Yes" : "No";
-  const choicesDesc = getVal("choicesDescription");
-  field("Individual has Choices?", choicesDesc ? `${hasChoices} (${choicesDesc})` : hasChoices);
+  // Choices for Families is a closed legacy funding stream; only mention it
+  // for Individuals who still have it, never print a "No".
+  if (document.getElementById("hasChoices")?.checked) {
+    const choicesDesc = getVal("choicesDescription");
+    field("Choices for Families Funding", choicesDesc ? `Yes (${choicesDesc})` : "Yes");
+  }
 
   line("");
   head("WAIVER RECIPIENTS & COMPLIANCE");
