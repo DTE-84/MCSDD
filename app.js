@@ -535,6 +535,20 @@ const FORM_FIELDS = [
   "hcbsRule2Privacy",
   "hcbsRule3Support",
   "homeLifeNotes",
+  // Section 17 - Self-Directed Supports (SDS) checklist
+  "sdsReceives",
+  "sdsEinStatus", "sdsEinNotes",
+  "sdsDrType", "sdsDrName", "sdsDrRelationship",
+  "sdsSupportBroker", "sdsSbAssessment", "sdsSbOutcome",
+  "sdsSvcPA", "sdsSvcMedPA", "sdsServicesHow",
+  "sdsTrainCpr", "sdsTrainFirstAid", "sdsTrainMedAdmin", "sdsTrainCrisis", "sdsTrainPbs", "sdsTrainNotes",
+  "sdsBackupStaff", "sdsBackupEmployer", "sdsBackupEmergencies",
+  "sdsFamilyHired", "sdsFamilyName", "sdsFamilyRelationship",
+  "sdsFamilyNotOpposed", "sdsFamilySolelyForIndividual", "sdsFamilyTeamAgrees",
+  "sdsAllocTool", "sdsAllocHours", "sdsAllocTotal",
+  "sdsAllocMatchesIsp", "sdsAllocCurrentVersion", "sdsAllocMatchesCimor",
+  "sdsDhssStatus", "sdsDhssNotes",
+  "sdsLmpName", "sdsLmpCredential", "sdsLmpPhone", "sdsLmpException",
   // Section 18 - Comments & Clinical Summary
   "lastAssessment",
   "lastLOC",
@@ -659,7 +673,8 @@ const AMENDMENT_SECTIONS = [
   { id: "sec-supervision", label: "14. Supervision" },
   { id: "sec-prev-goals", label: "15. Past/Current Goals" },
   { id: "sec-outcomes", label: "16. Action Plan" },
-  { id: "sec-comments", label: "17. Comments" },
+  { id: "sec-sds", label: "17. Self-Directed (SDS)" },
+  { id: "sec-comments", label: "18. Comments" },
 ];
 
 function esc(str) {
@@ -1473,8 +1488,46 @@ function syncLegalNames(sourceId) {
   updateUI();
 }
 
+// Section 17 — reveal only the SDS checklist pieces that apply, and flag
+// choices the SDS checklist says aren't allowed. These are warnings, not
+// blocks: approved exceptions do happen and get explained in the notes.
+function updateSdsVisibility() {
+  const val = (id) => document.getElementById(id)?.value || "";
+  const on = (id) => !!document.getElementById(id)?.checked;
+  const show = (id, visible) => {
+    const el = document.getElementById(id);
+    if (el) el.hidden = !visible;
+  };
+  show("sdsDetails", on("sdsReceives"));
+  show("sdsEinWarning", val("sdsEinStatus") === "Has an active EIN");
+  const drType = val("sdsDrType");
+  show("sdsDrNameWrap", drType === "Guardian" || drType === "Other");
+  show("sdsDrRelWrap", drType === "Other");
+  show("sdsSbAssessWrap", val("sdsSupportBroker") === "Yes");
+  show("sdsSbOutcomeWrap", val("sdsSupportBroker") === "Yes");
+  show("sdsFamilyWrap", on("sdsFamilyHired"));
+  show("sdsAllocWrap", val("sdsAllocTool") === "Completed");
+  show("sdsDhssWarning", val("sdsDhssStatus") === "Currently receiving");
+  show("sdsLmpWrap", on("sdsSvcMedPA"));
+
+  const exempt = (id) => val(id).startsWith("Exempt");
+  const warnings = [];
+  if (on("sdsSvcMedPA")) {
+    if (exempt("sdsTrainCpr")) warnings.push("CPR cannot be exempt for Medical Personal Assistance.");
+    if (exempt("sdsTrainFirstAid")) warnings.push("First Aid cannot be exempt for Medical Personal Assistance.");
+    if (exempt("sdsTrainMedAdmin")) warnings.push("Medication Administration cannot be exempt for Medical Personal Assistance if administering medication(s).");
+  }
+  if (exempt("sdsTrainCrisis")) warnings.push("Crisis Management cannot be exempt if physical intervention is needed.");
+  const warnEl = document.getElementById("sdsTrainWarning");
+  if (warnEl) {
+    warnEl.innerHTML = warnings.map(esc).join("<br>");
+    warnEl.hidden = warnings.length === 0;
+  }
+}
+
 function updateUI() {
   if(typeof toggleTransferringLocation === 'function') toggleTransferringLocation();
+  updateSdsVisibility();
   updateTransitionCostTotal();
   // Keep the two "Full Legal Name" fields in sync even if syncLegalNames()
   // didn't fire for some input path (e.g. a browser autofill quirk that skips
@@ -2379,7 +2432,90 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   );
   line("");
 
-  head("17. COMMENTS");
+  // SDS checklist only applies to Individuals who self-direct; leave the
+  // whole section off the plan otherwise.
+  if (document.getElementById("sdsReceives")?.checked) {
+    const isChecked = (id) => document.getElementById(id)?.checked;
+    const checkLine = (id, text) => line(`  [${isChecked(id) ? "X" : " "}] ${text}`);
+
+    head("17. SELF-DIRECTED SUPPORTS (SDS)");
+    field("Employer of Record", `${name || "[Individual]"} (the Individual)`);
+    field("Employer of Record EIN", [getVal("sdsEinStatus"), getVal("sdsEinNotes")].filter(Boolean).join(" — "));
+
+    const drType = getVal("sdsDrType");
+    if (drType === "Individual") {
+      field("Designated Representative", `${name || "[Individual]"} (the Individual)`);
+    } else if (drType) {
+      const drRel = drType === "Guardian" ? "Guardian" : getVal("sdsDrRelationship");
+      field("Designated Representative", [getVal("sdsDrName") || "[Name]", drRel ? `(${drRel})` : ""].filter(Boolean).join(" "));
+    }
+
+    const sb = getVal("sdsSupportBroker");
+    if (sb === "Yes") {
+      field("Support Broker", isChecked("sdsSbAssessment") ? "Yes — Support Broker Assessment attached" : "Yes");
+      field("Support Broker Personal Outcome(s)", getVal("sdsSbOutcome"));
+    } else {
+      field("Support Broker", sb);
+    }
+
+    const sdsSvcs = [];
+    if (isChecked("sdsSvcPA")) sdsSvcs.push("Personal Assistant");
+    if (isChecked("sdsSvcMedPA")) sdsSvcs.push("Medical Personal Assistant");
+    field("Services Being Self-Directed", sdsSvcs.join(", "));
+    field("How These Services Support the Individual", getVal("sdsServicesHow"));
+
+    line("");
+    subhead("PA / MEDICAL PA TRAINING (9 CSR 45-3.080)");
+    [
+      ["sdsTrainCpr", "CPR"],
+      ["sdsTrainFirstAid", "First Aid"],
+      ["sdsTrainMedAdmin", "Medication Administration"],
+      ["sdsTrainCrisis", "Behavior Intervention - Crisis Management"],
+      ["sdsTrainPbs", "Behavior Intervention - Positive Behavior Supports"],
+    ].forEach(([id, label]) => line(`  ${label}: ${getVal(id) || "Required"}`));
+    field("Training Exemption Justification", getVal("sdsTrainNotes"));
+
+    line("");
+    subhead("BACK-UP PLAN");
+    field("Scheduled employees unable to provide support", getVal("sdsBackupStaff") || "Not documented");
+    field("Employer / Designated Representative unavailable", getVal("sdsBackupEmployer") || "Not documented");
+    field("Other emergencies", getVal("sdsBackupEmergencies") || "Not documented");
+
+    line("");
+    if (isChecked("sdsFamilyHired")) {
+      const fam = [getVal("sdsFamilyName") || "[Name]", getVal("sdsFamilyRelationship") ? `(${getVal("sdsFamilyRelationship")})` : ""].filter(Boolean).join(" ");
+      field("Family Member Hired", fam);
+      checkLine("sdsFamilyNotOpposed", "The Individual is not opposed to the family member providing the service");
+      checkLine("sdsFamilySolelyForIndividual", "Services are solely for the Individual, not the benefit of the household/family unit");
+      checkLine("sdsFamilyTeamAgrees", "The support team agrees the family member will best meet the Individual's needs");
+    } else {
+      field("Family Member Hired", "No");
+    }
+
+    line("");
+    const alloc = getVal("sdsAllocTool");
+    if (alloc === "Completed") {
+      field("SDS Individual Allocation Tool", "Completed");
+      field("  Hours Reported", getVal("sdsAllocHours"));
+      field("  Total Amount", getVal("sdsAllocTotal"));
+      checkLine("sdsAllocMatchesIsp", "Correctly reports the service(s) and number of hours in the ISP");
+      checkLine("sdsAllocCurrentVersion", "Most current tool is used (08/12/2022)");
+      checkLine("sdsAllocMatchesCimor", "Total amount matches CIMOR");
+    } else if (alloc) {
+      field("SDS Individual Allocation Tool", "N/A — not starting, adding to, or changing PA hours");
+    }
+
+    field("Self-Directed Services through State Plan (DHSS)", [getVal("sdsDhssStatus"), getVal("sdsDhssNotes")].filter(Boolean).join(" — "));
+
+    if (isChecked("sdsSvcMedPA")) {
+      const lmp = [getVal("sdsLmpName"), getVal("sdsLmpCredential"), getVal("sdsLmpPhone")].filter(Boolean).join(", ");
+      field("Licensed Medical Professional", lmp);
+      if (isChecked("sdsLmpException")) line("  Exception: doctor's letter and center director approval on file");
+    }
+    line("");
+  }
+
+  head("18. COMMENTS");
   field("Comments", getVal("planComments"));
   
   const locList = [];

@@ -410,8 +410,9 @@
               <div class="nav-item" onclick="scrollToSection('sec-supervision')"><span>14.</span> Supervision<span class="amend-badge" id="amendBadge-sec-supervision" hidden>Amended</span></div>
               <div class="nav-item" onclick="scrollToSection('sec-prev-goals')"><span>15.</span> Past/Current Goals<span class="amend-badge" id="amendBadge-sec-prev-goals" hidden>Amended</span></div>
               <div class="nav-item" onclick="scrollToSection('sec-outcomes')"><span>16.</span> Action Plan<span class="amend-badge" id="amendBadge-sec-outcomes" hidden>Amended</span></div>
-              <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>17.</span> Comments<span class="amend-badge" id="amendBadge-sec-comments" hidden>Amended</span></div>
-              <div class="nav-item" onclick="scrollToSection('sec-amendments')"><span>18.</span> Amendment Log</div>
+              <div class="nav-item" onclick="scrollToSection('sec-sds')"><span>17.</span> Self-Directed (SDS)<span class="amend-badge" id="amendBadge-sec-sds" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-comments')"><span>18.</span> Comments<span class="amend-badge" id="amendBadge-sec-comments" hidden>Amended</span></div>
+              <div class="nav-item" onclick="scrollToSection('sec-amendments')"><span>19.</span> Amendment Log</div>
             </div>
           </div>
 
@@ -2869,10 +2870,260 @@
           </button>
         </div>
 
+        <!-- ── Section 17: Self-Directed Supports (SDS) Checklist ── -->
+        <div class="form-section" id="sec-sds">
+          <div class="section-title">
+            <span>17</span> Self-Directed Supports (SDS)
+          </div>
+          <p style="font-size: 11px; color: var(--text-label); margin-bottom: 15px; font-style: italic;">
+            Required checklist for anyone receiving SDS. Leave unchecked if the Individual does not self-direct; this section will be left off the plan.
+          </p>
+          <div class="form-grid">
+            <div class="field-group full">
+              <label class="eth-check" style="font-size: 14px;"><input type="checkbox" id="sdsReceives" onchange="updateUI()"> Individual receives Self-Directed Supports</label>
+            </div>
+          </div>
+
+          <div id="sdsDetails" hidden>
+            <div class="subsection-label">Employer of Record &amp; Designated Representative</div>
+            <div class="form-grid">
+              <div class="field-group">
+                <label>Employer of Record</label>
+                <div style="padding: 8px 0; font-weight: 600;"><span class="auto-name-fill">[Individual Name]</span> (the Individual)</div>
+              </div>
+              <div class="field-group">
+                <label>Employer of Record EIN status</label>
+                <select id="sdsEinStatus" onchange="updateUI()">
+                  <option value="">-- Select --</option>
+                  <option value="N/A - Not a new request or change in employer">N/A - Not a new request or change in employer</option>
+                  <option value="Has never had an EIN">Has never had an EIN</option>
+                  <option value="Has a closed EIN">Has a closed EIN</option>
+                  <option value="Has an active EIN">Has an active EIN</option>
+                </select>
+              </div>
+              <div class="field-group full">
+                <label>EIN Notes</label>
+                <input type="text" id="sdsEinNotes" placeholder="Closed EIN number / details (aids processing)" oninput="updateUI()" />
+                <div id="sdsEinWarning" style="font-size: 11px; color: var(--danger); margin-top: 4px;" hidden>An active EIN means this person cannot be the Employer of Record; a new Employer of Record will need to be identified.</div>
+              </div>
+              <div class="field-group">
+                <label>Designated Representative</label>
+                <select id="sdsDrType" onchange="updateUI()">
+                  <option value="">-- Select --</option>
+                  <option value="Individual">The Individual</option>
+                  <option value="Guardian">Guardian</option>
+                  <option value="Other">Other person chosen</option>
+                </select>
+              </div>
+              <div class="field-group" id="sdsDrNameWrap" hidden>
+                <label>Designated Representative Name</label>
+                <input type="text" id="sdsDrName" oninput="updateUI()" />
+              </div>
+              <div class="field-group" id="sdsDrRelWrap" hidden>
+                <label>Relationship to Individual</label>
+                <input type="text" id="sdsDrRelationship" oninput="updateUI()" />
+              </div>
+            </div>
+
+            <div class="subsection-label">Support Broker</div>
+            <div class="form-grid">
+              <div class="field-group">
+                <label>Will the Individual require Support Broker assistance?</label>
+                <select id="sdsSupportBroker" onchange="updateUI()">
+                  <option value="">-- Select --</option>
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
+              <div class="field-group" id="sdsSbAssessWrap" hidden>
+                <label>Support Broker Assessment</label>
+                <label class="eth-check" style="margin-top: 5px;"><input type="checkbox" id="sdsSbAssessment" onchange="updateUI()"> Assessment reviewed and attached</label>
+              </div>
+              <div class="field-group full" id="sdsSbOutcomeWrap" hidden>
+                <label>Personal Outcome(s) for Support Broker service</label>
+                <textarea id="sdsSbOutcome" oninput="updateUI()"></textarea>
+              </div>
+            </div>
+
+            <div class="subsection-label">Services Being Self-Directed</div>
+            <div class="form-grid">
+              <div class="field-group full">
+                <div class="ethnicity-grid">
+                  <label class="eth-check"><input type="checkbox" id="sdsSvcPA" onchange="updateUI()"> Personal Assistant (PA)</label>
+                  <label class="eth-check"><input type="checkbox" id="sdsSvcMedPA" onchange="updateUI()"> Medical Personal Assistant</label>
+                </div>
+              </div>
+              <div class="field-group full">
+                <label>How these services will support the Individual</label>
+                <textarea id="sdsServicesHow" oninput="updateUI()" placeholder="The ISP is used as a training document for employees. Give enough detail that every employee understands what is needed to successfully support the Individual."></textarea>
+              </div>
+            </div>
+
+            <div class="subsection-label">PA / Medical PA Training (9 CSR 45-3.080)</div>
+            <div class="form-grid">
+              <div class="field-group full" style="font-size: 11px; color: var(--text-label); font-style: italic;">
+                A training may be exempted only if (1) the PA's duties will not require the skill, or (2) the PA has adequate knowledge or experience as determined by the employer.
+              </div>
+              <div class="field-group">
+                <label>CPR Training</label>
+                <select id="sdsTrainCpr" class="sds-train" onchange="updateUI()">
+                  <option value="Required">Required</option>
+                  <option value="Exempt - Duties will not require skill">Exempt - Duties will not require this skill</option>
+                  <option value="Exempt - Adequate knowledge/experience">Exempt - PA has adequate knowledge/experience</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>First Aid Training</label>
+                <select id="sdsTrainFirstAid" class="sds-train" onchange="updateUI()">
+                  <option value="Required">Required</option>
+                  <option value="Exempt - Duties will not require skill">Exempt - Duties will not require this skill</option>
+                  <option value="Exempt - Adequate knowledge/experience">Exempt - PA has adequate knowledge/experience</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Medication Administration Training</label>
+                <select id="sdsTrainMedAdmin" class="sds-train" onchange="updateUI()">
+                  <option value="Required">Required</option>
+                  <option value="Exempt - Duties will not require skill">Exempt - Duties will not require this skill</option>
+                  <option value="Exempt - Adequate knowledge/experience">Exempt - PA has adequate knowledge/experience</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Behavior Intervention - Crisis Management</label>
+                <select id="sdsTrainCrisis" class="sds-train" onchange="updateUI()">
+                  <option value="Required">Required</option>
+                  <option value="Exempt - Duties will not require skill">Exempt - Duties will not require this skill</option>
+                  <option value="Exempt - Adequate knowledge/experience">Exempt - PA has adequate knowledge/experience</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Behavior Intervention - Positive Behavior Supports</label>
+                <select id="sdsTrainPbs" class="sds-train" onchange="updateUI()">
+                  <option value="Required">Required</option>
+                  <option value="Exempt - Duties will not require skill">Exempt - Duties will not require this skill</option>
+                  <option value="Exempt - Adequate knowledge/experience">Exempt - PA has adequate knowledge/experience</option>
+                </select>
+              </div>
+              <div class="field-group full" id="sdsTrainWarning" style="font-size: 11px; color: var(--danger);" hidden></div>
+              <div class="field-group full">
+                <label>Training Exemption Justification / Notes</label>
+                <textarea id="sdsTrainNotes" oninput="updateUI()" placeholder="Explain any exemption, including approved exceptions."></textarea>
+              </div>
+            </div>
+
+            <div class="subsection-label">Back-Up Plan</div>
+            <div class="form-grid">
+              <div class="field-group full">
+                <label>Support when scheduled employees are not able to provide the support</label>
+                <textarea id="sdsBackupStaff" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>When the Employer / Designated Representative is not capable or available to manage employees</label>
+                <textarea id="sdsBackupEmployer" oninput="updateUI()"></textarea>
+              </div>
+              <div class="field-group full">
+                <label>Handling other emergencies</label>
+                <textarea id="sdsBackupEmergencies" oninput="updateUI()" placeholder="Can be included here or attached separately."></textarea>
+              </div>
+            </div>
+
+            <div class="subsection-label">Hiring a Family Member</div>
+            <div class="form-grid">
+              <div class="field-group full">
+                <label class="eth-check"><input type="checkbox" id="sdsFamilyHired" onchange="updateUI()"> Individual is hiring a family member</label>
+              </div>
+            </div>
+            <div class="form-grid" id="sdsFamilyWrap" hidden>
+              <div class="field-group">
+                <label>Family Member Name</label>
+                <input type="text" id="sdsFamilyName" oninput="updateUI()" />
+              </div>
+              <div class="field-group">
+                <label>Relationship</label>
+                <input type="text" id="sdsFamilyRelationship" placeholder="Parent, sibling, grandparent..." oninput="updateUI()" />
+              </div>
+              <div class="field-group full" style="font-size: 11px; color: var(--text-label); font-style: italic;">
+                The paid family member cannot be the guardian, Designated Representative, Employer of Record, spouse, foster parent, or parent/step-parent of a child under 18.
+              </div>
+              <div class="field-group full">
+                <label class="eth-check"><input type="checkbox" id="sdsFamilyNotOpposed" onchange="updateUI()"> The Individual is not opposed to the family member providing the service</label>
+                <label class="eth-check"><input type="checkbox" id="sdsFamilySolelyForIndividual" onchange="updateUI()"> Services are solely for the Individual, not the benefit of the household/family unit</label>
+                <label class="eth-check"><input type="checkbox" id="sdsFamilyTeamAgrees" onchange="updateUI()"> The support team agrees the family member will best meet the Individual's needs</label>
+              </div>
+            </div>
+
+            <div class="subsection-label">SDS Individual Allocation Tool</div>
+            <div class="form-grid">
+              <div class="field-group full">
+                <label>Allocation Tool</label>
+                <select id="sdsAllocTool" onchange="updateUI()">
+                  <option value="">-- Select --</option>
+                  <option value="N/A">N/A - Not starting, adding to, or changing PA hours</option>
+                  <option value="Completed">Completed - starting, adding to, or changing PA hours</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid" id="sdsAllocWrap" hidden>
+              <div class="field-group">
+                <label>Hours Reported</label>
+                <input type="text" id="sdsAllocHours" oninput="updateUI()" />
+              </div>
+              <div class="field-group">
+                <label>Total Amount</label>
+                <input type="text" id="sdsAllocTotal" oninput="updateUI()" />
+              </div>
+              <div class="field-group full">
+                <label class="eth-check"><input type="checkbox" id="sdsAllocMatchesIsp" onchange="updateUI()"> Correctly reports the service(s) and number of hours in the ISP</label>
+                <label class="eth-check"><input type="checkbox" id="sdsAllocCurrentVersion" onchange="updateUI()"> Most current tool is used (08/12/2022)</label>
+                <label class="eth-check"><input type="checkbox" id="sdsAllocMatchesCimor" onchange="updateUI()"> Total amount matches CIMOR</label>
+              </div>
+            </div>
+
+            <div class="subsection-label">State Plan (DHSS) Self-Directed Services</div>
+            <div class="form-grid">
+              <div class="field-group full">
+                <label>Has the Individual received self-directed services through State Plan (DHSS)?</label>
+                <select id="sdsDhssStatus" onchange="updateUI()">
+                  <option value="">-- Select --</option>
+                  <option value="Has never received">Has never received</option>
+                  <option value="Previously received - not currently">Previously received - not currently</option>
+                  <option value="Currently receiving">Currently receiving</option>
+                </select>
+                <div id="sdsDhssWarning" style="font-size: 11px; color: var(--danger); margin-top: 4px;" hidden>An Individual cannot receive self-directed services from both DMH and DHSS at the same time.</div>
+              </div>
+              <div class="field-group full">
+                <label>DHSS Details</label>
+                <input type="text" id="sdsDhssNotes" placeholder="Dates, provider, when it ended..." oninput="updateUI()" />
+              </div>
+            </div>
+
+            <div id="sdsLmpWrap" hidden>
+              <div class="subsection-label">Licensed Medical Professional (Medical PA)</div>
+              <div class="form-grid">
+                <div class="field-group">
+                  <label>Name</label>
+                  <input type="text" id="sdsLmpName" oninput="updateUI()" />
+                </div>
+                <div class="field-group">
+                  <label>Credential / Title</label>
+                  <input type="text" id="sdsLmpCredential" placeholder="MD, DO, APRN, RN..." oninput="updateUI()" />
+                </div>
+                <div class="field-group">
+                  <label>Phone</label>
+                  <input type="text" id="sdsLmpPhone" oninput="updateUI()" />
+                </div>
+                <div class="field-group full">
+                  <label class="eth-check"><input type="checkbox" id="sdsLmpException" onchange="updateUI()"> Exception: doctor's letter and center director approval on file</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- ── Section 18: Comments ── -->
         <div class="form-section" id="sec-comments">
           <div class="section-title">
-            <span>17</span> Comments
+            <span>18</span> Comments
           </div>
           <div class="form-grid">
             <div class="field-group full">
@@ -3074,10 +3325,10 @@
           </div>
         </div>
 
-        <!-- ── Section 18: Amendment Log ── -->
+        <!-- ── Section 19: Amendment Log ── -->
         <div class="form-section" id="sec-amendments">
           <div class="section-title">
-            <span>18</span> Amendment Log
+            <span>19</span> Amendment Log
           </div>
           <div style="font-size: 13px; color: var(--text-label); margin-bottom: 16px; line-height: 1.5;">
             Record a change after this plan has been approved and sent &mdash; a move, a service change, a new
