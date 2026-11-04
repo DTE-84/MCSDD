@@ -1582,8 +1582,9 @@ function updateUI() {
   document.getElementById("printName").textContent = displayName;
   document.getElementById("printDMH").textContent = displayDMH;
   setPrintPageMargins(dName, displayDMH);
+  // Print the SC's typed "Other" text as-is (drop the "Other: " storage prefix)
   document.getElementById("printFunding").textContent = (
-    getVal("coverFundingType") ||
+    (getVal("coverFundingType") || "").replace(/(^|,\s*)Other:\s*/, "$1") ||
     getVal("waiverType") ||
     "Not Specified"
   ).toUpperCase();
@@ -5394,10 +5395,13 @@ init();
 // ── FUNDING CHECKBOX HELPERS ──
 function syncFundingCheckboxes() {
   const checked = [...document.querySelectorAll(".funding-cb:checked")].map(cb => cb.value);
+  // The "Other" checkbox has no .funding-cb class, so read it explicitly
+  const otherCb = document.getElementById("fundingOtherCb");
   const otherText = document.getElementById("fundingOtherText");
-  if (checked.includes("Other") && otherText && otherText.value.trim()) {
-    const idx = checked.indexOf("Other");
-    checked[idx] = "Other: " + otherText.value.trim();
+  if (otherCb && otherCb.checked) {
+    const typed = otherText ? otherText.value.trim() : "";
+    // Always last, so restore can take everything after "Other: " (even commas)
+    checked.push(typed ? "Other: " + typed : "Other");
   }
   // Store combined value in hidden field for narrative / save
   const hidden = document.getElementById("coverFundingType");
@@ -5412,20 +5416,26 @@ function toggleFundingOther() {
 }
 function restoreFundingVisuals() {
   const hidden = document.getElementById("coverFundingType");
-  if (!hidden || !hidden.value) return;
-  const values = hidden.value.split(",").map(v => v.trim());
-  document.querySelectorAll(".funding-cb").forEach(cb => {
-    cb.checked = values.some(v => v === cb.value || (v.startsWith("Other:") && cb.value === "Other"));
-  });
-  const otherVal = values.find(v => v.startsWith("Other: "));
-  if (otherVal) {
-    const otherText = document.getElementById("fundingOtherText");
-    if (otherText) {
-      otherText.value = otherVal.replace("Other: ", "");
-      const group = document.getElementById("fundingOtherGroup");
-      if (group) group.style.display = "";
-    }
+  if (!hidden) return;
+  // "Other" is always stored last; split it off before splitting on commas
+  // so typed text containing commas survives the round trip.
+  let raw = hidden.value;
+  let otherTyped = null;
+  const otherIdx = raw.search(/(^|,\s*)Other(:|$)/);
+  if (otherIdx !== -1) {
+    const otherPart = raw.slice(otherIdx).replace(/^,\s*/, "");
+    otherTyped = otherPart.replace(/^Other:?\s*/, "");
+    raw = raw.slice(0, otherIdx);
   }
+  const values = raw.split(",").map(v => v.trim()).filter(Boolean);
+  document.querySelectorAll(".funding-cb").forEach(cb => {
+    cb.checked = values.includes(cb.value);
+  });
+  const otherCb = document.getElementById("fundingOtherCb");
+  const otherText = document.getElementById("fundingOtherText");
+  if (otherCb) otherCb.checked = otherTyped !== null;
+  if (otherText) otherText.value = otherTyped || "";
+  toggleFundingOther();
 }
 
 // ── AUTOSAVE (every 20 minutes) ──
