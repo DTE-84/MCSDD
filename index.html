@@ -2851,6 +2851,7 @@
           <div class="section-title">
             <span>15</span> Previous and Current Goals and Tasks
           </div>
+          <label class="eth-check" style="margin-bottom: 12px;"><input type="checkbox" id="goalsFirstTimeInService" onchange="renderGoalTasks(); updateUI()"> First time in services (no previous goals &mdash; new goals only)</label>
           <div id="dynamicGoalsTasksContainer"></div>
           <button class="btn btn-outline" type="button" onclick="addGoalTask()">+ Add Goal / Task Entry</button>
         </div>
@@ -3491,6 +3492,9 @@
             </button>
             <button class="btn btn-success" onclick="printPlan()">
               Print / Save PDF
+            </button>
+            <button class="btn btn-success" onclick="downloadWordDoc()" title="Download the face sheet and plan as a Word document">
+              Download Word (.doc)
             </button>
             <button class="btn btn-outline" onclick="manualSaveDraft()">
               Save Draft

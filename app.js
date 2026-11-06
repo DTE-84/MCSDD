@@ -549,6 +549,8 @@ const FORM_FIELDS = [
   "sdsAllocMatchesIsp", "sdsAllocCurrentVersion", "sdsAllocMatchesCimor",
   "sdsDhssStatus", "sdsDhssNotes",
   "sdsLmpName", "sdsLmpCredential", "sdsLmpPhone", "sdsLmpException",
+  // Section 15 - Previous and Current Goals
+  "goalsFirstTimeInService",
   // Section 18 - Comments & Clinical Summary
   "lastAssessment",
   "lastLOC",
@@ -677,6 +679,10 @@ const AMENDMENT_SECTIONS = [
   { id: "sec-comments", label: "18. Comments" },
 ];
 
+// Stands in for ":" inside typed values while the narrative's label regex
+// runs (see field() in updateUI); a control character no one can type.
+const VALUE_COLON = "\u0001";
+
 function esc(str) {
   return String(str || "")
     .replace(/&/g, "&amp;")
@@ -761,6 +767,9 @@ function updateGoalTaskField(id, field, val) {
 function renderGoalTasks() {
   const container = document.getElementById("dynamicGoalsTasksContainer");
   if (!container) return;
+  // First time in services: no previous goals to report progress on.
+  const firstTime = !!document.getElementById("goalsFirstTimeInService")?.checked;
+  const prevOnly = firstTime ? ' style="display:none"' : "";
   if (!clinicalGoalsTasks.length) {
     container.innerHTML =
       '<p style="font-size: 12px; color: var(--text-label); margin: 8px 0 12px">No goals/tasks added.</p>';
@@ -770,19 +779,19 @@ function renderGoalTasks() {
     .map(
       (g, idx) => `
     <div class="legal-rep-card" style="border-left: 3px solid var(--gold); margin-bottom:15px;">
-      <div class="rep-header"><span class="rep-title">Goal/Task #${idx + 1}</span><button class="remove-rep-btn" onclick="removeGoalTask(${g.id})">×</button></div>
+      <div class="rep-header"><span class="rep-title">${firstTime ? "New " : ""}Goal/Task #${idx + 1}</span><button class="remove-rep-btn" onclick="removeGoalTask(${g.id})">×</button></div>
       <div class="form-grid">
         <div class="field-group"><label>Goal</label><input type="text" value="${esc(g.goal)}" oninput="updateGoalTaskField(${g.id},'goal',this.value)"></div>
         <div class="field-group"><label>Task</label><input type="text" value="${esc(g.task)}" oninput="updateGoalTaskField(${g.id},'task',this.value)"></div>
-        <div class="field-group"><label>Progress</label><input type="text" value="${esc(g.progress)}" oninput="updateGoalTaskField(${g.id},'progress',this.value)"></div>
-        <div class="field-group"><label>Continued Status</label>
+        <div class="field-group"${prevOnly}><label>Progress</label><input type="text" value="${esc(g.progress)}" oninput="updateGoalTaskField(${g.id},'progress',this.value)"></div>
+        <div class="field-group"${prevOnly}><label>Continued Status</label>
           <select onchange="updateGoalTaskField(${g.id},'continued',this.value)">
             <option value="">Select...</option>
             <option value="Continued" ${g.continued === 'Continued' ? 'selected' : ''}>Continued</option>
             <option value="Not Continued" ${g.continued === 'Not Continued' ? 'selected' : ''}>Not Continued</option>
           </select>
         </div>
-        <div class="field-group half"><label>Why (Reasoning)</label><input type="text" value="${esc(g.continuedWhy)}" oninput="updateGoalTaskField(${g.id},'continuedWhy',this.value)"></div>
+        <div class="field-group half"${prevOnly}><label>Why (Reasoning)</label><input type="text" value="${esc(g.continuedWhy)}" oninput="updateGoalTaskField(${g.id},'continuedWhy',this.value)"></div>
         <div class="field-group"><label>Meaning</label><input type="text" value="${esc(g.meaning)}" oninput="updateGoalTaskField(${g.id},'meaning',this.value)"></div>
         <div class="field-group"><label>Strengths/Assets</label><input type="text" value="${esc(g.strengths)}" oninput="updateGoalTaskField(${g.id},'strengths',this.value)"></div>
         <div class="field-group"><label>Tech</label><input type="text" value="${esc(g.tech)}" oninput="updateGoalTaskField(${g.id},'tech',this.value)"></div>
@@ -1613,7 +1622,13 @@ function updateUI() {
     line("___HEAD___" + s + "___HEAD___");
     line("");
   };
-const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !== "N/A") line(`${l}: ${v}`); };
+// Colons inside a typed value are swapped for a placeholder until after the
+  // label regex below runs, so a sentence like "At home: ..." on the second
+  // line of a paragraph isn't mistaken for a bold field label.
+  const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !== "N/A") line(`${l}: ${String(v).replace(/:/g, VALUE_COLON)}`); };
+  // Marks text to print in bold (entry names in the provider, medication and
+  // service lists).
+  const bold = (v) => (v ? `___BOLD___${v}___BOLD___` : v);
 
   head("1. DEMOGRAPHICS & LEGAL AUTHORITY");
   field("Full Legal Name", name);
@@ -2013,7 +2028,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
     medicalProfessionals.forEach((m, idx) => {
       let cat = m.category === "Other" && m.categoryOther ? m.categoryOther : m.category;
       line(`  [${idx + 1}] ${cat}`);
-      field("      Name", m.name);
+      field("      Name", bold(m.name));
       if (m.contact) field("      Contact", m.contact);
       if (m.frequency) field("      Frequency", m.frequency);
       if (m.date) field("      Date", m.date);
@@ -2043,7 +2058,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   if (medications.length > 0) {
     line("Current Medications:");
     medications.forEach((m, idx) => {
-      line(`  [${idx + 1}] ${m.name}`);
+      line(`  [${idx + 1}] ${bold(m.name)}`);
       if (m.frequency) field("      Dosage/Frequency", m.frequency);
       if (m.results) field("      Side Effects/Notes", m.results);
     });
@@ -2122,7 +2137,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   if (currentSupports.length > 0) {
     line("Current Services:");
     currentSupports.forEach((s, idx) => {
-      line(`  [${idx + 1}] Provider: ${s.provider || "—"} (${s.type})`);
+      line(`  [${idx + 1}] Provider: ${bold(s.provider) || "—"} (${s.type})`);
       s.items.forEach((it) => {
         line(`      - Support: ${it.description || "—"}`);
         line(`        Purpose: ${it.purpose || "—"}`);
@@ -2135,7 +2150,7 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   if (linkingSupports.length > 0) {
     line("Linking Services:");
     linkingSupports.forEach((s, idx) => {
-      line(`  [${idx + 1}] Provider: ${s.provider || "—"}`);
+      line(`  [${idx + 1}] Provider: ${bold(s.provider) || "—"}`);
       const utilizingStr = s.notUtilizing ? " [DMH Service-Not Currently Utilizing]" : "";
       if (s.enrollmentInfo || s.notUtilizing) {
         line(`      Enrollment Info: ${s.enrollmentInfo || "—"}${utilizingStr}`);
@@ -2401,16 +2416,23 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   line("");
 
   head("15. PREVIOUS AND CURRENT GOALS AND TASKS");
+  const firstTimeInService = document.getElementById("goalsFirstTimeInService")?.checked;
+  if (firstTimeInService) {
+    line("First time in services — no previous goals. New goals only.");
+    line("");
+  }
   line(
     clinicalGoalsTasks
       .map((g, i) => {
-        let entry = `Goal Entry #${i + 1}: ${g.goal || ""}`;
+        let entry = `${firstTimeInService ? "New Goal" : "Goal Entry"} #${i + 1}: ${g.goal || ""}`;
         const sub = (label, v) => {
           if (v && String(v).trim()) entry += `\n  - ${label}: ${v}`;
         };
         sub("Task", g.task);
-        sub("Progress", g.progress);
-        sub("Status", g.continued && (g.continuedWhy ? `${g.continued} (Reason: ${g.continuedWhy})` : g.continued));
+        if (!firstTimeInService) {
+          sub("Progress", g.progress);
+          sub("Status", g.continued && (g.continuedWhy ? `${g.continued} (Reason: ${g.continuedWhy})` : g.continued));
+        }
         sub("Meaning", g.meaning);
         sub("Strengths/Assets", g.strengths);
         sub("Tech", g.tech);
@@ -2663,7 +2685,10 @@ const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !
   safeHTML = safeHTML.replace(/^(─{10,}|═{10,})$/gm, '<span class="print-head-line">$1</span>');
   
   // Highlight Field Labels (any text ending with colon at start of line)
-  safeHTML = safeHTML.replace(/^([A-Za-z0-9\s\/\-&;\(\)\[\]\.,'"?#]+):\s*(.*)$/gm, '<span class="print-label">$1:</span> <span class="print-value">$2</span>');
+  safeHTML = safeHTML.replace(/^([A-Za-z0-9 \t\/\-&;\(\)\[\]\.,'"?#]+):[ \t]*(.*)$/gm, '<span class="print-label">$1:</span> <span class="print-value">$2</span>');
+
+  safeHTML = safeHTML.replace(/___BOLD___(.*?)___BOLD___/g, '<strong class="print-bold">$1</strong>');
+  safeHTML = safeHTML.split(VALUE_COLON).join(":");
 
   document.getElementById("narrativeDisplay").innerHTML = safeHTML;
 }
@@ -5166,6 +5191,90 @@ function copyToClipboard() {
 
 function printPlan() {
   window.print();
+}
+
+// Word export — an HTML document saved with a .doc extension, which Word
+// opens and can re-save as .docx. Built from the same face sheet values and
+// narrative the Print view uses, so the two never drift apart. Images (logo,
+// photo) are left out: Word won't load relative or data: image sources from
+// an HTML .doc.
+function downloadWordDoc() {
+  updateUI();
+  const ok = confirm(
+    "This Word file is NOT encrypted and contains the Individual's protected health information.\n\n" +
+    "Save it only to an agency location such as TCM Share, and email it only through the agency's secure/encrypted email.\n\n" +
+    "Continue?",
+  );
+  if (!ok) return;
+
+  const text = (id) => esc(document.getElementById(id)?.textContent.trim() || "—");
+  const coverRows = [
+    ["Full Legal Name", "printName"],
+    ["DMH ID Number", "printDMH"],
+    ["Funding Type", "printFunding"],
+    ["PCSP Implementation Date", "printImplDate"],
+    ["Meeting Date", "printMeetingDate"],
+    ["TCM Agency", "printCaseManager"],
+    ["Facility / Home", "printHome"],
+  ]
+    .map(([label, id]) => `<tr><td class="cover-label">${label}</td><td>${text(id)}</td></tr>`)
+    .join("");
+
+  // The narrative relies on white-space: pre-wrap, which Word ignores, so
+  // turn its line breaks and leading indents into explicit markup.
+  const narrative = document.getElementById("narrativeDisplay").innerHTML
+    .split("\n")
+    .map((ln) => ln.replace(/ {2,}/g, (sp) => "&nbsp;".repeat(sp.length)))
+    .join("<br>\n");
+
+  const doc = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="utf-8">
+<title>Person Centered Service Plan</title>
+<style>
+  @page { margin: 0.75in; }
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #222; }
+  .agency { font-size: 10pt; color: #003366; text-transform: uppercase; letter-spacing: 1px; }
+  h1 { font-size: 20pt; color: #003366; margin: 6pt 0 12pt; }
+  table.cover { border-collapse: collapse; width: 100%; margin-bottom: 12pt; }
+  table.cover td { border: 1px solid #c9a84c; padding: 4pt 8pt; vertical-align: top; }
+  td.cover-label { font-weight: bold; color: #003366; width: 35%; }
+  .cover-desc { font-style: italic; font-size: 10pt; margin-bottom: 6pt; }
+  .confidential { font-size: 9pt; color: #8a6d1f; text-transform: uppercase; }
+  .narrative { line-height: 1.4; }
+  .print-head { font-weight: bold; font-size: 13pt; color: #004d99; }
+  .print-head-line { color: #c9a84c; }
+  .print-label { font-weight: bold; color: #003366; }
+  .print-bold { font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="agency">Marion County Services for Developmental Disabilities</div>
+<h1>Person Centered Service Plan</h1>
+<table class="cover">${coverRows}</table>
+<p class="cover-desc">This document constitutes the official Person Centered Service Plan for the above-named individual. All services must be provided in accordance with the outcomes, strategies, and legal authorities detailed within the following clinical documentation.</p>
+<p class="confidential">MCSDD Official Document &middot; Confidential PHI &middot; Marion County, Missouri</p>
+<br style="page-break-before: always" clear="all">
+<div class="narrative">${narrative}</div>
+</body>
+</html>`;
+
+  const name = document.getElementById("coverLegalName")?.value.trim() || "";
+  const now = new Date();
+  const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const filename = `${name ? name.replace(/[^a-z0-9]/gi, "_") : "Draft"}_PCSP_${date}.doc`;
+
+  const blob = new Blob(["﻿", doc], { type: "application/msword" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Word document downloaded.", "success");
 }
 
 // Prints the Individual's name at the top of every printed page and
