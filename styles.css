@@ -1960,7 +1960,7 @@ textarea:focus-visible {
 	border: 1px solid var(--gold);
 }
 
-/* Section 17 toggles parts of the SDS checklist with [hidden]; .field-group
+/* Section 7A toggles parts of the SDS checklist with [hidden]; .field-group
    and .form-grid set their own display, which would otherwise win. */
 #sec-sds [hidden] {
 	display: none !important;

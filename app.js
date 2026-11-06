@@ -535,7 +535,7 @@ const FORM_FIELDS = [
   "hcbsRule2Privacy",
   "hcbsRule3Support",
   "homeLifeNotes",
-  // Section 17 - Self-Directed Supports (SDS) checklist
+  // Section 7A - Self-Directed Supports (SDS) checklist
   "sdsReceives",
   "sdsEinStatus", "sdsEinNotes",
   "sdsDrType", "sdsDrName", "sdsDrRelationship",
@@ -557,6 +557,7 @@ const FORM_FIELDS = [
   "hasChoices",
   "choicesDescription",
   "tcsmSatisfactionSurvey",
+  "tcmSurveyDestination",
   "sdsAwareness",
   "sdsInterest",
   "dissentingOpinions",
@@ -644,7 +645,6 @@ const FORM_FIELDS = [
   "dnrAltFormLocation",
   "dnrAltReviewDate",
   "seizureProtocols",
-  "bowelProtocols",
   "mentalHealthSupports",
   "allergies",
   // Misc
@@ -666,6 +666,7 @@ const AMENDMENT_SECTIONS = [
   { id: "sec-vision", label: "5. Hopes / Concerns" },
   { id: "sec-communication", label: "6. Communication" },
   { id: "sec-program-services", label: "7. Programs" },
+  { id: "sec-sds", label: "7A. Self-Directed (SDS)" },
   { id: "sec-health", label: "8. Health/Risk" },
   { id: "sec-community-support", label: "9. Community Support" },
   { id: "sec-support-ways", label: "10. Ways To Support" },
@@ -675,8 +676,7 @@ const AMENDMENT_SECTIONS = [
   { id: "sec-supervision", label: "14. Supervision" },
   { id: "sec-prev-goals", label: "15. Past/Current Goals" },
   { id: "sec-outcomes", label: "16. Action Plan" },
-  { id: "sec-sds", label: "17. Self-Directed (SDS)" },
-  { id: "sec-comments", label: "18. Comments" },
+  { id: "sec-comments", label: "17. Comments" },
 ];
 
 // Stands in for ":" inside typed values while the narrative's label regex
@@ -1497,7 +1497,7 @@ function syncLegalNames(sourceId) {
   updateUI();
 }
 
-// Section 17 — reveal only the SDS checklist pieces that apply, and flag
+// Section 7A — reveal only the SDS checklist pieces that apply, and flag
 // choices the SDS checklist says aren't allowed. These are warnings, not
 // blocks: approved exceptions do happen and get explained in the notes.
 function updateSdsVisibility() {
@@ -1537,6 +1537,8 @@ function updateSdsVisibility() {
 function updateUI() {
   if(typeof toggleTransferringLocation === 'function') toggleTransferringLocation();
   updateSdsVisibility();
+  const surveyDest = document.getElementById("tcmSurveyDestination");
+  if (surveyDest) surveyDest.style.display = document.getElementById("tcsmSatisfactionSurvey")?.checked ? "block" : "none";
   updateTransitionCostTotal();
   // Keep the two "Full Legal Name" fields in sync even if syncLegalNames()
   // didn't fire for some input path (e.g. a browser autofill quirk that skips
@@ -1868,6 +1870,7 @@ function updateUI() {
             return parts.join(" ");
           }).join(" | "));
         }
+        if (s.serviceName === "Group Home" && s.groupHomeUnits?.length) field("      Group Home", s.groupHomeUnits.join(", "));
         if (s.serviceDetails && !s.sdsUtilized) field("      Service/Program Details", s.serviceDetails);
         if (s.serviceHours && !s.sdsUtilized) field("      Provided hours", s.serviceHours);
         
@@ -1904,8 +1907,8 @@ function updateUI() {
         }
         
         if (isWaivered === 'Yes') {
-          field("      Signee", s.whoSigned);
           field("      Name of Signee", s.signeeNames);
+          field("      Signee", s.whoSigned);
           field("      Provider & Services Choice Statement Effective Signed Date", s.signedDate);
           field("      Updated edit to previously signed Statement", s.isUpdate ? "Yes" : "No");
           if (s.isUpdate) {
@@ -1913,18 +1916,22 @@ function updateUI() {
           }
           line("");
           
-          if (s.sig2Date || s.sig2Who || s.sig2Names) {
+          if (s.sig2Date || s.sig2Who || s.sig2Names || s.sig2IsUpdate) {
             line("      Additional Signature:");
-            field("        Signee", s.sig2Who);
             field("        Name of Signee", s.sig2Names);
+            field("        Signee", s.sig2Who);
             field("        Effective Signed Date", s.sig2Date);
+            field("        Updated edit to previously signed Statement", s.sig2IsUpdate ? "Yes" : "No");
+            if (s.sig2IsUpdate) field("        Previous Signed Date", s.sig2PrevSignedDate);
             line("");
           }
-          if (s.sig3Date || s.sig3Who || s.sig3Names) {
+          if (s.sig3Date || s.sig3Who || s.sig3Names || s.sig3IsUpdate) {
             line("      3rd Signature:");
-            field("        Signee", s.sig3Who);
             field("        Name of Signee", s.sig3Names);
+            field("        Signee", s.sig3Who);
             field("        Effective Signed Date", s.sig3Date);
+            field("        Updated edit to previously signed Statement", s.sig3IsUpdate ? "Yes" : "No");
+            if (s.sig3IsUpdate) field("        Previous Signed Date", s.sig3PrevSignedDate);
             line("");
           }
           field("      1. Informed of options", s.q1);
@@ -1991,6 +1998,89 @@ function updateUI() {
     }
   }
 
+
+  // SDS checklist only applies to Individuals who self-direct; leave the
+  // whole section off the plan otherwise.
+  if (document.getElementById("sdsReceives")?.checked) {
+    const isChecked = (id) => document.getElementById(id)?.checked;
+    const checkLine = (id, text) => line(`  [${isChecked(id) ? "X" : " "}] ${text}`);
+
+    head("7A. SELF-DIRECTED SUPPORTS (SDS)");
+    field("Employer of Record", `${name || "[Individual]"} (the Individual)`);
+    field("Employer of Record EIN", [getVal("sdsEinStatus"), getVal("sdsEinNotes")].filter(Boolean).join(" — "));
+
+    const drType = getVal("sdsDrType");
+    if (drType === "Individual") {
+      field("Designated Representative", `${name || "[Individual]"} (the Individual)`);
+    } else if (drType) {
+      const drRel = drType === "Guardian" ? "Guardian" : getVal("sdsDrRelationship");
+      field("Designated Representative", [getVal("sdsDrName") || "[Name]", drRel ? `(${drRel})` : ""].filter(Boolean).join(" "));
+    }
+
+    const sb = getVal("sdsSupportBroker");
+    if (sb === "Yes") {
+      field("Support Broker", isChecked("sdsSbAssessment") ? "Yes — Support Broker Assessment attached" : "Yes");
+      field("Support Broker Personal Outcome(s)", getVal("sdsSbOutcome"));
+    } else {
+      field("Support Broker", sb);
+    }
+
+    const sdsSvcs = [];
+    if (isChecked("sdsSvcPA")) sdsSvcs.push("Personal Assistant");
+    if (isChecked("sdsSvcMedPA")) sdsSvcs.push("Medical Personal Assistant");
+    field("Services Being Self-Directed", sdsSvcs.join(", "));
+    field("How These Services Support the Individual", getVal("sdsServicesHow"));
+
+    line("");
+    subhead("PA / MEDICAL PA TRAINING (9 CSR 45-3.080)");
+    [
+      ["sdsTrainCpr", "CPR"],
+      ["sdsTrainFirstAid", "First Aid"],
+      ["sdsTrainMedAdmin", "Medication Administration"],
+      ["sdsTrainCrisis", "Behavior Intervention - Crisis Management"],
+      ["sdsTrainPbs", "Behavior Intervention - Positive Behavior Supports"],
+    ].forEach(([id, label]) => line(`  ${label}: ${getVal(id) || "Required"}`));
+    field("Training Exemption Justification", getVal("sdsTrainNotes"));
+
+    line("");
+    subhead("BACK-UP PLAN");
+    field("Scheduled employees unable to provide support", getVal("sdsBackupStaff") || "Not documented");
+    field("Employer / Designated Representative unavailable", getVal("sdsBackupEmployer") || "Not documented");
+    field("Other emergencies", getVal("sdsBackupEmergencies") || "Not documented");
+
+    line("");
+    if (isChecked("sdsFamilyHired")) {
+      const fam = [getVal("sdsFamilyName") || "[Name]", getVal("sdsFamilyRelationship") ? `(${getVal("sdsFamilyRelationship")})` : ""].filter(Boolean).join(" ");
+      field("Family Member Hired", fam);
+      checkLine("sdsFamilyNotOpposed", "The Individual is not opposed to the family member providing the service");
+      checkLine("sdsFamilySolelyForIndividual", "Services are solely for the Individual, not the benefit of the household/family unit");
+      checkLine("sdsFamilyTeamAgrees", "The support team agrees the family member will best meet the Individual's needs");
+    } else {
+      field("Family Member Hired", "No");
+    }
+
+    line("");
+    const alloc = getVal("sdsAllocTool");
+    if (alloc === "Completed") {
+      field("SDS Individual Allocation Tool", "Completed");
+      field("  Hours Reported", getVal("sdsAllocHours"));
+      field("  Total Amount", getVal("sdsAllocTotal"));
+      checkLine("sdsAllocMatchesIsp", "Correctly reports the service(s) and number of hours in the ISP");
+      checkLine("sdsAllocCurrentVersion", "Most current tool is used (08/12/2022)");
+      checkLine("sdsAllocMatchesCimor", "Total amount matches CIMOR");
+    } else if (alloc) {
+      field("SDS Individual Allocation Tool", "N/A — not starting, adding to, or changing PA hours");
+    }
+
+    field("Self-Directed Services through State Plan (DHSS)", [getVal("sdsDhssStatus"), getVal("sdsDhssNotes")].filter(Boolean).join(" — "));
+
+    if (isChecked("sdsSvcMedPA")) {
+      const lmp = [getVal("sdsLmpName"), getVal("sdsLmpCredential"), getVal("sdsLmpPhone")].filter(Boolean).join(", ");
+      field("Licensed Medical Professional", lmp);
+      if (isChecked("sdsLmpException")) line("  Exception: doctor's letter and center director approval on file");
+    }
+    line("");
+  }
 
   head("8. HEALTH, SAFETY & RISK PLANNING (MEDICAL PROFILE)");
   field("Diagnosis", getVal("diagnosis"));
@@ -2124,7 +2214,6 @@ function updateUI() {
   field("Risk Level", getVal("riskLevel"));
   field("Supervision Level", getVal("supervisionLevel"));
   field("Seizure Protocols", getVal("seizureProtocols"));
-  field("Bowel Problems / Protocols", getVal("bowelProtocols"));
   field("Mental Health Supports", getVal("mentalHealthSupports"));
   field("Allergies / Sensitivities / Reactions", getVal("allergies"));
   line("");
@@ -2178,6 +2267,18 @@ function updateUI() {
   
   field("Cultural Considerations", getVal("culturalDifferences"));
 
+  if (document.getElementById("age17Yes")?.checked) {
+    field("Transitioning Youth - School (Age 17+ SSI Prep)", getVal("age17SsiSupport"));
+    if (document.getElementById("age17DifferingOpinionCheck")?.checked) {
+      field("Differing Opinions (Minor)", getVal("age17MinorDifferingOpinion"));
+      field("Differing Opinions (Adult)", getVal("age17AdultDifferingOpinion"));
+    }
+  } else if (document.getElementById("age17NA")?.checked) {
+    field("Transitioning Youth - School", "Not Applicable");
+  }
+
+  field("Water Temp Req", getVal("waterTemp"));
+
   let incomeText = [];
   if (document.getElementById("unemployedCheck")?.checked) {
     incomeText.push("Unemployed");
@@ -2227,17 +2328,6 @@ function updateUI() {
     }
   }
 
-  if (document.getElementById("age17Yes")?.checked) {
-    field("Transitioning Youth - School (Age 17+ SSI Prep)", getVal("age17SsiSupport"));
-    if (document.getElementById("age17DifferingOpinionCheck")?.checked) {
-      field("Differing Opinions (Minor)", getVal("age17MinorDifferingOpinion"));
-      field("Differing Opinions (Adult)", getVal("age17AdultDifferingOpinion"));
-    }
-  } else if (document.getElementById("age17NA")?.checked) {
-    field("Transitioning Youth - School", "Not Applicable");
-  }
-
-  field("Water Temp Req", getVal("waterTemp"));
 
   field("General Strategies", getVal("waysToSupport"));
   line("");
@@ -2455,90 +2545,7 @@ function updateUI() {
   );
   line("");
 
-  // SDS checklist only applies to Individuals who self-direct; leave the
-  // whole section off the plan otherwise.
-  if (document.getElementById("sdsReceives")?.checked) {
-    const isChecked = (id) => document.getElementById(id)?.checked;
-    const checkLine = (id, text) => line(`  [${isChecked(id) ? "X" : " "}] ${text}`);
-
-    head("17. SELF-DIRECTED SUPPORTS (SDS)");
-    field("Employer of Record", `${name || "[Individual]"} (the Individual)`);
-    field("Employer of Record EIN", [getVal("sdsEinStatus"), getVal("sdsEinNotes")].filter(Boolean).join(" — "));
-
-    const drType = getVal("sdsDrType");
-    if (drType === "Individual") {
-      field("Designated Representative", `${name || "[Individual]"} (the Individual)`);
-    } else if (drType) {
-      const drRel = drType === "Guardian" ? "Guardian" : getVal("sdsDrRelationship");
-      field("Designated Representative", [getVal("sdsDrName") || "[Name]", drRel ? `(${drRel})` : ""].filter(Boolean).join(" "));
-    }
-
-    const sb = getVal("sdsSupportBroker");
-    if (sb === "Yes") {
-      field("Support Broker", isChecked("sdsSbAssessment") ? "Yes — Support Broker Assessment attached" : "Yes");
-      field("Support Broker Personal Outcome(s)", getVal("sdsSbOutcome"));
-    } else {
-      field("Support Broker", sb);
-    }
-
-    const sdsSvcs = [];
-    if (isChecked("sdsSvcPA")) sdsSvcs.push("Personal Assistant");
-    if (isChecked("sdsSvcMedPA")) sdsSvcs.push("Medical Personal Assistant");
-    field("Services Being Self-Directed", sdsSvcs.join(", "));
-    field("How These Services Support the Individual", getVal("sdsServicesHow"));
-
-    line("");
-    subhead("PA / MEDICAL PA TRAINING (9 CSR 45-3.080)");
-    [
-      ["sdsTrainCpr", "CPR"],
-      ["sdsTrainFirstAid", "First Aid"],
-      ["sdsTrainMedAdmin", "Medication Administration"],
-      ["sdsTrainCrisis", "Behavior Intervention - Crisis Management"],
-      ["sdsTrainPbs", "Behavior Intervention - Positive Behavior Supports"],
-    ].forEach(([id, label]) => line(`  ${label}: ${getVal(id) || "Required"}`));
-    field("Training Exemption Justification", getVal("sdsTrainNotes"));
-
-    line("");
-    subhead("BACK-UP PLAN");
-    field("Scheduled employees unable to provide support", getVal("sdsBackupStaff") || "Not documented");
-    field("Employer / Designated Representative unavailable", getVal("sdsBackupEmployer") || "Not documented");
-    field("Other emergencies", getVal("sdsBackupEmergencies") || "Not documented");
-
-    line("");
-    if (isChecked("sdsFamilyHired")) {
-      const fam = [getVal("sdsFamilyName") || "[Name]", getVal("sdsFamilyRelationship") ? `(${getVal("sdsFamilyRelationship")})` : ""].filter(Boolean).join(" ");
-      field("Family Member Hired", fam);
-      checkLine("sdsFamilyNotOpposed", "The Individual is not opposed to the family member providing the service");
-      checkLine("sdsFamilySolelyForIndividual", "Services are solely for the Individual, not the benefit of the household/family unit");
-      checkLine("sdsFamilyTeamAgrees", "The support team agrees the family member will best meet the Individual's needs");
-    } else {
-      field("Family Member Hired", "No");
-    }
-
-    line("");
-    const alloc = getVal("sdsAllocTool");
-    if (alloc === "Completed") {
-      field("SDS Individual Allocation Tool", "Completed");
-      field("  Hours Reported", getVal("sdsAllocHours"));
-      field("  Total Amount", getVal("sdsAllocTotal"));
-      checkLine("sdsAllocMatchesIsp", "Correctly reports the service(s) and number of hours in the ISP");
-      checkLine("sdsAllocCurrentVersion", "Most current tool is used (08/12/2022)");
-      checkLine("sdsAllocMatchesCimor", "Total amount matches CIMOR");
-    } else if (alloc) {
-      field("SDS Individual Allocation Tool", "N/A — not starting, adding to, or changing PA hours");
-    }
-
-    field("Self-Directed Services through State Plan (DHSS)", [getVal("sdsDhssStatus"), getVal("sdsDhssNotes")].filter(Boolean).join(" — "));
-
-    if (isChecked("sdsSvcMedPA")) {
-      const lmp = [getVal("sdsLmpName"), getVal("sdsLmpCredential"), getVal("sdsLmpPhone")].filter(Boolean).join(", ");
-      field("Licensed Medical Professional", lmp);
-      if (isChecked("sdsLmpException")) line("  Exception: doctor's letter and center director approval on file");
-    }
-    line("");
-  }
-
-  head("18. COMMENTS");
+  head("17. COMMENTS");
   field("Comments", getVal("planComments"));
   
   const locList = [];
@@ -2582,7 +2589,12 @@ function updateUI() {
   const sdsAw = document.getElementById("sdsAwareness")?.checked ? "Yes" : "No";
   const sdsInt = getVal("sdsInterest");
   field("Individual/Guardian aware of SDS", sdsInt ? `${sdsAw} (Interest: ${sdsInt})` : sdsAw);
-  field("TCM Satisfaction Survey", document.getElementById("tcsmSatisfactionSurvey")?.checked ? "Completed/Addressed" : "No");
+  if (document.getElementById("tcsmSatisfactionSurvey")?.checked) {
+    const surveyTo = getVal("tcmSurveyDestination");
+    field("TCM Satisfaction Survey", surveyTo ? `Completed/Addressed — Sent to: ${surveyTo}` : "Completed/Addressed");
+  } else {
+    field("TCM Satisfaction Survey", "No");
+  }
   
   line("");
   line("If there are concerns with services or support provided by the support coordinator, they may contact the TCM assistant supervisor, Barb Van Abbema, at 573-248-1077 ext. 111, the TCM supervisor, Mahogany Wallis, at 573-248-1077 ext 102 or the SB40 executive director, Cathy Arrowsmith, at 573-248-1077 ext. 104.");
@@ -2631,23 +2643,6 @@ function updateUI() {
   line(`${displayName ? displayName + ' and/or their Guardian' : 'The individual and/or guardian'} may contact the Office of Constituent Services at 1-800-364-9687 to file an anonymous complaint. All calls will be kept confidential and the caller can choose to remain anonymous.`);
 
 
-  // ── SIGNATURE SECTION ──
-  line("\n" + "═".repeat(67));
-  line("SIGNATURES & APPROVAL");
-  line("");
-  
-  const cont = getVal("contributors");
-  if (cont) {
-    line("Plan Contributors:");
-    cont.split('\n').filter(c => c.trim()).forEach(c => {
-      line(`${c.trim()}: _____________________________________ Date: __________`);
-      line("");
-    });
-  } else {
-    line("Contributor: ____________________________________ Date: __________");
-    line("");
-  }
-
   line("\n" + "═".repeat(67));
   const unmaskedName = name ? (nick ? `${name} ("${nick}")` : name) : "NO INDIVIDUAL SELECTED";
   const unmaskedDMH = dmhID || "N/A";
@@ -2655,7 +2650,7 @@ function updateUI() {
   line(`DMH ID: ${unmaskedDMH}`);
 
   // ── AMENDMENT LOG (Section 18) ──
-  // Appended after signatures, as an addendum to the approved plan rather
+  // Appended at the end, as an addendum to the approved plan rather
   // than a change to any section above — the sections list just says
   // which parts of the plan above this line an entry relates to.
   if (amendments.length > 0) {
@@ -3796,10 +3791,21 @@ function toggleHcbsSubcategoryModifier(i, subName, modifierKey, isChecked) {
   updateUI();
 }
 
+// Group Home rate modifiers, checked alongside the Group Home subcategory.
+const GROUP_HOME_UNITS = ["T2016 U1", "T2016 U2", "T2016 U3", "T2016 U4", "T2016 U5"];
+function toggleGroupHomeUnit(i, unit, checked) {
+  const units = new Set(hcbsServices[i].groupHomeUnits || []);
+  if (checked) units.add(unit);
+  else units.delete(unit);
+  hcbsServices[i].groupHomeUnits = GROUP_HOME_UNITS.filter((u) => units.has(u));
+  updateUI();
+}
+
 function updateHcbsService(i, field, value) {
   hcbsServices[i][field] = value;
   if (field === 'serviceName') {
     hcbsServices[i].subcategories = [];
+    hcbsServices[i].groupHomeUnits = [];
     renderHcbsServices();
   }
   updateUI();
@@ -3925,6 +3931,16 @@ function renderHcbsServices() {
                 }).join('')}
               </div>
             `}
+            ${s.serviceName === 'Group Home' ? `
+              <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);">
+                ${GROUP_HOME_UNITS.map(u => `
+                  <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
+                    <input type="checkbox" ${(s.groupHomeUnits || []).includes(u) ? 'checked' : ''} onchange="toggleGroupHomeUnit(${i}, '${u}', this.checked)">
+                    ${u}
+                  </label>
+                `).join('')}
+              </div>
+            ` : ''}
           </div>
         ` : ''}
         ${s.serviceName && !s.sdsUtilized ? `
@@ -4060,16 +4076,16 @@ function renderHcbsServices() {
         <label style="font-size: 12px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Primary Signature</label>
         <div class="form-grid" style="align-items: end;">
           <div class="field-group">
+            <label>Name of Signee</label>
+            <input type="text" value="${esc(s.signeeNames || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'signeeNames', this.value)">
+          </div>
+          <div class="field-group">
             <label>Signee</label>
             <select onchange="updateHcbsService(${i}, 'whoSigned', this.value)">
               <option value="">Select...</option>
               <option value="Individual" ${s.whoSigned === 'Individual' ? 'selected' : ''}>Individual</option>
               <option value="Guardian" ${s.whoSigned === 'Guardian' ? 'selected' : ''}>Guardian</option>
             </select>
-          </div>
-          <div class="field-group">
-            <label>Name of Signee</label>
-            <input type="text" value="${esc(s.signeeNames || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'signeeNames', this.value)">
           </div>
           <div class="field-group">
             <label>Provider & Services Choice Statement Effective Signed Date</label>
@@ -4090,11 +4106,15 @@ function renderHcbsServices() {
           </div>
           ` : ""}
         </div>
-        <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add Additional Signature</button>
+        <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig2Date || s.sig2Who || s.sig2Names || s.sig2IsUpdate ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add Additional Signature</button>
         
-        <div style="display: ${s.sig2Date || s.sig2Who || s.sig2Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+        <div style="display: ${s.sig2Date || s.sig2Who || s.sig2Names || s.sig2IsUpdate ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
           <label style="font-size: 11px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">Additional Signature</label>
           <div class="form-grid" style="align-items: end;">
+            <div class="field-group">
+              <label>Name of Signee</label>
+              <input type="text" value="${esc(s.sig2Names || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'sig2Names', this.value)">
+            </div>
             <div class="field-group">
               <label>Signee</label>
               <select onchange="updateHcbsService(${i}, 'sig2Who', this.value)">
@@ -4103,20 +4123,34 @@ function renderHcbsServices() {
                 <option value="Guardian" ${s.sig2Who === 'Guardian' ? 'selected' : ''}>Guardian</option>
               </select>
             </div>
-            <div class="field-group">
-              <label>Name of Signee</label>
-              <input type="text" value="${esc(s.sig2Names || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'sig2Names', this.value)">
-            </div>
             <div class="field-group full">
               <label>Effective Signed Date</label>
               <input type="date" value="${esc(s.sig2Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig2Date', this.value)">
             </div>
           </div>
-          <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add 3rd Signature</button>
+          <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin-top: 15px;">
+            <div style="margin-bottom: 5px;">
+              <label class="eth-check" style="color: var(--gold);">
+                <input type="checkbox" ${s.sig2IsUpdate ? "checked" : ""} onchange="updateHcbsService(${i}, 'sig2IsUpdate', this.checked); renderHcbsServices();">
+                Updated edit to previously signed Statement
+              </label>
+            </div>
+            ${s.sig2IsUpdate ? `
+            <div style="flex: 1; min-width: 250px; margin-bottom: 5px;">
+              <label>Previous Signed Date</label>
+              <input type="date" value="${esc(s.sig2PrevSignedDate || "")}" oninput="updateHcbsService(${i}, 'sig2PrevSignedDate', this.value)">
+            </div>
+            ` : ""}
+          </div>
+          <button type="button" class="btn btn-outline" style="margin-top: 15px; font-size: 11px; display: ${s.sig3Date || s.sig3Who || s.sig3Names || s.sig3IsUpdate ? 'none' : 'block'};" onclick="this.nextElementSibling.style.display='block'; this.style.display='none';">+ Add 3rd Signature</button>
           
-          <div style="display: ${s.sig3Date || s.sig3Who || s.sig3Names ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+          <div style="display: ${s.sig3Date || s.sig3Who || s.sig3Names || s.sig3IsUpdate ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
             <label style="font-size: 11px; font-weight: 700; color: var(--text-base); margin-bottom: 10px; display: block; text-transform: uppercase;">3rd Signature</label>
             <div class="form-grid" style="align-items: end;">
+              <div class="field-group">
+                <label>Name of Signee</label>
+                <input type="text" value="${esc(s.sig3Names || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'sig3Names', this.value)">
+              </div>
               <div class="field-group">
                 <label>Signee</label>
                 <select onchange="updateHcbsService(${i}, 'sig3Who', this.value)">
@@ -4125,14 +4159,24 @@ function renderHcbsServices() {
                   <option value="Guardian" ${s.sig3Who === 'Guardian' ? 'selected' : ''}>Guardian</option>
                 </select>
               </div>
-              <div class="field-group">
-                <label>Name of Signee</label>
-                <input type="text" value="${esc(s.sig3Names || "")}" placeholder="Name..." oninput="updateHcbsService(${i}, 'sig3Names', this.value)">
-              </div>
               <div class="field-group full">
                 <label>Effective Signed Date</label>
                 <input type="date" value="${esc(s.sig3Date || "")}" placeholder="e.g. MM/DD/YYYY" oninput="updateHcbsService(${i}, 'sig3Date', this.value)">
               </div>
+            </div>
+            <div class="field-group full" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin-top: 15px;">
+              <div style="margin-bottom: 5px;">
+                <label class="eth-check" style="color: var(--gold);">
+                  <input type="checkbox" ${s.sig3IsUpdate ? "checked" : ""} onchange="updateHcbsService(${i}, 'sig3IsUpdate', this.checked); renderHcbsServices();">
+                  Updated edit to previously signed Statement
+                </label>
+              </div>
+              ${s.sig3IsUpdate ? `
+              <div style="flex: 1; min-width: 250px; margin-bottom: 5px;">
+                <label>Previous Signed Date</label>
+                <input type="date" value="${esc(s.sig3PrevSignedDate || "")}" oninput="updateHcbsService(${i}, 'sig3PrevSignedDate', this.value)">
+              </div>
+              ` : ""}
             </div>
           </div>
         </div>
