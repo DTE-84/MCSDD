@@ -1871,38 +1871,14 @@ function updateUI() {
           }).join(" | "));
         }
         if (s.serviceName === "Group Home" && s.groupHomeUnits?.length) field("      Group Home", s.groupHomeUnits.join(", "));
-        if (s.serviceDetails && !s.sdsUtilized) field("      Service/Program Details", s.serviceDetails);
-        if (s.serviceHours && !s.sdsUtilized) field("      Provided hours", s.serviceHours);
+        if (s.serviceDetails) field("      Service/Program Details", s.serviceDetails);
+        if (s.serviceHours) field("      Provided hours", s.serviceHours);
         
         field("      Program", Array.isArray(s.q5Funding) && s.q5Funding.length > 0 ? s.q5Funding.join(", ") : "");
         if (s.medicationDMH) {
           field("      Medication taken at Program(DMH Facility)", "Yes");
           if (s.medicationDMHDetails) {
             field("      Medication Details", s.medicationDMHDetails);
-          }
-        }
-        
-        if (s.sdsUtilized) {
-          line("      -- Self-Directed Services (SDS) --");
-          field("      Designated Representative", s.sdsDesignatedRep);
-          field("      Training Exemptions Justification", s.sdsTrainingExemptions);
-          field("      SDS Back-up Plan", s.sdsBackupPlan);
-          field("      Budget Allocation Complete & Matches", s.sdsBudgetAllocationMatch ? "Yes" : "No");
-          field("      DHSS State Plan Auth Checked", s.sdsDhssAuthChecked ? "Yes" : "No");
-          field("      Paid Family Member Providing Supports?", s.sdsPaidFamilyMember);
-          if (s.sdsPaidFamilyMember === "Yes") {
-            field("        Individual opposed to family member?", s.sdsFamilyOpposed);
-            if (s.sdsFamilyOpposed === 'Yes') {
-              field("        Opposition Details", s.sdsFamilyOpposedDetails);
-            }
-            field("        Supports solely for individual", s.sdsFamilyHouseholdTasks ? "Yes" : "No");
-            if (!s.sdsFamilyHouseholdTasks) {
-              field("        Household Tasks Details", s.sdsFamilyHouseholdTasksDetails);
-            }
-            field("        Team agrees family best meets needs", s.sdsFamilyBestMeetNeeds ? "Yes" : "No");
-            if (!s.sdsFamilyBestMeetNeeds) {
-              field("        Team Agreement Details", s.sdsFamilyBestMeetNeedsDetails);
-            }
           }
         }
         
@@ -3123,22 +3099,6 @@ function toggleWaiveredServices7() {
   }
 }
 
-function toggleSDS7() {
-  const utilized = document.getElementById("sdsUtilized7")?.value;
-  const group = document.getElementById("sdsGroup7");
-  if (group) {
-    group.style.display = (utilized === "Yes") ? "block" : "none";
-  }
-}
-
-function toggleSDSPaidFamily7() {
-  const paidFam = document.getElementById("sdsPaidFamilyMember7")?.value;
-  const group = document.getElementById("sdsPaidFamilyGroup7");
-  if (group) {
-    group.style.display = (paidFam === "Yes") ? "block" : "none";
-  }
-}
-
 function addDueProcess() {
   dueProcessItems.push({
     invitation: "",
@@ -3943,7 +3903,7 @@ function renderHcbsServices() {
             ` : ''}
           </div>
         ` : ''}
-        ${s.serviceName && !s.sdsUtilized ? `
+        ${s.serviceName ? `
           <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 15px; margin-top: 15px; padding: 0 5px;">
             <div class="field-group">
               <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Service/Program Details</label>
@@ -3990,85 +3950,6 @@ function renderHcbsServices() {
           ` : ''}
         </div>
         
-        <div class="field-group full" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
-          <label style="font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 10px; display: block; text-transform: uppercase;">Self-Directed Services (SDS)</label>
-          <label class="eth-check" style="font-size: 13px; color: var(--text-base);">
-            <input type="checkbox" ${s.sdsUtilized ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsUtilized', this.checked); renderHcbsServices();">
-            Are Self-Directed Services (SDS) being utilized?
-          </label>
-          
-          ${s.sdsUtilized ? `
-            <div style="margin-top: 15px; padding-left: 15px; border-left: 2px solid var(--border);">
-              <div class="field-group full">
-                <label>Designated Representative</label>
-                <input type="text" value="${esc(s.sdsDesignatedRep || "")}" oninput="updateHcbsService(${i}, 'sdsDesignatedRep', this.value)" placeholder="Name, or state 'None Appointed'">
-              </div>
-              <div class="field-group full">
-                <label>Justify any training exemptions for personal assistance (see training checklist)</label>
-                <textarea oninput="updateHcbsService(${i}, 'sdsTrainingExemptions', this.value)">${esc(s.sdsTrainingExemptions || "")}</textarea>
-              </div>
-              <div class="field-group full">
-                <label>SDS Back-up Plan (Provisions for scheduled employees not providing supports)</label>
-                <textarea oninput="updateHcbsService(${i}, 'sdsBackupPlan', this.value)" placeholder="May refer to separate documents attached to the plan...">${esc(s.sdsBackupPlan || "")}</textarea>
-              </div>
-              <div class="field-group full">
-                <label class="eth-check">
-                  <input type="checkbox" ${s.sdsBudgetAllocationMatch ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsBudgetAllocationMatch', this.checked)">
-                  SDS Budget Allocation tool is complete and matches the money amount on the Authorization form (for new individuals to SDS program)
-                </label>
-              </div>
-              <div class="field-group full">
-                <label class="eth-check">
-                  <input type="checkbox" ${s.sdsDhssAuthChecked ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsDhssAuthChecked', this.checked)">
-                  If receiving Medicaid State Plan personal care services through DHSS - authorization for services system has been checked to ensure these services are not being self-directed or waivered.
-                </label>
-              </div>
-              <div class="field-group full" style="margin-top: 15px;">
-                <label>Is a Paid Family Member providing supports?</label>
-                <select onchange="updateHcbsService(${i}, 'sdsPaidFamilyMember', this.value); renderHcbsServices();">
-                  <option value="">Select...</option>
-                  <option value="Yes" ${s.sdsPaidFamilyMember === 'Yes' ? 'selected' : ''}>Yes</option>
-                  <option value="No" ${s.sdsPaidFamilyMember === 'No' ? 'selected' : ''}>No</option>
-                </select>
-              </div>
-              ${s.sdsPaidFamilyMember === 'Yes' ? `
-                <div style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.02); border: 1px solid var(--border);">
-                  <div class="field-group full" style="margin-bottom: 25px;">
-                    <label>Is the individual opposed to the family member providing the support?</label>
-                    <div style="display: flex; gap: 15px; align-items: flex-start;">
-                      <select style="width: 150px; flex-shrink: 0;" onchange="updateHcbsService(${i}, 'sdsFamilyOpposed', this.value)">
-                        <option value="">Select...</option>
-                        <option value="Yes" ${s.sdsFamilyOpposed === 'Yes' ? 'selected' : ''}>Yes</option>
-                        <option value="No" ${s.sdsFamilyOpposed === 'No' ? 'selected' : ''}>No</option>
-                      </select>
-                      ${s.sdsFamilyOpposed === 'Yes' ? `
-                        <textarea style="flex: 1;" placeholder="Provide detailed information regarding the opposition..." oninput="updateHcbsService(${i}, 'sdsFamilyOpposedDetails', this.value)">${esc(s.sdsFamilyOpposedDetails || "")}</textarea>
-                      ` : ''}
-                    </div>
-                  </div>
-                  <div class="field-group full">
-                    <label class="eth-check">
-                      <input type="checkbox" ${s.sdsFamilyHouseholdTasks ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsFamilyHouseholdTasks', this.checked)">
-                      The supports to be provided are solely for the individual and not household tasks expected to be shared with people who live in the family unit.
-                    </label>
-                    ${!s.sdsFamilyHouseholdTasks ? `
-                      <textarea style="margin-top: 10px;" placeholder="Please detail why..." oninput="updateHcbsService(${i}, 'sdsFamilyHouseholdTasksDetails', this.value)">${esc(s.sdsFamilyHouseholdTasksDetails || "")}</textarea>
-                    ` : ''}
-                  </div>
-                  <div class="field-group full">
-                    <label class="eth-check">
-                      <input type="checkbox" ${s.sdsFamilyBestMeetNeeds ? 'checked' : ''} onchange="updateHcbsService(${i}, 'sdsFamilyBestMeetNeeds', this.checked)">
-                      The PCSP team agrees that the family member providing the individual assistance will best meet the individual's needs.
-                    </label>
-                    ${!s.sdsFamilyBestMeetNeeds ? `
-                      <textarea style="margin-top: 10px;" placeholder="Please detail why..." oninput="updateHcbsService(${i}, 'sdsFamilyBestMeetNeedsDetails', this.value)">${esc(s.sdsFamilyBestMeetNeedsDetails || "")}</textarea>
-                    ` : ''}
-                  </div>
-                </div>
-              ` : ''}
-            </div>
-          ` : ''}
-        </div>
       </div>
 
       ${isWaivered === 'Yes' ? `
@@ -4599,11 +4480,9 @@ function restoreFormData(fd) {
   toggleEmploymentStatus7(); // Ensure employment status visibility is correct
   toggleWaiveredServices7(); // Ensure waivered services visibility is correct
   toggleHcbsFields();
-  toggleSDS7();
   toggleHrstFields();
   toggleDnrAlt();
   toggleHrstAdditional();
-  toggleSDSPaidFamily7();
   toggleSelfAdmin8();
   toggleDmhLocation();
   toggleTransferring();
