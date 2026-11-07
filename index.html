@@ -1860,6 +1860,41 @@
               </div>
             </div>
 
+            <!-- Personal Assistance wording; prints as bullets with the Individual's name -->
+            <div id="sdsPaWrap" hidden>
+              <div class="subsection-label">Personal Assistance</div>
+              <div class="form-grid">
+                <div class="field-group full">
+                  <label>Personal assistance is needed for</label>
+                  <div class="ethnicity-grid">
+                    <label class="eth-check"><input type="checkbox" id="sdsPaCuing" onchange="updateUI()"> Cuing</label>
+                    <label class="eth-check"><input type="checkbox" id="sdsPaPrompting" onchange="updateUI()"> Prompting</label>
+                    <label class="eth-check"><input type="checkbox" id="sdsPaTraining" onchange="updateUI()"> Training</label>
+                  </div>
+                </div>
+                <div class="field-group full">
+                  <label>Other assistance needed (optional)</label>
+                  <input type="text" id="sdsPaOtherNeeds" oninput="updateUI()" placeholder="e.g. bathing and dressing" />
+                </div>
+                <div class="field-group">
+                  <label>Where personal assistance will be provided</label>
+                  <select id="sdsPaSetting" onchange="updateUI()">
+                    <option value="">Select...</option>
+                    <option value="both at home and in the community">Both at home and in the community</option>
+                    <option value="at home">At home</option>
+                    <option value="in the community">In the community</option>
+                  </select>
+                </div>
+                <div class="field-group full">
+                  <label class="eth-check"><input type="checkbox" id="sdsPaDhssReferral" onchange="updateUI()"> A referral has been made to DHSS to see what services the Individual will qualify for</label>
+                </div>
+                <div class="field-group full" id="sdsPaDhssDetailsWrap" hidden>
+                  <label>Details of DHSS referral</label>
+                  <textarea id="sdsPaDhssDetails" oninput="updateUI()" placeholder="Date referred, who made the referral, status, services requested..."></textarea>
+                </div>
+              </div>
+            </div>
+
             <div class="subsection-label">PA / Medical PA Training (9 CSR 45-3.080)</div>
             <div class="form-grid">
               <div class="field-group full" style="font-size: 11px; color: var(--text-label); font-style: italic;">

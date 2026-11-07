@@ -541,6 +541,8 @@ const FORM_FIELDS = [
   "sdsDrType", "sdsDrName", "sdsDrRelationship",
   "sdsSupportBroker", "sdsSbAssessment", "sdsSbOutcome",
   "sdsSvcPA", "sdsSvcMedPA", "sdsServicesHow",
+  "sdsPaCuing", "sdsPaPrompting", "sdsPaTraining", "sdsPaOtherNeeds", "sdsPaSetting",
+  "sdsPaDhssReferral", "sdsPaDhssDetails",
   "sdsTrainCpr", "sdsTrainFirstAid", "sdsTrainMedAdmin", "sdsTrainCrisis", "sdsTrainPbs", "sdsTrainNotes",
   "sdsBackupStaff", "sdsBackupEmployer", "sdsBackupEmergencies",
   "sdsFamilyHired", "sdsFamilyName", "sdsFamilyRelationship",
@@ -1518,6 +1520,8 @@ function updateSdsVisibility() {
   show("sdsAllocWrap", val("sdsAllocTool") === "Completed");
   show("sdsDhssWarning", val("sdsDhssStatus") === "Currently receiving");
   show("sdsLmpWrap", on("sdsSvcMedPA"));
+  show("sdsPaWrap", on("sdsSvcPA") || on("sdsSvcMedPA"));
+  show("sdsPaDhssDetailsWrap", on("sdsPaDhssReferral"));
 
   const exempt = (id) => val(id).startsWith("Exempt");
   const warnings = [];
@@ -2006,6 +2010,31 @@ function updateUI() {
     if (isChecked("sdsSvcMedPA")) sdsSvcs.push("Medical Personal Assistant");
     field("Services Being Self-Directed", sdsSvcs.join(", "));
     field("How These Services Support the Individual", getVal("sdsServicesHow"));
+
+    if (sdsSvcs.length) {
+      const paName = nick || name || "[Individual]";
+      const typed = (v) => v.replace(/:/g, VALUE_COLON);
+      const needs = [
+        isChecked("sdsPaCuing") && "cuing",
+        isChecked("sdsPaPrompting") && "prompting",
+        isChecked("sdsPaTraining") && "training",
+        getVal("sdsPaOtherNeeds") && typed(getVal("sdsPaOtherNeeds")),
+      ].filter(Boolean);
+      const listed = needs.length > 1 ? `${needs.slice(0, -1).join(", ")} and ${needs[needs.length - 1]}` : needs[0];
+      const paBullets = [];
+      if (listed) paBullets.push(`${paName} needs personal assistance for ${listed}.`);
+      if (getVal("sdsPaSetting")) paBullets.push(`${paName}'s personal assistance will be provided ${getVal("sdsPaSetting")}.`);
+      if (isChecked("sdsPaDhssReferral")) paBullets.push(`A referral has been made to DHSS to see what services ${paName} will qualify for.`);
+      if (paBullets.length) {
+        line("");
+        line("Personal Assistance:");
+        paBullets.forEach((b) => line(`  • ${b}`));
+        if (isChecked("sdsPaDhssReferral")) {
+          getVal("sdsPaDhssDetails").split("\n").map((d) => d.trim()).filter(Boolean)
+            .forEach((d) => line(`      ◦ ${typed(d)}`));
+        }
+      }
+    }
 
     line("");
     subhead("PA / MEDICAL PA TRAINING (9 CSR 45-3.080)");
