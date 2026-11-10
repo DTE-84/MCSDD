@@ -1631,7 +1631,12 @@ function updateUI() {
 // Colons inside a typed value are swapped for a placeholder until after the
   // label regex below runs, so a sentence like "At home: ..." on the second
   // line of a paragraph isn't mistaken for a bold field label.
-  const field = (l, v) => { if (v && String(v).trim() !== "" && String(v).trim() !== "N/A") line(`${l}: ${String(v).replace(/:/g, VALUE_COLON)}`); };
+  const field = (l, v) => {
+    if (!v || String(v).trim() === "" || String(v).trim() === "N/A") return;
+    const indent = l.match(/^ */)[0];
+    const value = String(v).replace(/:/g, VALUE_COLON).replace(/\n/g, "\n" + indent);
+    line(`${l}: ${value}`);
+  };
   // Marks text to print in bold (entry names in the provider, medication and
   // service lists).
   const bold = (v) => (v ? `___BOLD___${v}___BOLD___` : v);
@@ -1701,7 +1706,7 @@ function updateUI() {
   }
   
   field("Residency", getVal("residencyType"));
-  field("Residence Address / Location Notes", getVal("residenceNotes"));
+  field("  Residence Address / Location Notes", getVal("residenceNotes"));
   field("Education", getVal("educationStatus"));
   field("School", getVal("schoolName"));
   
@@ -1763,7 +1768,7 @@ function updateUI() {
   if (getVal("commMethodOther")) commMethods.push(`Other: ${getVal("commMethodOther")}`);
   field("Primary Methods", commMethods.length ? commMethods.join(", ") : "None Selected");
   
-  field("Description/Notes", getVal("commMethodNotes"));
+  field("  Description/Notes", getVal("commMethodNotes"));
   
   if (document.getElementById("commSeeAttached")?.checked) {
     line("Communication Chart: SEE ATTACHED / ENCLOSED");
@@ -1874,6 +1879,7 @@ function updateUI() {
             return parts.join(" ");
           }).join(" | "));
         }
+        if (s.otherCodes) field("      Other Code(s)", s.otherCodes);
         if (s.serviceName === "Group Home" && s.groupHomeUnits?.length) field("      Group Home", s.groupHomeUnits.join(", "));
         if (s.serviceDetails) field("      Service/Program Details", s.serviceDetails);
         if (s.serviceHours) field("      Provided hours", s.serviceHours);
@@ -2225,7 +2231,7 @@ function updateUI() {
 
   head("9. COMMUNITY NATURAL AND NON-DIVISION SUPPORT");
   field("Non-Divisional Waiver", getVal("nonDivisionalWaiver") || "—");
-  field("Non-Divisional Waiver Details", getVal("nonDivisionalWaiverDetail"));
+  field("  Non-Divisional Waiver Details", getVal("nonDivisionalWaiverDetail"));
   line("");
 
   if (currentSupports.length > 0) {
@@ -2268,15 +2274,15 @@ function updateUI() {
   document.querySelectorAll('#learningStyleContainer input[type="checkbox"]:checked').forEach(cb => learnS.push(cb.value));
   field("Learning Styles", learnS.length ? learnS.join(", ") : "None Selected");
 
-  field("Learning Style Notes", getVal("learningStyleNotes"));
+  field("  Learning Style Notes", getVal("learningStyleNotes"));
   
   field("Cultural Considerations", getVal("culturalDifferences"));
 
   if (document.getElementById("age17Yes")?.checked) {
     field("Transitioning Youth - School (Age 17+ SSI Prep)", getVal("age17SsiSupport"));
     if (document.getElementById("age17DifferingOpinionCheck")?.checked) {
-      field("Differing Opinions (Minor)", getVal("age17MinorDifferingOpinion"));
-      field("Differing Opinions (Adult)", getVal("age17AdultDifferingOpinion"));
+      field("  Differing Opinions (Minor)", getVal("age17MinorDifferingOpinion"));
+      field("  Differing Opinions (Adult)", getVal("age17AdultDifferingOpinion"));
     }
   } else if (document.getElementById("age17NA")?.checked) {
     field("Transitioning Youth - School", "Not Applicable");
@@ -2688,6 +2694,8 @@ function updateUI() {
   safeHTML = safeHTML.replace(/^([A-Za-z0-9 \t\/\-&;\(\)\[\]\.,'"?#]+):[ \t]*(.*)$/gm, '<span class="print-label">$1:</span> <span class="print-value">$2</span>');
 
   safeHTML = safeHTML.replace(/___BOLD___(.*?)___BOLD___/g, '<strong class="print-bold">$1</strong>');
+  // SC-marked bold: **Choking Risk** in a typed paragraph (Ctrl+B adds the stars).
+  safeHTML = safeHTML.replace(/\*\*(?=\S)([^*\n]+?)(?<=\S)\*\*/g, '<strong class="print-bold">$1</strong>');
   safeHTML = safeHTML.split(VALUE_COLON).join(":");
 
   document.getElementById("narrativeDisplay").innerHTML = safeHTML;
@@ -3754,11 +3762,6 @@ function updateHcbsBackupDetail(i, dIdx, val) {
   updateUI();
 }
 
-function setHcbsSubcategory(i, subName) {
-  hcbsServices[i].subcategories = [{ name: subName, pos21: false, pos02: false, pos10: false }];
-  updateUI();
-}
-
 function toggleHcbsSubcategory(i, subName, isChecked) {
   if (!Array.isArray(hcbsServices[i].subcategories)) hcbsServices[i].subcategories = [];
   if (isChecked) {
@@ -3795,6 +3798,7 @@ function updateHcbsService(i, field, value) {
   if (field === 'serviceName') {
     hcbsServices[i].subcategories = [];
     hcbsServices[i].groupHomeUnits = [];
+    hcbsServices[i].otherCodes = "";
     renderHcbsServices();
   }
   updateUI();
@@ -3866,60 +3870,32 @@ function renderHcbsServices() {
         </div>
         ${s.serviceName && HCBS_SUBCATEGORIES[s.serviceName] ? `
           <div class="field-group full" style="margin-top: 10px; background: rgba(0,0,0,0.02); padding: 10px; border-radius: 6px; border: 1px solid var(--border);">
-            <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 8px; display: block; text-transform: uppercase;">${s.serviceName === 'Applied Behavior Analysis' ? 'Select Subcategories (Multiple allowed)' : 'Select Subcategory'}</label>
-            ${s.serviceName === 'Applied Behavior Analysis' ? `
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${HCBS_SUBCATEGORIES[s.serviceName].map(sub => {
-                  const isChecked = s.subcategories && s.subcategories.some(x => x.name === sub);
-                  const subObj = isChecked ? s.subcategories.find(x => x.name === sub) : null;
-                  return `
-                  <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                    <label class="eth-check" style="font-size: 13px; color: var(--text-base); flex: 1; min-width: 250px;">
-                      <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleHcbsSubcategory(${i}, '${esc(sub)}', this.checked)">
-                      ${esc(sub)}
-                    </label>
-                    ${isChecked ? `
-                      <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
-                        <input type="checkbox" ${subObj && subObj.pos21 ? 'checked' : ''} onchange="toggleHcbsSubcategoryModifier(${i}, '${esc(sub)}', 'pos21', this.checked)">
-                        -POS21 (Inpatient)
-                      </label>
-                    ` : ''}
-                  </div>
-                  `;
-                }).join('')}
-              </div>
-            ` : `
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${HCBS_SUBCATEGORIES[s.serviceName].map(sub => {
-                  const isChecked = s.subcategories && s.subcategories.length > 0 && s.subcategories[0].name === sub;
-                  const subObj = isChecked ? s.subcategories[0] : null;
-                  return `
-                  <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                    <label class="eth-check" style="font-size: 13px; color: var(--text-base); flex: 1; min-width: 250px;">
-                      <input type="radio" name="hcbs_sub_${i}" value="${esc(sub)}" ${isChecked ? 'checked' : ''} onchange="setHcbsSubcategory(${i}, '${esc(sub)}')">
-                      ${esc(sub)}
-                    </label>
-                    ${(isChecked && s.serviceName === 'Out of Home Respite') ? `
-                      <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
-                        <input type="checkbox" ${subObj && subObj.pos21 ? 'checked' : ''} onchange="toggleHcbsSubcategoryModifier(${i}, '${esc(sub)}', 'pos21', this.checked)">
-                        -POS21 (Inpatient)
-                      </label>
-                    ` : ''}
-                    ${(isChecked && s.serviceName === 'Virtual Delivery of Services') ? `
-                      <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
-                        <input type="checkbox" ${subObj && subObj.pos02 ? 'checked' : ''} onchange="toggleHcbsSubcategoryModifier(${i}, '${esc(sub)}', 'pos02', this.checked)">
-                        -POS02 (Other than patient's home)
-                      </label>
-                      <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
-                        <input type="checkbox" ${subObj && subObj.pos10 ? 'checked' : ''} onchange="toggleHcbsSubcategoryModifier(${i}, '${esc(sub)}', 'pos10', this.checked)">
-                        -10 (In patient's home)
-                      </label>
-                    ` : ''}
-                  </div>
-                  `;
-                }).join('')}
-              </div>
-            `}
+            <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 8px; display: block; text-transform: uppercase;">Select Subcategories (Multiple allowed)</label>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${HCBS_SUBCATEGORIES[s.serviceName].map(sub => {
+                const subObj = (s.subcategories || []).find(x => x.name === sub);
+                const isChecked = !!subObj;
+                const posKey = (key, label) => `
+                  <label class="eth-check" style="font-size: 12px; color: var(--text-base); white-space: nowrap; margin-left: 20px;">
+                    <input type="checkbox" ${subObj && subObj[key] ? 'checked' : ''} onchange="toggleHcbsSubcategoryModifier(${i}, '${esc(sub)}', '${key}', this.checked)">
+                    ${label}
+                  </label>`;
+                return `
+                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                  <label class="eth-check" style="font-size: 13px; color: var(--text-base); flex: 1; min-width: 250px;">
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleHcbsSubcategory(${i}, '${esc(sub)}', this.checked)">
+                    ${esc(sub)}
+                  </label>
+                  ${isChecked && (s.serviceName === 'Applied Behavior Analysis' || s.serviceName === 'Out of Home Respite') ? posKey('pos21', '-POS21 (Inpatient)') : ''}
+                  ${isChecked && s.serviceName === 'Virtual Delivery of Services' ? posKey('pos02', "-POS02 (Other than patient's home)") + posKey('pos10', "-10 (In patient's home)") : ''}
+                </div>
+                `;
+              }).join('')}
+            </div>
+            <div style="margin-top: 10px;">
+              <label style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 5px; display: block; text-transform: uppercase;">Other code(s) not listed</label>
+              <input type="text" value="${esc(s.otherCodes || "")}" placeholder="e.g. T1019 U2 TT" oninput="updateHcbsService(${i}, 'otherCodes', this.value)">
+            </div>
             ${s.serviceName === 'Group Home' ? `
               <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);">
                 ${GROUP_HOME_UNITS.map(u => `
@@ -4219,7 +4195,7 @@ function renderLegalReps() {
         <div class="field-group full">
           <label>Authority Type (Select all that apply)</label>
           <div class="ethnicity-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-            ${['Self / Full Rights', 'Full Guardianship', 'Limited Guardianship', 'Full Conservatorship', 'Limited Conservatorship', 'Power of Attorney', 'Representative Payee', 'Physical Custody', 'Legal Custody'].map(auth => `
+            ${['Self / Full Rights', 'Full Guardianship', 'Limited Guardianship', 'Partial Guardianship', 'Co-Guardianship', 'Full Conservatorship', 'Limited Conservatorship', 'Power of Attorney', 'Representative Payee', 'Physical Custody', 'Legal Custody'].map(auth => `
               <label class="eth-check" style="font-size: 10px;">
                 <input type="checkbox" value="${auth}" ${Array.isArray(r.legalType) && r.legalType.includes(auth) ? 'checked' : (r.legalType === auth ? 'checked' : '')} onchange="updateRepAuth(${i}, this)">
                 ${auth}
@@ -4236,6 +4212,18 @@ function renderLegalReps() {
             <div style="margin-top: 10px;">
               <label style="font-size: 11px; color: var(--gold);">Type of Limited Guardianship</label>
               <input type="text" value="${esc(r.limitedGuardianshipType || "")}" placeholder="..." oninput="updateRep(${i},'limitedGuardianshipType',this.value)">
+            </div>
+          ` : ''}
+          ${(Array.isArray(r.legalType) ? r.legalType.includes('Partial Guardianship') : r.legalType === 'Partial Guardianship') ? `
+            <div style="margin-top: 10px;">
+              <label style="font-size: 11px; color: var(--gold);">Areas Covered by Partial Guardianship</label>
+              <input type="text" value="${esc(r.partialGuardianshipType || "")}" placeholder="e.g. medical and financial decisions" oninput="updateRep(${i},'partialGuardianshipType',this.value)">
+            </div>
+          ` : ''}
+          ${(Array.isArray(r.legalType) ? r.legalType.includes('Co-Guardianship') : r.legalType === 'Co-Guardianship') ? `
+            <div style="margin-top: 10px;">
+              <label style="font-size: 11px; color: var(--gold);">Co-Guardian(s) Shared With</label>
+              <input type="text" value="${esc(r.coGuardianWith || "")}" placeholder="Name(s) of the other co-guardian(s)" oninput="updateRep(${i},'coGuardianWith',this.value)">
             </div>
           ` : ''}
           ${(Array.isArray(r.legalType) ? r.legalType.includes('Limited Conservatorship') : r.legalType === 'Limited Conservatorship') ? `
@@ -4280,6 +4268,13 @@ function getLegalRepsNarrative() {
     }
     if (rep.limitedGuardianshipType && (Array.isArray(rep.legalType) ? rep.legalType.includes('Limited Guardianship') : rep.legalType === 'Limited Guardianship')) {
       authType = authType.replace('Limited Guardianship', `Limited Guardianship (${rep.limitedGuardianshipType})`);
+    }
+    const hasAuth = (a) => (Array.isArray(rep.legalType) ? rep.legalType.includes(a) : rep.legalType === a);
+    if (rep.partialGuardianshipType && hasAuth('Partial Guardianship')) {
+      authType = authType.replace('Partial Guardianship', `Partial Guardianship (${rep.partialGuardianshipType})`);
+    }
+    if (rep.coGuardianWith && hasAuth('Co-Guardianship')) {
+      authType = authType.replace('Co-Guardianship', `Co-Guardianship (with ${rep.coGuardianWith})`);
     }
     if (rep.limitedConservatorshipType && (Array.isArray(rep.legalType) ? rep.legalType.includes('Limited Conservatorship') : rep.legalType === 'Limited Conservatorship')) {
       authType = authType.replace('Limited Conservatorship', `Limited Conservatorship (${rep.limitedConservatorshipType})`);
@@ -5556,3 +5551,19 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 initScrollSpy();
+
+// ── SC bold ──
+// Ctrl+B (Cmd+B on Mac) in any text box wraps the selected words in **…**,
+// which the printed plan shows in bold. Typing the stars by hand works too.
+document.addEventListener("keydown", (e) => {
+  const el = e.target;
+  if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== "b") return;
+  if (!(el instanceof HTMLTextAreaElement || (el instanceof HTMLInputElement && el.type === "text"))) return;
+  e.preventDefault();
+  const { selectionStart: a, selectionEnd: b, value } = el;
+  const picked = value.slice(a, b);
+  const wrapped = /^\*\*[\s\S]*\*\*$/.test(picked) ? picked.slice(2, -2) : `**${picked}**`;
+  el.setRangeText(wrapped, a, b, picked ? "select" : "end");
+  if (!picked) el.setSelectionRange(a + 2, a + 2);
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+});
