@@ -2088,7 +2088,7 @@ function updateUI() {
       field("SDS Individual Allocation Tool", "Completed");
       field("  Hours Reported", getVal("sdsAllocHours"));
       field("  Total Amount", getVal("sdsAllocTotal"));
-      checkLine("sdsAllocMatchesIsp", "Correctly reports the service(s) and number of hours in the ISP");
+      checkLine("sdsAllocMatchesIsp", "Correctly reports the service(s) and number of hours in the PCSP");
       checkLine("sdsAllocCurrentVersion", "Most current tool is used (08/12/2022)");
       checkLine("sdsAllocMatchesCimor", "Total amount matches CIMOR");
     } else if (alloc) {
