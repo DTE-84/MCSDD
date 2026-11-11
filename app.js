@@ -211,6 +211,7 @@ const HCBS_SUBCATEGORIES = {
 
 // ── DATA STRUCTURES ──
 let employmentEntries = []; 
+let additionalEmployers7 = [];
 let legalReps = [];
 let commChartRows = [];
 let importantPeople = [];
@@ -1797,11 +1798,22 @@ function updateUI() {
     field("Reasons for excluding employment", getVal("unemployedReasons7"));
     field("Career Planning Activities", getVal("unemployedActivities7"));
     field("Future Employment Discussions", getVal("futureEmploymentDiscussions"));
-  } else if (empStatus7 === "Employed") {
+  } else if (empStatus7 === "Employed" || empStatus7 === "Student Employed") {
+    const multiEmp = additionalEmployers7.length > 0;
+    if (multiEmp) line("Employer #1:");
     field("Employer Name", getVal("employerName7"));
     field("Job Title", getVal("jobTitle7"));
     field("Avg. Hours/Week", getVal("avgHoursWorked7"));
     field("Competitive & Integrated", getVal("competitiveIntegratedWork7"));
+    additionalEmployers7.forEach((e, idx) => {
+      line("");
+      line(`Employer #${idx + 2}:`);
+      field("Employer Name", e.name);
+      field("Job Title", e.jobTitle);
+      field("Avg. Hours/Week", e.hours);
+      field("Competitive & Integrated", e.competitive);
+    });
+    if (multiEmp) line("");
     const groupSupport = getVal("groupSupportedEmploymentJustification7");
     if (groupSupport) {
       field("Group Supported Justification", groupSupport);
@@ -1959,7 +1971,8 @@ function updateUI() {
           }
         }
       });
-      
+    }
+
       if (isHcbsWaivered === "No") {
         field("  4. Additional Funding/Supports", getVal("hcbsEduQ4"));
         line("");
@@ -1981,7 +1994,6 @@ function updateUI() {
       field("      2. Current release signed for school date", getVal("hcbsEduQ2"));
       field("      3. Dates requested IEP if not received", getVal("hcbsEduQ3"));
       line("");
-    }
   }
 
 
@@ -3126,6 +3138,38 @@ function toggleEmploymentStatus7() {
   if (employedGroup) {
     employedGroup.style.display = (status === "Employed" || status === "Student Employed") ? "block" : "none";
   }
+}
+
+function addAdditionalEmployer7() {
+  additionalEmployers7.push({ name: "", jobTitle: "", hours: "", competitive: "" });
+  renderAdditionalEmployers7();
+  updateUI();
+}
+function removeAdditionalEmployer7(i) {
+  additionalEmployers7.splice(i, 1);
+  renderAdditionalEmployers7();
+  updateUI();
+}
+function updateAdditionalEmployer7(i, key, value) {
+  additionalEmployers7[i][key] = value;
+  updateUI();
+}
+function renderAdditionalEmployers7() {
+  const container = document.getElementById("additionalEmployers7Container");
+  if (!container) return;
+  container.innerHTML = additionalEmployers7.map((e, i) => `
+    <div class="legal-rep-card" style="margin: 10px 0; background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span style="font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--gold);">Employer #${i + 2}</span>
+        <button class="remove-rep-btn" type="button" onclick="removeAdditionalEmployer7(${i})">✕</button>
+      </div>
+      <div class="form-grid">
+        <div class="field-group"><label>Name of Employer</label><input type="text" value="${esc(e.name)}" placeholder="Employer Name" oninput="updateAdditionalEmployer7(${i}, 'name', this.value)"></div>
+        <div class="field-group"><label>Job Title</label><input type="text" value="${esc(e.jobTitle)}" placeholder="Job Title" oninput="updateAdditionalEmployer7(${i}, 'jobTitle', this.value)"></div>
+        <div class="field-group"><label>Avg. Hours/Week</label><input type="number" value="${esc(e.hours)}" placeholder="e.g. 20" oninput="updateAdditionalEmployer7(${i}, 'hours', this.value)"></div>
+        <div class="field-group full" style="grid-column: 1 / -1;"><label>Competitive & Integrated setting</label><input type="text" value="${esc(e.competitive)}" placeholder="Yes, or explain why not..." oninput="updateAdditionalEmployer7(${i}, 'competitive', this.value)"></div>
+      </div>
+    </div>`).join("");
 }
 
 function toggleWaiveredServices7() {
@@ -4343,6 +4387,7 @@ function captureFormData() {
     _commChartRows: commChartRows,
     _importantPeople: importantPeople,
     _employmentEntries: employmentEntries,
+    _additionalEmployers7: additionalEmployers7,
     _dueProcessItems: dueProcessItems,
     _meetingAttendees: meetingAttendees,
     _coverPhotoData: _coverPhotoData,
@@ -4436,6 +4481,7 @@ function restoreFormData(fd) {
     });
   }
   employmentEntries = fd._employmentEntries || [];
+  additionalEmployers7 = fd._additionalEmployers7 || [];
   commChartRows = fd._commChartRows || [];
   importantPeople = fd._importantPeople || [];
   dueProcessItems = fd._dueProcessItems || [];
@@ -4460,6 +4506,7 @@ function restoreFormData(fd) {
   renderMedications();
   renderAmendments();
   renderEmploymentEntries();
+  renderAdditionalEmployers7();
   renderCommChart();
   renderImportantPeople();
   renderDueProcess();
