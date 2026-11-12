@@ -1973,7 +1973,9 @@ function updateUI() {
       });
     }
 
-      if (isHcbsWaivered === "No") {
+      // Shown for both answers: many individuals have HCBS Waiver services
+      // AND other supports (MTBH, Easterseals, etc.) at the same time.
+      if (isHcbsWaivered === "No" || getVal("hcbsEduQ4")) {
         field("  4. Additional Funding/Supports", getVal("hcbsEduQ4"));
         line("");
       }
@@ -2968,13 +2970,9 @@ function toggleNAField(f, c) {
 function toggleHcbsFields() {
   const val = document.getElementById("isHcbsWaivered").value;
   const container = document.getElementById("hcbsFieldsContainer");
-  const fundingContainer = document.getElementById("hcbsAdditionalFundingContainer");
 
   if (container) {
     container.style.display = (val === "Yes" || val === "No") ? "block" : "none";
-  }
-  if (fundingContainer) {
-    fundingContainer.style.display = (val === "No") ? "block" : "none";
   }
   updateWaiverOnlyHealthFields();
   renderHcbsServices();

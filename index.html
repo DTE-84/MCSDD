@@ -1710,17 +1710,17 @@
 
           <div class="subsection-label">HCBS Waiver Choice &amp; Education / Backup Plan</div>
           <div class="form-grid" style="margin-bottom: 32px;">
-            <div class="field-group full" style="grid-column: 1 / -1;">
+            <div class="field-group full" id="hcbsAdditionalFundingContainer" style="grid-column: 1 / -1;">
+              <label>Additional Funding/Supports (e.g. Easterseals PAC funding, MTBH, BRT, Counseling, etc.):</label>
+              <textarea id="hcbsEduQ4" oninput="updateUI()"></textarea>
+            </div>
+            <div class="field-group full" style="grid-column: 1 / -1; margin-top: 15px;">
               <label>Is the individual receiving HCBS Waiver services?</label>
               <select id="isHcbsWaivered" onchange="toggleHcbsFields(); updateUI()">
                 <option value="">Select...</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </select>
-            </div>
-            <div class="field-group full" id="hcbsAdditionalFundingContainer" style="display: none; grid-column: 1 / -1; margin-top: 15px;">
-              <label>4. Additional Funding/Supports (e.g. Easterseals PAC funding, BRT, Counseling, etc.):</label>
-              <textarea id="hcbsEduQ4" oninput="updateUI()"></textarea>
             </div>
           </div>
           
