@@ -1695,6 +1695,7 @@ input:checked + .slider:before {
 	#toast,
 	.sidebar-overlay,
 	#dragDropHint,
+	.no-print,
 	.form-section,
 	.output-section > .section-title {
 		/* form sections hidden - only narrative prints */
