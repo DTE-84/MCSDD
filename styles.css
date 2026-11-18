@@ -1112,23 +1112,11 @@ input:checked + .slider:before {
 }
 
 /* ── Responsive refinements ──────────────────────────────────
-   Laptop  1025–1439: narrower side panels so the form has room
    Tablet   769–1024: single column (rules above), grid tracks
                       allowed to shrink
    Phone      ≤ 768 : nothing wider than the screen, wrapping
                       header, 16px inputs (stops iOS focus zoom)
    ─────────────────────────────────────────────────────────── */
-@media (max-width: 1439px) and (min-width: 1025px) {
-	.app-container {
-		grid-template-columns: 250px minmax(0, 1fr) 250px;
-	}
-	.app-container.sidebar-collapsed {
-		grid-template-columns: 0px minmax(0, 1fr) 250px;
-	}
-	.workspace-content {
-		padding: 28px;
-	}
-}
 @media (max-width: 1024px) {
 	.form-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
