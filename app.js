@@ -5195,7 +5195,9 @@ function launchApp() {
   welcome.style.transition = "opacity 0.5s ease";
   setTimeout(() => {
     welcome.style.display = "none";
-    document.getElementById("appContainer").style.display = "grid";
+    // Shown via a class (not an inline display:grid) so the tablet/phone
+    // layout in styles.css can switch the container to a single column.
+    document.getElementById("appContainer").classList.add("app-launched");
   }, 500);
 }
 
