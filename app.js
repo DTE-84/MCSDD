@@ -4986,6 +4986,30 @@ function togglePasswordVisibility(inputId, btnElement) {
   }
 }
 
+// Department email domain. Keep in sync with ALLOWED_EMAIL_SUFFIX in api.ts.
+const ALLOWED_EMAIL_SUFFIX = "@mcsdd.com";
+
+// Asks for the verification code Neon Auth emailed and confirms it.
+// Returns true once the email is verified.
+async function promptVerifyEmail(email) {
+  const code = window.prompt(
+    `We emailed a verification code to ${email}.\n\n` +
+      "Enter it below to confirm your account. If you don't see it, check your spam/junk folder.",
+  );
+  if (!code || !code.trim()) return false;
+  const { error } = await authClient.verifyOtp({
+    email,
+    token: code.trim(),
+    type: "signup",
+  });
+  if (error) {
+    showToast("That code didn't work. Sign in again to get a new code.", "error");
+    return false;
+  }
+  showToast("Email confirmed!", "success");
+  return true;
+}
+
 async function submitAuth() {
   const email = document.getElementById("emailInput").value.trim();
   const pass = document.getElementById("passInput").value;
@@ -5006,6 +5030,11 @@ async function submitAuth() {
   }
 
   if (_authMode === "signup") {
+    // Convenience check only — api.ts enforces the same rule server-side.
+    if (!email.toLowerCase().endsWith(ALLOWED_EMAIL_SUFFIX)) {
+      err.textContent = `Please use your MCSDD department email (name${ALLOWED_EMAIL_SUFFIX}).`;
+      return;
+    }
     const confirmPass = document.getElementById("passConfirm").value;
     if (pass.length < 8) {
       err.textContent = "Password must be at least 8 characters.";
@@ -5041,12 +5070,19 @@ async function submitAuth() {
       return;
     }
     if (!data.session) {
-      showToast(
-        "Account created. Check your email to confirm, then sign in.",
-        "success",
-      );
-      toggleAuthMode();
-      return;
+      // Email verification is required: confirm the emailed code, then
+      // sign in with the password they just chose.
+      const verified = await promptVerifyEmail(email);
+      if (!verified) {
+        toggleAuthMode();
+        return;
+      }
+      const signIn = await authClient.signInWithPassword({ email, password: pass });
+      if (signIn.error) {
+        showToast("Email confirmed. Please sign in.", "success");
+        toggleAuthMode();
+        return;
+      }
     }
     _sessionKey = pass;
     // Re-derive from a forced, uncached session fetch rather than trusting
@@ -5073,6 +5109,17 @@ async function submitAuth() {
     btn.disabled = false;
 
     if (error) {
+      if (
+        error.code === "EMAIL_NOT_VERIFIED" ||
+        error.status === 403 ||
+        /verif/i.test(error.message || "")
+      ) {
+        // Neon Auth emails a fresh code when an unverified account signs in.
+        if (await promptVerifyEmail(email)) return submitAuth();
+        err.textContent =
+          "Please confirm your email first — sign in again to get a new code.";
+        return;
+      }
       err.textContent = "Incorrect email or password.";
       document.getElementById("passInput").value = "";
       document.getElementById("passInput").focus();

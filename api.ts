@@ -16,6 +16,9 @@ attachDatabasePool(pool);
 const jwks = createRemoteJWKSet(new URL(process.env.NEON_AUTH_JWKS_URL!));
 const issuer = new URL(process.env.NEON_AUTH_BASE_URL!).origin;
 
+// Department email domain. Keep in sync with ALLOWED_EMAIL_SUFFIX in app.js.
+const ALLOWED_EMAIL_SUFFIX = "@mcsdd.com";
+
 function corsHeaders(request: Request): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": request.headers.get("origin") || "*",
@@ -42,6 +45,22 @@ app.use("*", async (c, next) => {
     c.set("userId", payload.sub);
   } catch {
     return c.text("Unauthorized", 401, corsHeaders(c.req.raw));
+  }
+  // Only verified MCSDD department accounts may read or write plans. Read
+  // the email and verified flag from neon_auth.user (the source of truth)
+  // rather than trusting JWT claims, so a changed or unverified email is
+  // caught on the very next request.
+  const { rows: users } = await pool.query(
+    `select email, "emailVerified" from neon_auth."user" where id = $1`,
+    [c.get("userId")],
+  );
+  const user = users[0];
+  if (
+    !user ||
+    !user.emailVerified ||
+    !String(user.email).toLowerCase().endsWith(ALLOWED_EMAIL_SUFFIX)
+  ) {
+    return c.text("Forbidden: verified @mcsdd.com account required", 403, corsHeaders(c.req.raw));
   }
   await next();
   for (const [key, value] of Object.entries(corsHeaders(c.req.raw))) {
