@@ -5030,10 +5030,21 @@ async function submitAuth() {
   }
 
   if (_authMode === "signup") {
-    // Convenience check only — api.ts enforces the same rule server-side.
+    // Convenience check only — api.ts enforces the same rule on every
+    // request. Non-department addresses are asked about server-side so the
+    // short exception list never has to live in this public file.
     if (!email.toLowerCase().endsWith(ALLOWED_EMAIL_SUFFIX)) {
-      err.textContent = `Please use your MCSDD department email (name${ALLOWED_EMAIL_SUFFIX}).`;
-      return;
+      let allowed = false;
+      try {
+        const res = await fetch(
+          `${NEON_FUNCTION_API_BASE_URL}/signup-allowed?email=${encodeURIComponent(email)}`,
+        );
+        allowed = res.ok && (await res.json()).allowed === true;
+      } catch {}
+      if (!allowed) {
+        err.textContent = `Please use your MCSDD department email (name${ALLOWED_EMAIL_SUFFIX}).`;
+        return;
+      }
     }
     const confirmPass = document.getElementById("passConfirm").value;
     if (pass.length < 8) {

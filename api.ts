@@ -19,6 +19,21 @@ const issuer = new URL(process.env.NEON_AUTH_BASE_URL!).origin;
 // Department email domain. Keep in sync with ALLOWED_EMAIL_SUFFIX in app.js.
 const ALLOWED_EMAIL_SUFFIX = "@mcsdd.com";
 
+// Individual non-department addresses that are also allowed (e.g. the app's
+// developer). Comma-separated, set as a private env var on the deployed
+// Function — never committed, since this repo is public.
+const EXTRA_ALLOWED_EMAILS = new Set(
+  (process.env.EXTRA_ALLOWED_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean),
+);
+
+function isAllowedEmail(email: unknown): boolean {
+  const e = String(email || "").trim().toLowerCase();
+  return e.endsWith(ALLOWED_EMAIL_SUFFIX) || EXTRA_ALLOWED_EMAILS.has(e);
+}
+
 function corsHeaders(request: Request): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": request.headers.get("origin") || "*",
@@ -33,6 +48,12 @@ const app = new Hono<{ Variables: Variables }>();
 
 app.get("/", (c) => c.text("PCSP Assistant Pro — Neon Function API"));
 app.options("*", (c) => new Response(null, { status: 204, headers: corsHeaders(c.req.raw) }));
+
+// Public pre-check for the sign-up form (no login yet). Registered before
+// the auth middleware below so it doesn't require a session.
+app.get("/signup-allowed", (c) =>
+  c.json({ allowed: isAllowedEmail(c.req.query("email")) }, 200, corsHeaders(c.req.raw)),
+);
 
 app.use("*", async (c, next) => {
   const auth = c.req.header("authorization");
@@ -55,11 +76,7 @@ app.use("*", async (c, next) => {
     [c.get("userId")],
   );
   const user = users[0];
-  if (
-    !user ||
-    !user.emailVerified ||
-    !String(user.email).toLowerCase().endsWith(ALLOWED_EMAIL_SUFFIX)
-  ) {
+  if (!user || !user.emailVerified || !isAllowedEmail(user.email)) {
     return c.text("Forbidden: verified @mcsdd.com account required", 403, corsHeaders(c.req.raw));
   }
   await next();
