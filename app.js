@@ -5076,11 +5076,20 @@ async function submitAuth() {
     });
     btn.disabled = false;
 
-    if (error) {
+    // With email verification required, sign-up creates the account and
+    // emails a code but does NOT sign in — the Supabase-style adapter
+    // reports that as a "Failed to retrieve user session" error rather
+    // than a null session. Treat both shapes as "go confirm the code".
+    const awaitingVerification =
+      (!error && !data?.session) ||
+      (error &&
+        (/session.?not.?found/i.test(error.code || "") ||
+          /retrieve user session/i.test(error.message || "")));
+    if (error && !awaitingVerification) {
       err.textContent = error.message;
       return;
     }
-    if (!data.session) {
+    if (awaitingVerification) {
       // Email verification is required: confirm the emailed code, then
       // sign in with the password they just chose.
       const verified = await promptVerifyEmail(email);
