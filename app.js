@@ -4991,23 +4991,33 @@ const ALLOWED_EMAIL_SUFFIX = "@mcsdd.com";
 
 // Asks for the verification code Neon Auth emailed and confirms it.
 // Returns true once the email is verified.
+// Each sign-in attempt emails a NEW code and cancels the previous one, so
+// a wrong/old code is retried here in place rather than by signing in
+// again (which would just send yet another code). Neon Auth allows a few
+// attempts per code; after that a fresh sign-in is needed.
 async function promptVerifyEmail(email) {
-  const code = window.prompt(
-    `We emailed a verification code to ${email}.\n\n` +
-      "Enter it below to confirm your account. If you don't see it, check your spam/junk folder.",
-  );
-  if (!code || !code.trim()) return false;
-  const { error } = await authClient.verifyOtp({
-    email,
-    token: code.trim(),
-    type: "signup",
-  });
-  if (error) {
-    showToast("That code didn't work. Sign in again to get a new code.", "error");
-    return false;
+  let message =
+    `We just emailed a verification code to ${email}.\n\n` +
+    "Wait for that email, then enter its code below. Only the NEWEST email's code works — " +
+    "older codes stop working. Check your spam/junk folder if you don't see it.";
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const code = window.prompt(message);
+    if (!code || !code.trim()) return false;
+    const { error } = await authClient.verifyOtp({
+      email,
+      token: code.replace(/\s+/g, ""),
+      type: "signup",
+    });
+    if (!error) {
+      showToast("Email confirmed!", "success");
+      return true;
+    }
+    message =
+      "That code didn't work. Make sure it's from the MOST RECENT email " +
+      `(sent to ${email}) and try again:`;
   }
-  showToast("Email confirmed!", "success");
-  return true;
+  showToast("Too many tries. Sign in again to get a new code.", "error");
+  return false;
 }
 
 async function submitAuth() {
